@@ -207,9 +207,9 @@ class FireblocksSDK(object):
 
         response = requests.get(self.base_url + path, headers=headers)
         if response.status_code != 200:
-            raise Exception(response.text)
+            raise Exception("Got an error from fireblocks server: " + response.text)
         else:
-            return response.json()['result']
+            return response.json()
 
     def _post_request(self, path, body=""):
         token = self.token_provider.sign_jwt(path, body)
@@ -220,9 +220,9 @@ class FireblocksSDK(object):
 
         response = requests.post(self.base_url + path, headers=headers, json=body)
         if response.status_code != 200:
-            raise Exception(response.text)
+            raise Exception("Got an error from fireblocks server: " + response.text)
         else:
-            return response.json()['result']
+            return response.json()
 
 
 
