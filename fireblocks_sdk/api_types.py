@@ -1,3 +1,11 @@
+class TransferPeerPath(object):
+    def __init__(self, peer_type, peer_id):
+        if peer_type not in PEER_TYPES:
+            raise Exception("Got invalid transfer peer type: " + peer_type)
+        self.type = peer_type
+        self.id = str(peer_id)
+
+
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
 TRANSACTION_BURN = "BURN"
@@ -40,12 +48,3 @@ EXTERNAL_WALLET = "EXTERNAL_WALLET"
 UNKNOWN_PEER = "UNKNOWN"
 
 PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER)
-
-class TransferPeerPath(object):
-    def __init__(self, peer_type, peer_id):
-        if peer_type not in PEER_TYPES:
-            raise Exception("Got invalid transfer peer type: " + peer_type)
-        self.type = peer_type
-        self.id = peer_id
-
-NO_DESTINATION = TransferPeerPath(UNKNOWN_PEER, "")

@@ -2,7 +2,7 @@ import requests
 import urllib
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, NO_DESTINATION, TRANSACTION_TRANSFER
+from .api_types import TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -23,6 +23,32 @@ class FireblocksSDK(object):
         """Gets all vault accounts for your tenant"""
 
         return self._get_request("/v1/vault/accounts")
+
+    def get_vault_account(self, vault_account_id):
+        """Gets a single vault account        
+        Args:
+            vault_account_id (string): The id of the requested account
+        """        
+
+        return self._get_request(f"/v1/vault/accounts/{vault_account_id}")
+
+    def get_vault_account_asset(self, vault_account_id, asset_id):
+        """Gets a single vault account asset        
+        Args:
+            vault_account_id (string): The id of the requested account
+            asset_id (string): The id of the requested asset
+        """        
+
+        return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
+
+    def get_deposit_addresses(self, vault_account_id, asset_id):
+        """Gets deposit addresses for an asset in a vault account
+        Args:
+            vault_account_id (string): The id of the requested account
+            asset_id (string): The id of the requested asset
+        """        
+
+        return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
 
     def get_exchange_accounts(self):
         """Gets all exchange accounts for your tenant"""
@@ -159,7 +185,7 @@ class FireblocksSDK(object):
             )            
 
 
-    def create_transaction(self, asset_id, amount, source, destination=NO_DESTINATION , fee=-1, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=-1, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
         """Creates a new transaction
 
         Args:
@@ -179,11 +205,13 @@ class FireblocksSDK(object):
             "assetId": asset_id,
             "amount": amount,            
             "source": source.__dict__,
-            "destination": destination.__dict__,
             "fee": fee,
             "waitForStatus": wait_for_status,
             "operation": tx_type
         }
+
+        if destination:
+            body["destination"] = destination.__dict__
 
         return self._post_request("/v1/transactions", body)
 
