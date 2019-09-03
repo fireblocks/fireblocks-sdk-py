@@ -8,11 +8,11 @@ setup(
   #author = 'Yoni Moses',                   # Type in your name
   #author_email = 'yoni@fireblocks.io',      # Type in your E-Mail
   url = 'https://github.com/fireblocks/fireblocks-sdk-py',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/fireblocks/fireblocks-sdk-py/archive/v0.1.tar.gz',    # I explain this later on
   keywords = ['Fireblocks', 'SDK'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
-          'PyJWT',
-          'requests',
+          'PyJWT=1.7.1',
+          'requests=2.22.0',
       ],
   classifiers=[
     'Development Status :: 4 - Beta',

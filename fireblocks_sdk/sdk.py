@@ -2,7 +2,7 @@ import requests
 import urllib
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, TRANSACTION_TRANSFER
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -69,7 +69,7 @@ class FireblocksSDK(object):
         params = {}
 
         if status and status not in TRANSACTION_STATUS_TYPES:
-            raise Exception("Got invalid transaction type: " + tx_type)
+            raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
         if before:
             params['before'] = before
@@ -199,7 +199,7 @@ class FireblocksSDK(object):
         """        
 
         if tx_type not in TRANSACTION_TYPES:
-            raise Exception("Got invalid transaction type: " + tx_type)
+            raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
         body = {
             "assetId": asset_id,
@@ -224,7 +224,7 @@ class FireblocksSDK(object):
 
         response = requests.get(self.base_url + path, headers=headers)
         if response.status_code != 200:
-            raise Exception("Got an error from fireblocks server: " + response.text)
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
             return response.json()
 
@@ -237,7 +237,7 @@ class FireblocksSDK(object):
 
         response = requests.post(self.base_url + path, headers=headers, json=body)
         if response.status_code != 200:
-            raise Exception("Got an error from fireblocks server: " + response.text)
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
             return response.json()
 
