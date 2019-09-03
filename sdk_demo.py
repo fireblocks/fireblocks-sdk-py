@@ -1,12 +1,12 @@
 import logging
 from time import sleep
+import os.path
 
 from fireblocks_sdk import FireblocksSDK, TransferPeerPath, TRANSACTION_STATUS_CONFIRMED, TRANSACTION_STATUS_CANCELLED, TRANSACTION_STATUS_REJECTED, TRANSACTION_STATUS_FAILED, VAULT_ACCOUNT, TRANSACTION_MINT, TRANSACTION_BURN
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s::%(levelname)s::%(message)s")
 
-private_key = open('api-client.key', 'r').read()
-client = FireblocksSDK(private_key, "e4b761cc-3e31-4413-b7f5-feccf281454e", "https://api.csd.fireblocks.io")
+client = None
 
 
 
@@ -64,6 +64,14 @@ def get_balances(vault_account, secondary_vault_account):
     logging.info(f"Secondary balance: {secondary_balance}")
 
 def main():
+    global client
+
+    if not os.path.isfile('api-client.key'):
+        print("Please save your private key to api-client.key to use this demo")
+        exit(0)
+    private_key = open('api-client.key', 'r').read()
+    client = FireblocksSDK(private_key, "e4b761cc-3e31-4413-b7f5-feccf281454e", "https://api.csd.fireblocks.io")
+
     vault_account = client.get_vault_account("0")
     secondary_vault_account = client.get_vault_account("1")
 
