@@ -1,25 +1,8 @@
 import requests
 import urllib
 
-from sdk_token_provider import SdkTokenProvider
-
-TRANSACTION_TRANSFER = "TRANSFER"
-TRANSACTION_MINT = "MINT"
-TRANSACTION_BURN = "BURN"
-
-TRANSACTION_STATUS_SUBMITTED = "SUBMITTED"
-TRANSACTION_STATUS_PENDING_SIGNATURE= "PENDING_SIGNATURE"
-TRANSACTION_STATUS_PENDING_AUTHORIZATION = "PENDING_AUTHORIZATION"
-TRANSACTION_STATUS_PENDING = "PENDING"
-TRANSACTION_STATUS_BROADCASTING = "BROADCASTING"
-TRANSACTION_STATUS_CONFIRMING= "CONFIRMING"
-TRANSACTION_STATUS_CONFIRMED = "CONFIRMED"
-TRANSACTION_STATUS_CANCELLING = "CANCELLING"
-TRANSACTION_STATUS_CANCELLED = "CANCELLED"
-TRANSACTION_STATUS_REJECTED = "REJECTED"
-TRANSACTION_STATUS_FAILED = "FAILED"
-TRANSACTION_STATUS_TIMEOUT = "TIMEOUT"
-TRANSACTION_STATUS_BLOCKED = "BLOCKED"
+from .sdk_token_provider import SdkTokenProvider
+from .api_types import TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, NO_DESTINATION, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -58,6 +41,9 @@ class FireblocksSDK(object):
         path = "/v1/transactions"
         
         params = {}
+
+        if status and status not in TRANSACTION_STATUS_TYPES:
+            raise Exception("Got invalid transaction type: " + tx_type)
 
         if before:
             params['before'] = before
@@ -173,24 +159,27 @@ class FireblocksSDK(object):
             )            
 
 
-    def create_transaction(self, asset_id, source, destination, amount, fee=-1, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
+    def create_transaction(self, asset_id, amount, source, destination=NO_DESTINATION , fee=-1, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
         """Creates a new transaction
 
         Args:
             asset_id (str): The asset symbol
-            source (str): The source address
-            destination (str): The destination address
+            source (TransferPeerType): The transfer source
+            destination (TransferPeerType, optional): The transfer destination
             amount (int): The amount
             fee (int, optional): The fee
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT or BURN. Default is TRANSFER.                
         """        
 
+        if tx_type not in TRANSACTION_TYPES:
+            raise Exception("Got invalid transaction type: " + tx_type)
+
         body = {
             "assetId": asset_id,
-            "source": source,
-            "destination": destination,
-            "amount": amount,
+            "amount": amount,            
+            "source": source.__dict__,
+            "destination": destination.__dict__,
             "fee": fee,
             "waitForStatus": wait_for_status,
             "operation": tx_type
@@ -211,7 +200,7 @@ class FireblocksSDK(object):
         else:
             return response.json()
 
-    def _post_request(self, path, body=""):
+    def _post_request(self, path, body={}):
         token = self.token_provider.sign_jwt(path, body)
         headers = {
             "X-API-Key": self.api_key,
