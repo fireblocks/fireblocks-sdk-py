@@ -13,6 +13,3 @@ Python 2.7 and later.
 
 ### Installation
 `pip install fireblocks-sdk`
-
-### Example
-An example script that demonstrates the SDK usage can be found [here](https://github.com/fireblocks/fireblocks-sdk-py/blob/master/sdk_demo.py).
