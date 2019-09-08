@@ -1,4 +1,0 @@
-PyJWT
-requests
-urllib3
-chardet

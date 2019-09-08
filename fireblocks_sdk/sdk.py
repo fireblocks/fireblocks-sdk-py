@@ -215,6 +215,7 @@ class FireblocksSDK(object):
 
         return self._post_request("/v1/transactions", body)
 
+
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
         headers = {

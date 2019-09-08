@@ -1,5 +1,13 @@
+
 class TransferPeerPath(object):
     def __init__(self, peer_type, peer_id):
+        """Defines a source or a destination for a transfer
+        
+        Args:
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, or UNKNOWN_PEER
+            peer_id (str): the account/wallet id
+        """
+            
         if peer_type not in PEER_TYPES:
             raise Exception("Got invalid transfer peer type: " + peer_type)
         self.type = peer_type
