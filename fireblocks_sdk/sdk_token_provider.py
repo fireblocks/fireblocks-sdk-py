@@ -18,7 +18,7 @@ class SdkTokenProvider(object):
             "uri": path,
             "nonce": timestamp_millisecs,
             "iat": timestamp_secs,
-            "exp": timestamp_secs + 20, 
+            "exp": timestamp_secs + 60, 
             "sub": self.api_key,
             "bodyHash": sha256(json.dumps(body_json).encode("utf-8")).hexdigest()
         }
