@@ -10,6 +10,8 @@ setup(
   keywords = ['Fireblocks', 'SDK'],
   install_requires=[
           'PyJWT==1.7.1',
+          'cryptography==2.7',
+          'pycryptodome==3.9.0',
           'requests==2.22.0',
       ],
   classifiers=[
