@@ -10,7 +10,7 @@ class FireblocksSDK(object):
         """Creates a new Fireblocks API Client.
 
         Args:
-            private_key (str): A string representation of your private key
+            private_key (str): A string representation of your private key (in PEM format)
             api_key (str): Your api key. This is a uuid you received from Fireblocks
             api_key (str): The fireblocks server URL. Leave empty to use the default server            
         """        
@@ -36,7 +36,7 @@ class FireblocksSDK(object):
         """Gets a single vault account asset        
         Args:
             vault_account_id (string): The id of the requested account
-            asset_id (string): The id of the requested asset
+            asset_id (string): The symbol of the requested asset (e.g BTC, ETH)
         """        
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
@@ -45,7 +45,7 @@ class FireblocksSDK(object):
         """Gets deposit addresses for an asset in a vault account
         Args:
             vault_account_id (string): The id of the requested account
-            asset_id (string): The id of the requested asset
+            asset_id (string): The symbol of the requested asset (e.g BTC, ETH)
         """        
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
@@ -61,7 +61,9 @@ class FireblocksSDK(object):
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in seconds)
             after (int, optional): Only gets transactions created after given timestamp (in seconds)
-            print_cols (str, optional): Only gets transactions with the specified status
+            status (str, optional): Only gets transactions with the specified status, which should one of the following:
+                SUBMITTED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING, BROADCASTING, CONFIRMING, CONFIRMED, 
+                CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
         """        
 
         path = "/v1/transactions"
@@ -69,7 +71,7 @@ class FireblocksSDK(object):
         params = {}
 
         if status and status not in TRANSACTION_STATUS_TYPES:
-            raise FireblocksApiException("Got invalid transaction type: " + tx_type)
+            raise FireblocksApiException("Got invalid transaction type: " + status)
 
         if before:
             params['before'] = before
@@ -125,7 +127,7 @@ class FireblocksSDK(object):
 
         Args:
             vault_account_id (str): The vault account Id
-            asset_id (str): The asset to add
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
         """        
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
@@ -153,7 +155,7 @@ class FireblocksSDK(object):
 
         Args:
             wallet_id (str): The wallet id
-            asset_id (str): The asset to add
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
             address (str): The wallet address
             tag (str, optional): (for ripple only) The ripple account tag 
         """        
@@ -171,7 +173,7 @@ class FireblocksSDK(object):
 
         Args:
             wallet_id (str): The wallet id
-            asset_id (str): The asset to add
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
             address (str): The wallet address
             tag (str, optional): (for ripple only) The ripple account tag 
         """        
@@ -189,9 +191,9 @@ class FireblocksSDK(object):
         """Creates a new transaction
 
         Args:
-            asset_id (str): The asset symbol
-            source (TransferPeerType): The transfer source
-            destination (TransferPeerType, optional): The transfer destination
+            asset_id (str): The asset symbol (e.g BTC, ETH)
+            source (TransferPeerPath): The transfer source
+            destination (TransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (int): The amount
             fee (int, optional): The fee
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
@@ -200,6 +202,9 @@ class FireblocksSDK(object):
 
         if tx_type not in TRANSACTION_TYPES:
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
+
+        if not isinstance(source, TransferPeerPath):
+            raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
             "assetId": asset_id,
@@ -211,6 +216,8 @@ class FireblocksSDK(object):
         }
 
         if destination:
+            if not isinstance(destination, TransferPeerPath):
+                raise FireblocksApiException("Expected transaction destination of type TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
         return self._post_request("/v1/transactions", body)
