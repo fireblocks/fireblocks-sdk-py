@@ -194,8 +194,8 @@ class FireblocksSDK(object):
             asset_id (str): The asset symbol (e.g BTC, ETH)
             source (TransferPeerPath): The transfer source
             destination (TransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
-            amount (int): The amount
-            fee (int, optional): The fee
+            amount (double): The amount
+            fee (double, optional): The fee
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT or BURN. Default is TRANSFER.                
         """        
