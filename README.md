@@ -12,4 +12,4 @@ Make sure you have the credentials for Fireblocks API Services. Otherwise, pleas
 Python 3.6 or newer.
 
 ### Installation
-`pip install fireblocks-sdk`
+`pip3 install fireblocks-sdk`
