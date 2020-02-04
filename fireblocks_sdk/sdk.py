@@ -64,7 +64,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
 
-    def generate_new_address(self, vault_account_id, asset_id, description):
+    def generate_new_address(self, vault_account_id, asset_id, description=None):
         """Generates a new address for an asset in a vault account
 
         Args:
@@ -75,7 +75,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or ''})
 
-    def set_address_description(self, vault_account_id, asset_id, address, tag, description):
+    def set_address_description(self, vault_account_id, asset_id, address, tag=None, description=None):
         """Sets the description of an existing address
 
         Args:
@@ -144,7 +144,7 @@ class FireblocksSDK(object):
         return self._get_request("/v1/fiat_accounts")
 
     def get_fiat_account_by_id(self, account_id):
-        """Gets all fiat accounts for your tenant
+        """Gets a single fiat account by ID
 
         Args:
             account_id (string): The fiat account ID
@@ -364,7 +364,7 @@ class FireblocksSDK(object):
         return self._delete_request(f"/v1/external_wallets/{wallet_id}")
 
     def delete_internal_wallet_asset(self, wallet_id, asset_id):
-        """Deletes a single internal wallet
+        """Deletes a single asset from an internal wallet
 
         Args:
             wallet_id (string): The internal wallet ID
@@ -374,7 +374,7 @@ class FireblocksSDK(object):
         return self._delete_request(f"/v1/internal_wallets/{wallet_id}/{asset_id}")
 
     def delete_external_wallet_asset(self, wallet_id, asset_id):
-        """Deletes a single external wallet
+        """Deletes a single asset from an external wallet
 
         Args:
             wallet_id (string): The external wallet ID
