@@ -2,12 +2,12 @@
 class TransferPeerPath(object):
     def __init__(self, peer_type, peer_id):
         """Defines a source or a destination for a transfer
-        
+
         Args:
-            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, or UNKNOWN_PEER
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION or UNKNOWN_PEER
             peer_id (str): the account/wallet id
         """
-            
+
         if peer_type not in PEER_TYPES:
             raise Exception("Got invalid transfer peer type: " + peer_type)
         self.type = peer_type
@@ -54,7 +54,9 @@ EXCHANGE_ACCOUNT = "EXCHANGE_ACCOUNT"
 INTERNAL_WALLET = "INTERNAL_WALLET"
 EXTERNAL_WALLET = "EXTERNAL_WALLET"
 UNKNOWN_PEER = "UNKNOWN"
+FIAT_ACCOUNT = "FIAT_ACCOUNT"
+NETWORK_CONNECTION = "NETWORK_CONNECTION"
 
-PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER)
+PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION)
 
 class FireblocksApiException(Exception): pass
