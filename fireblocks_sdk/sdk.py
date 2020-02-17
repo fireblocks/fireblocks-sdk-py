@@ -178,15 +178,17 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body)
 
-    def get_transactions(self, before=0, after=0, status=None):
+    def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None):
         """Gets a list of transactions matching the given filter
 
         Args:
-            before (int, optional): Only gets transactions created before given timestamp (in seconds)
-            after (int, optional): Only gets transactions created after given timestamp (in seconds)
+            before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
+            after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
             status (str, optional): Only gets transactions with the specified status, which should one of the following:
                 SUBMITTED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING, BROADCASTING, CONFIRMING, CONFIRMED,
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
+            limit (int, optional): Limit the amount of returned results. If not specified, a limit of 200 results will be used
+            order_by (str, optional): Determines the order of the returned results. Possible values are 'createdAt' or 'lastUpdated'
         """
 
         path = "/v1/transactions"
@@ -202,6 +204,10 @@ class FireblocksSDK(object):
             params['after'] = after
         if status:
             params['status'] = status
+        if order_by:
+            params['orderBy'] = order_by
+        if limit:
+            params['limit'] = limit
 
         if params:
             path = path + "?" + urllib.parse.urlencode(params)
