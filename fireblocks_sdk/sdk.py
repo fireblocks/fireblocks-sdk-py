@@ -345,8 +345,8 @@ class FireblocksSDK(object):
         }
 
         if destination:
-            if not isinstance(destination, DestinationTransferPeerPath):
-                raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath, but got type: " + type(destination))
+            if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
+                raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
         return self._post_request("/v1/transactions", body)
