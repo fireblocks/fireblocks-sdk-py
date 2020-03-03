@@ -13,6 +13,20 @@ class TransferPeerPath(object):
         self.type = peer_type
         self.id = str(peer_id)
 
+class DestinationTransferPeerPath(TransferPeerPath):
+    def __init__(self, peer_type, peer_id, one_time_address=None):
+        """Defines a destination for a transfer
+
+        Args:
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION or UNKNOWN_PEER
+            peer_id (str): the account/wallet id
+            one_time_address (JSON object): The destination address (and tag) for a non whitelisted address.
+        """
+        TransferPeerPath.__init__(self, peer_type, peer_id)
+
+        if one_time_address != None:
+            self.oneTimeAddress = one_time_address
+        
 
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"

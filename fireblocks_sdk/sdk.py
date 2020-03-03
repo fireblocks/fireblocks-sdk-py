@@ -3,7 +3,7 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, TRANSACTION_TRANSFER
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -322,7 +322,7 @@ class FireblocksSDK(object):
         Args:
             asset_id (str): The asset symbol (e.g BTC, ETH)
             source (TransferPeerPath): The transfer source
-            destination (TransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
+            destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
             fee (double, optional): The fee
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
@@ -345,8 +345,8 @@ class FireblocksSDK(object):
         }
 
         if destination:
-            if not isinstance(destination, TransferPeerPath):
-                raise FireblocksApiException("Expected transaction destination of type TransferPeerPath, but got type: " + type(destination))
+            if not isinstance(destination, DestinationTransferPeerPath):
+                raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
         return self._post_request("/v1/transactions", body)
