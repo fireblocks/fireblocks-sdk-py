@@ -186,7 +186,7 @@ class FireblocksSDK(object):
             after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
             status (str, optional): Only gets transactions with the specified status, which should one of the following:
                 SUBMITTED, QUEUED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING_3RD_PARTY_MANUAL_APPROVAL,
-                PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PENDING_COMPLETED,
+                PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
             limit (int, optional): Limit the amount of returned results. If not specified, a limit of 200 results will be used
             order_by (str, optional): Determines the order of the returned results. Possible values are 'createdAt' or 'lastUpdated'
