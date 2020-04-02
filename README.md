@@ -1,8 +1,11 @@
 # The Official Python SDK for Fireblocks API
 
+## Version
+1.4
+
 ## About
 This repository contains the official Python SDK for Fireblocks API.
-For the complete API reference, go to the [API reference](https://api.fireblocks.io/docs/v1/swagger-ui/).
+For the complete API reference, go to the [API reference](https://docs.fireblocks.com/api).
 
 ## Usage
 ### Before You Begin
