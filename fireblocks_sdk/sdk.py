@@ -243,14 +243,18 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
-    def create_vault_account(self, name, hiddenOnUI = False):
+    def create_vault_account(self, name, hiddenOnUI=False):
         """Creates a new vault account.
 
         Args:
             name (str): A name for the new vault account
         """
+        body = {
+            "name": name,
+            "hiddenOnUI": hiddenOnUI
+        }
 
-        return self._post_request("/v1/vault/accounts", {"name": name, "hiddenOnUI": hiddenOnUI})
+        return self._post_request("/v1/vault/accounts", body)
     
     def hide_vault_account(self, vault_account_id):
         """Hides the vault account from being visible in the web console
