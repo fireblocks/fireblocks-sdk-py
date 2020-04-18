@@ -248,6 +248,7 @@ class FireblocksSDK(object):
 
         Args:
             name (str): A name for the new vault account
+            hiddenOnUI (boolean): Specifies whether the vault account is hidden from the web console, false by default
         """
         body = {
             "name": name,
