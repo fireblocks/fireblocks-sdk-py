@@ -338,7 +338,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=-1, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
         """Creates a new transaction
 
         Args:
@@ -361,10 +361,15 @@ class FireblocksSDK(object):
             "assetId": asset_id,
             "amount": amount,
             "source": source.__dict__,
-            "fee": fee,
             "waitForStatus": wait_for_status,
             "operation": tx_type
         }
+
+        if fee:
+            body["fee"] = fee
+
+        if gas_price:
+            body["gasPrice"] = gas_price
 
         if destination:
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
