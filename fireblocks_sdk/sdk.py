@@ -346,7 +346,8 @@ class FireblocksSDK(object):
             source (TransferPeerPath): The transfer source
             destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
-            fee (double, optional): The fee
+            fee (double, optional): Sathoshi/Latoshi per byte.
+            gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT or BURN. Default is TRANSFER.
         """
