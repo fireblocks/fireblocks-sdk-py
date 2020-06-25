@@ -288,7 +288,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
 
-    def set_vault_account_customer_ref_id(vault_account_id, customer_ref_id):
+    def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id):
         """Sets an AML/KYT customer reference ID for the vault account
 
         Args:
@@ -298,7 +298,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
 
-    def set_vault_account_customer_ref_id_for_address(vault_account_id, asset_id, address, customer_ref_id=None):
+    def set_vault_account_customer_ref_id_for_address(self, vault_account_id, asset_id, address, customer_ref_id=None):
         """Sets an AML/KYT customer reference ID for the given address
 
         Args:
