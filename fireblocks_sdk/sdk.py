@@ -64,16 +64,17 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
 
-    def generate_new_address(self, vault_account_id, asset_id, description=None):
+    def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None):
         """Generates a new address for an asset in a vault account
 
         Args:
             vault_account_id (string): The vault account ID
             asset_id (string): The ID of the asset for which to generate the deposit address
             description (string, optional): A description for the new address
+            customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or ''})
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or '', "customerRefId": customer_ref_id or ''})
 
     def set_address_description(self, vault_account_id, asset_id, address, tag=None, description=None):
         """Sets the description of an existing address
@@ -243,17 +244,21 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
-    def create_vault_account(self, name, hiddenOnUI=False):
+    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None):
         """Creates a new vault account.
 
         Args:
             name (str): A name for the new vault account
             hiddenOnUI (boolean): Specifies whether the vault account is hidden from the web console, false by default
+            customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
         body = {
             "name": name,
             "hiddenOnUI": hiddenOnUI
         }
+
+        if customer_ref_id:
+            body["customerRefId"] = customer_ref_id
 
         return self._post_request("/v1/vault/accounts", body)
     
@@ -283,23 +288,48 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
 
-    def create_external_wallet(self, name):
+    def set_vault_account_customer_ref_id(vault_account_id, customer_ref_id):
+        """Sets an AML/KYT customer reference ID for the vault account
+
+        Args:
+            vault_account_id (str): The vault account Id
+            customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+        """
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+
+    def set_vault_account_customer_ref_id_for_address(vault_account_id, asset_id, address, customer_ref_id=None):
+        """Sets an AML/KYT customer reference ID for the given address
+
+        Args:
+            vault_account_id (str): The vault account Id
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
+            address (string): The address for which to set the customer reference id
+            customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+        """
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+
+
+    def create_external_wallet(self, name, customer_ref_id):
         """Creates a new external wallet
 
         Args:
             name (str): A name for the new external wallet
+            customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request("/v1/external_wallets", {"name": name})
+        return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''})
 
-    def create_internal_wallet(self, name):
+    def create_internal_wallet(self, name, customer_ref_id=None):
         """Creates a new internal wallet
 
         Args:
             name (str): A name for the new internal wallet
+            customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request("/v1/internal_wallets", {"name": name})
+        return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''})
 
     def create_external_wallet_asset(self, wallet_id, asset_id, address, tag=None):
         """Creates a new asset within an exiting external wallet
@@ -338,7 +368,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None):
         """Creates a new transaction
 
         Args:
@@ -350,6 +380,7 @@ class FireblocksSDK(object):
             gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT or BURN. Default is TRANSFER.
+            note (str, optional): A custome note that can be associated with the transaction.
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -371,6 +402,9 @@ class FireblocksSDK(object):
 
         if gas_price:
             body["gasPrice"] = gas_price
+
+        if note:
+            body["note"] = note
 
         if destination:
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
@@ -416,6 +450,26 @@ class FireblocksSDK(object):
         """
 
         return self._delete_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
+
+    def set_customer_ref_id_for_internal_wallet(self, wallet_id, customer_ref_id=None):
+        """Sets an AML/KYT customer reference ID for the specific internal wallet
+
+        Args:
+            wallet_id (string): The external wallet ID
+            customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+        """
+
+        return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+
+    def set_customer_ref_id_for_external_wallet(self, wallet_id, customer_ref_id=None):
+        """Sets an AML/KYT customer reference ID for the specific external wallet
+
+        Args:
+            wallet_id (string): The external wallet ID
+            customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+        """
+
+        return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
