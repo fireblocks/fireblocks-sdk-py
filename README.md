@@ -1,7 +1,7 @@
 # The Official Python SDK for Fireblocks API
 
 ## Version
-1.4
+1.5
 
 ## About
 This repository contains the official Python SDK for Fireblocks API.
