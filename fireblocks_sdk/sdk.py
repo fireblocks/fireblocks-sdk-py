@@ -496,9 +496,11 @@ class FireblocksSDK(object):
         if any([not isinstance(x, TransferTicketTerm) for x in terms]):
             raise FireblocksApiException("Expected Tranfer Assist ticket's term of type TranferTicketTerm")
 
+        body['terms'] = [term.__dict__ for term in terms]
+
         return self._post_request(f"/v1/transfer_tickets", body)
     
-    def get_transfer_ticket(self, ticket_id):
+    def get_transfer_ticket_by_id(self, ticket_id):
         """Retrieve a transfer ticket
 
         Args:
@@ -526,12 +528,13 @@ class FireblocksSDK(object):
         
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel")
 
-    def transfer_ticket_term(self, ticket_id, term_id, source=None, fee=None, gas_price=None):
-        """Retrieve a transfer ticket
+    def execute_ticket_term(self, ticket_id, term_id, source=None):
+        """Initiate a transfer ticket transaction
 
         Args:
             ticket_id (str): The ID of the transfer ticket
             term_id (str): The ID of the term within the transfer ticket
+            source (TransferPeerPath): JSON object of the source of the transaction. The network connection's vault account by default
         """
 
         body = {}
@@ -541,13 +544,7 @@ class FireblocksSDK(object):
                 raise FireblocksApiException("Expected ticket term source Of type TransferPeerPath, but got type: " + type(source))
             body["source"] = source.__dict__
 
-        if fee:
-            body["fee"] = fee
 
-        if gas_price:
-            body["gasPrice"] = gas_price
-
-        
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body) 
 
     def _get_request(self, path):

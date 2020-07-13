@@ -41,10 +41,11 @@ class TransferTicketTerm(object):
 
         """
     
-        self.network_connection_id = str(network_connection_id)
+        self.networkConnectionId = str(network_connection_id)
         self.outgoing = bool(outgoing)
         self.asset = str(asset)
         self.amount = str(amount)
+        self.note = str(note)
 
 
 TRANSACTION_TRANSFER = "TRANSFER"
