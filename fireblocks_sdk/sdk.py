@@ -3,7 +3,7 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TRANSACTION_TRANSFER
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -470,6 +470,85 @@ class FireblocksSDK(object):
         """
 
         return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+
+    def get_transfer_tickets(self):
+        """Gets all transfer tickets of your tenant"""
+
+        return self._get_request("/v1/transfer_tickets")
+
+    def create_transfer_ticket(self, terms, external_ticket_id=None, description=None):
+        """Creates a new transfer ticket
+
+        Args:
+            terms (list of Transfer Assist terms): The list of
+            external_ticket_id (str, optional): The ID for of the transfer ticket on customer's OMS
+            description (str, optional): A description for the new ticket
+        """
+
+        body = {}
+
+        if external_ticket_id:
+            body["externalTicketId"] = external_ticket_id
+
+        if description:
+            body["description"] = description
+
+        if any([not isinstance(x, TransferTicketTerm) for x in terms]):
+            raise FireblocksApiException("Expected Tranfer Assist ticket's term of type TranferTicketTerm")
+
+        return self._post_request(f"/v1/transfer_tickets", body)
+    
+    def get_transfer_ticket(self, ticket_id):
+        """Retrieve a transfer ticket
+
+        Args:
+            ticket_id (str): The ID of the transfer ticket.
+        """
+        
+        return self._get_request(f"/v1/transfer_tickets/{ticket_id}")
+
+    def get_transfer_ticket_term(self, ticket_id, term_id):
+        """Retrieve a transfer ticket
+
+        Args:
+            ticket_id (str): The ID of the transfer ticket
+            term_id (str): The ID of the term within the transfer ticket
+        """
+        
+        return self._get_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}")
+
+    def cancel_transfer_ticket(self, ticket_id):
+        """Cancel a transfer ticket
+
+        Args:
+            ticket_id (str): The ID of the transfer ticket to cancel
+        """
+        
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel")
+
+    def transfer_ticket_term(self, ticket_id, term_id, source=None, fee=None, gas_price=None):
+        """Retrieve a transfer ticket
+
+        Args:
+            ticket_id (str): The ID of the transfer ticket
+            term_id (str): The ID of the term within the transfer ticket
+        """
+
+        body = {}
+
+        if source:
+            if not isinstance(source, TransferPeerPath):
+                raise FireblocksApiException("Expected ticket term source Of type TransferPeerPath, but got type: " + type(source))
+            body["source"] = source.__dict__
+
+        if fee:
+            body["fee"] = fee
+
+        if gas_price:
+            body["gasPrice"] = gas_price
+
+        
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body) 
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
