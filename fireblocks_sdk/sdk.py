@@ -480,8 +480,8 @@ class FireblocksSDK(object):
         """Creates a new transfer ticket
 
         Args:
-            terms (list of Transfer Assist terms): The list of
-            external_ticket_id (str, optional): The ID for of the transfer ticket on customer's OMS
+            terms (list of TransferTicketTerm objects): The list of TransferTicketTerm
+            external_ticket_id (str, optional): The ID for of the transfer ticket on customer's platform
             description (str, optional): A description for the new ticket
         """
 
