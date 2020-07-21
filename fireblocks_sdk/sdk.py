@@ -261,7 +261,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/estimate_network_fee?assetId=${asset_id}")
 
-    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER, note=None):
+    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER):
         """Estimates transaction fee
 
         Args:
