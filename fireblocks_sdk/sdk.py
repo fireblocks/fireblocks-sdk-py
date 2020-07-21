@@ -251,6 +251,47 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/transactions/{txid}")
 
+
+    def get_fee_for_asset(self, asset_id):
+        """Gets the estimated fees for an asset
+
+        Args:
+            asset_id (str): The asset symbol (e.g BTC, ETH)
+        """
+
+        return self._get_request(f"/v1/estimate_network_fee?assetId=${asset_id}")
+
+    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER, note=None):
+        """Estimates transaction fee
+
+        Args:
+            asset_id (str): The asset symbol (e.g BTC, ETH)
+            source (TransferPeerPath): The transaction source
+            destination (DestinationTransferPeerPath, optional): The transfer destination.
+            amount (str): The amount
+            tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
+        """
+
+        if tx_type not in TRANSACTION_TYPES:
+            raise FireblocksApiException("Got invalid transaction type: " + tx_type)
+
+        if not isinstance(source, TransferPeerPath):
+            raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
+
+        body = {
+            "assetId": asset_id,
+            "amount": amount,
+            "source": source.__dict__,
+            "operation": tx_type
+        }
+
+        if destination:
+            if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
+                raise FireblocksApiException("Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
+            body["destination"] = destination.__dict__
+
+        return self._post_request("/v1/transactions/estimate_fee", body)
+
     def cancel_transaction_by_id(self, txid):
         """Cancels the selected transaction
 
@@ -395,7 +436,7 @@ class FireblocksSDK(object):
             fee (double, optional): Sathoshi/Latoshi per byte.
             gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
-            tx_type (str, optional): Transaction type: either TRANSFER, MINT or BURN. Default is TRANSFER.
+            tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
         """
 
