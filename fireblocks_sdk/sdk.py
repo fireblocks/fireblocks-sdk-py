@@ -221,10 +221,26 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/internal_wallets")
 
+    def get_internal_wallet(self, wallet_id):
+        """Gets an internal wallet from your tenant
+        Args:
+            wallet_id (str): The wallet id to query
+        """
+
+        return self._get_request(f"/v1/internal_wallet/{wallet_id}")
+
     def get_external_wallets(self):
         """Gets all external wallets for your tenant"""
 
         return self._get_request("/v1/external_wallets")
+
+    def get_external_wallet(self, wallet_id):
+        """Gets an external wallet from your tenant
+        Args:
+            wallet_id (str): The wallet id to query
+        """
+
+        return self._get_request(f"/v1/external_wallet/{wallet_id}")
 
     def get_transaction_by_id(self, txid):
         """Gets detailed information for a single transaction
