@@ -29,7 +29,7 @@ class DestinationTransferPeerPath(TransferPeerPath):
         
 
 class TransferTicketTerm(object):
-    def __init__(self, network_connection_id, outgoing, asset, amount, note=None):
+    def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
         """Defines a transfer ticket's term
 
         Args:
@@ -45,7 +45,9 @@ class TransferTicketTerm(object):
         self.outgoing = bool(outgoing)
         self.asset = str(asset)
         self.amount = str(amount)
-        self.note = str(note)
+        if note:
+            self.note = str(note)
+        self.operation = operation
 
 
 TRANSACTION_TRANSFER = "TRANSFER"

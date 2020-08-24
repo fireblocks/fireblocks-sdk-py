@@ -107,6 +107,24 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/exchange_accounts")
 
+    def get_exchange_account(self, exchange_account_id):
+        """Gets an exchange account for your tenant
+        Args:
+            exchange_account_id (string): The exchange ID in Fireblocks
+        """
+
+        return self._get_request(f"/v1/exchange_accounts/{exchange_account_id}")
+
+    def get_exchange_account_asset(self, exchange_account_id, asset_id):
+        """Get a specific asset from an exchange account
+
+        Args:
+            exchange_account_id (string): The exchange ID in Fireblocks
+            asset_id (string): The asset to transfer
+        """
+
+        return self._get_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}")
+
     def transfer_to_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount):
         """Transfer to a subaccount from a main exchange account
 
@@ -229,6 +247,15 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/internal_wallet/{wallet_id}")
 
+    def get_internal_wallet_asset(self, wallet_id, asset_id):
+        """Gets an asset from an internal wallet from your tenant
+        Args:
+            wallet_id (str): The wallet id to query
+            asset_id (str): The asset id to query
+        """
+        return self._get_request(f"/v1/internal_wallet/{wallet_id}/{asset_id}")
+
+
     def get_external_wallets(self):
         """Gets all external wallets for your tenant"""
 
@@ -241,6 +268,14 @@ class FireblocksSDK(object):
         """
 
         return self._get_request(f"/v1/external_wallet/{wallet_id}")
+
+    def get_external_wallet_asset(self, wallet_id, asset_id):
+        """Gets an asset from an external wallet from your tenant
+        Args:
+            wallet_id (str): The wallet id to query
+            asset_id (str): The asset id to query
+        """
+        return self._get_request(f"/v1/external_wallet/{wallet_id}/{asset_id}")
 
     def get_transaction_by_id(self, txid):
         """Gets detailed information for a single transaction
