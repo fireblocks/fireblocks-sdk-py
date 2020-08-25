@@ -245,7 +245,7 @@ class FireblocksSDK(object):
             wallet_id (str): The wallet id to query
         """
 
-        return self._get_request(f"/v1/internal_wallet/{wallet_id}")
+        return self._get_request(f"/v1/internal_wallets/{wallet_id}")
 
     def get_internal_wallet_asset(self, wallet_id, asset_id):
         """Gets an asset from an internal wallet from your tenant
@@ -253,7 +253,7 @@ class FireblocksSDK(object):
             wallet_id (str): The wallet id to query
             asset_id (str): The asset id to query
         """
-        return self._get_request(f"/v1/internal_wallet/{wallet_id}/{asset_id}")
+        return self._get_request(f"/v1/internal_wallets/{wallet_id}/{asset_id}")
 
 
     def get_external_wallets(self):
@@ -267,7 +267,7 @@ class FireblocksSDK(object):
             wallet_id (str): The wallet id to query
         """
 
-        return self._get_request(f"/v1/external_wallet/{wallet_id}")
+        return self._get_request(f"/v1/external_wallets/{wallet_id}")
 
     def get_external_wallet_asset(self, wallet_id, asset_id):
         """Gets an asset from an external wallet from your tenant
@@ -275,7 +275,7 @@ class FireblocksSDK(object):
             wallet_id (str): The wallet id to query
             asset_id (str): The asset id to query
         """
-        return self._get_request(f"/v1/external_wallet/{wallet_id}/{asset_id}")
+        return self._get_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
 
     def get_transaction_by_id(self, txid):
         """Gets detailed information for a single transaction
@@ -353,7 +353,7 @@ class FireblocksSDK(object):
             body["customerRefId"] = customer_ref_id
 
         return self._post_request("/v1/vault/accounts", body)
-    
+
     def hide_vault_account(self, vault_account_id):
         """Hides the vault account from being visible in the web console
 
@@ -591,14 +591,14 @@ class FireblocksSDK(object):
         body['terms'] = [term.__dict__ for term in terms]
 
         return self._post_request(f"/v1/transfer_tickets", body)
-    
+
     def get_transfer_ticket_by_id(self, ticket_id):
         """Retrieve a transfer ticket
 
         Args:
             ticket_id (str): The ID of the transfer ticket.
         """
-        
+
         return self._get_request(f"/v1/transfer_tickets/{ticket_id}")
 
     def get_transfer_ticket_term(self, ticket_id, term_id):
@@ -608,7 +608,7 @@ class FireblocksSDK(object):
             ticket_id (str): The ID of the transfer ticket
             term_id (str): The ID of the term within the transfer ticket
         """
-        
+
         return self._get_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}")
 
     def cancel_transfer_ticket(self, ticket_id):
@@ -617,7 +617,7 @@ class FireblocksSDK(object):
         Args:
             ticket_id (str): The ID of the transfer ticket to cancel
         """
-        
+
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel")
 
     def execute_ticket_term(self, ticket_id, term_id, source=None):
@@ -637,7 +637,7 @@ class FireblocksSDK(object):
             body["source"] = source.__dict__
 
 
-        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body) 
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
