@@ -28,28 +28,6 @@ class DestinationTransferPeerPath(TransferPeerPath):
             self.oneTimeAddress = one_time_address
         
 
-class TransferTicketTerm(object):
-    def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
-        """Defines a transfer ticket's term
-
-        Args:
-          network_connection_id (str): The Fireblocks network connection on which this term should be fulfilled
-          outgoing (bool): True means that the term is from the initiator of the ticket
-          asset (str): The asset of term that was agreed on
-          amount (str): The amount of the asset that should be transferred
-          note (str, optional): Custom note that can be added to the term
-
-        """
-    
-        self.networkConnectionId = str(network_connection_id)
-        self.outgoing = bool(outgoing)
-        self.asset = str(asset)
-        self.amount = str(amount)
-        if note:
-            self.note = str(note)
-        self.operation = operation
-
-
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
 TRANSACTION_BURN = "BURN"
@@ -109,5 +87,27 @@ NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
 
 PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND)
+
+class TransferTicketTerm(object):
+    def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
+        """Defines a transfer ticket's term
+
+        Args:
+          network_connection_id (str): The Fireblocks network connection on which this term should be fulfilled
+          outgoing (bool): True means that the term is from the initiator of the ticket
+          asset (str): The asset of term that was agreed on
+          amount (str): The amount of the asset that should be transferred
+          note (str, optional): Custom note that can be added to the term
+
+        """
+    
+        self.networkConnectionId = str(network_connection_id)
+        self.outgoing = bool(outgoing)
+        self.asset = str(asset)
+        self.amount = str(amount)
+        if note:
+            self.note = str(note)
+        self.operation = operation
+
 
 class FireblocksApiException(Exception): pass
