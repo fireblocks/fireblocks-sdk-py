@@ -369,6 +369,19 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide")
+    
+    def update_vault_account(self, vault_account_id, name):
+        """Updates a vault account.
+
+        Args:
+            vault_account_id (str): The vault account Id
+            name (str): A new name for the vault account
+        """
+        body = {
+            "name": name,
+        }
+
+        return self._put_request("/v1/vault/accounts/{vault_account_id}", body)
 
     def create_vault_asset(self, vault_account_id, asset_id):
         """Creates a new asset within an existing vault account
