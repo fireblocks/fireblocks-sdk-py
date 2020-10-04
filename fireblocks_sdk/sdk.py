@@ -381,7 +381,7 @@ class FireblocksSDK(object):
             "name": name,
         }
 
-        return self._put_request("/v1/vault/accounts/{vault_account_id}", body)
+        return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
     def create_vault_asset(self, vault_account_id, asset_id):
         """Creates a new asset within an existing vault account
