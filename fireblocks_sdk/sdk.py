@@ -205,7 +205,7 @@ class FireblocksSDK(object):
             after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
             status (str, optional): Only gets transactions with the specified status, which should one of the following:
                 SUBMITTED, QUEUED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING_3RD_PARTY_MANUAL_APPROVAL,
-                PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
+                PENDING_3RD_PARTY, BROADCASTING, RMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
             limit (int, optional): Limit the amount of returned results. If not specified, a limit of 200 results will be used
             order_by (str, optional): Determines the order of the returned results. Possible values are 'createdAt' or 'lastUpdated'
@@ -651,6 +651,34 @@ class FireblocksSDK(object):
 
 
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body)
+    
+    def set_confirmation_threshold_for_txid(self, txid, required_confirmations_number):
+        """Set the required number of confirmations for transaction
+        
+        Args:
+            txid (str): The transaction id
+            required_confirmations_Number (number): Required confirmation threshold fot the txid
+        """
+        
+        body = {
+            "numOfConfirmations": required_confirmations_number
+        }
+        
+        return self._post_request(f"/v1/transactions/{txid}/set_confirmation_threshold", body)
+    
+    def set_confirmation_threshold_for_txhash(self, txhash, required_confirmations_number):
+        """Set the required number of confirmations for transaction by txhash
+        
+        Args:
+            txhash (str): The transaction hash 
+            required_confirmations_Number (number): Required confirmation threshold fot the txhash
+        """
+        
+        body = {
+            "numOfConfirmations": required_confirmations_number
+        }
+        
+        return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
