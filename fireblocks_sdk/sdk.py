@@ -212,10 +212,14 @@ class FireblocksSDK(object):
             order_by (str, optional): Determines the order of the returned results. Possible values are 'createdAt' or 'lastUpdated'
             txhash (str, optional): Only gets transactions with the specified txHash
             assets (str, optional): Filter results for specified assets
-            source_type, dest_type (str, optional): Only gets transactions with given source_type / dest_type, which should be one of the following:
+            source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
                 NETWORK_CONNECTION, COMPOUND
-            source_id, dest_id: (str, optional): Only gets transactions with given source_id
+            source_id (str, optional): Only gets transactions with given source_id
+            dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                NETWORK_CONNECTION, COMPOUND
+            dest_id (str, optional): Only gets transactions with given dest_id
         """
 
         path = "/v1/transactions"
