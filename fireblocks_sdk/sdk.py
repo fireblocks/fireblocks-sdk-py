@@ -199,7 +199,8 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body)
 
-    def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None):
+    def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
+                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
         """Gets a list of transactions matching the given filter
 
         Args:
@@ -211,6 +212,16 @@ class FireblocksSDK(object):
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
             limit (int, optional): Limit the amount of returned results. If not specified, a limit of 200 results will be used
             order_by (str, optional): Determines the order of the returned results. Possible values are 'createdAt' or 'lastUpdated'
+            txhash (str, optional): Only gets transactions with the specified txHash
+            assets (str, optional): Filter results for specified assets
+            source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                NETWORK_CONNECTION, COMPOUND
+            source_id (str, optional): Only gets transactions with given source_id
+            dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                NETWORK_CONNECTION, COMPOUND
+            dest_id (str, optional): Only gets transactions with given dest_id
         """
 
         path = "/v1/transactions"
@@ -226,10 +237,22 @@ class FireblocksSDK(object):
             params['after'] = after
         if status:
             params['status'] = status
-        if order_by:
-            params['orderBy'] = order_by
         if limit:
             params['limit'] = limit
+        if order_by:
+            params['orderBy'] = order_by
+        if  txhash:
+            params['txHash'] = txhash
+        if assets:
+            params['assets'] = assets
+        if source_type:
+            params['sourcetype'] = source_type
+        if source_id:
+            params['sourceId'] = source_id
+        if dest_type:
+            params['destType'] = dest_type
+        if dest_id:
+            params['destId'] = dest_id
 
         if params:
             path = path + "?" + urllib.parse.urlencode(params)
@@ -371,6 +394,19 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide")
+    
+    def update_vault_account(self, vault_account_id, name):
+        """Updates a vault account.
+
+        Args:
+            vault_account_id (str): The vault account Id
+            name (str): A new name for the vault account
+        """
+        body = {
+            "name": name,
+        }
+
+        return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
     def create_vault_asset(self, vault_account_id, asset_id):
         """Creates a new asset within an existing vault account
@@ -640,6 +676,34 @@ class FireblocksSDK(object):
 
 
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body)
+    
+    def set_confirmation_threshold_for_txid(self, txid, required_confirmations_number):
+        """Set the required number of confirmations for transaction
+        
+        Args:
+            txid (str): The transaction id
+            required_confirmations_Number (number): Required confirmation threshold fot the txid
+        """
+        
+        body = {
+            "numOfConfirmations": required_confirmations_number
+        }
+        
+        return self._post_request(f"/v1/transactions/{txid}/set_confirmation_threshold", body)
+    
+    def set_confirmation_threshold_for_txhash(self, txhash, required_confirmations_number):
+        """Set the required number of confirmations for transaction by txhash
+        
+        Args:
+            txhash (str): The transaction hash 
+            required_confirmations_Number (number): Required confirmation threshold fot the txhash
+        """
+        
+        body = {
+            "numOfConfirmations": required_confirmations_number
+        }
+        
+        return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
