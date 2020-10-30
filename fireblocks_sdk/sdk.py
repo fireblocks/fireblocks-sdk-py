@@ -86,8 +86,10 @@ class FireblocksSDK(object):
             tag (string, optional): The XRP tag, or EOS memo, for which to set the description
             description (string, optional): The description to set, or none for no description
         """
-
-        return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}:{tag or ''}", { "description": description or ''})
+        if tag:
+            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}:{tag}", { "description": description or ''})
+        else:
+            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}", { "description": description or ''})
 
     def get_network_connections(self):
         """Gets all network connections for your tenant"""
