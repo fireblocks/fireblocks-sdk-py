@@ -522,7 +522,6 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
         if not isinstance(source, TransferPeerPath):
-            print(source)
             raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
