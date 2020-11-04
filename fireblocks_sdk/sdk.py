@@ -705,7 +705,7 @@ class FireblocksSDK(object):
         
         return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
     
-    def get_public_key_info(self, algorithm=None, derivation_path=None, compressed=None ):
+    def get_public_key_info(self, algorithm, derivation_path, compressed=None ):
         """Get the public key information
         
         Args:
