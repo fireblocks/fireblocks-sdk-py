@@ -13,7 +13,8 @@ class SdkTokenProvider(object):
         timestamp = time.time()
         timestamp_millisecs = int(timestamp * 1000)
         timestamp_secs = math.floor(timestamp)
-
+        path= path.replace("[", "%5B")
+        path= path.replace("]", "%5D")
         token = {
             "uri": path,
             "nonce": timestamp_millisecs,

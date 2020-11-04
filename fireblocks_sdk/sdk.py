@@ -710,17 +710,17 @@ class FireblocksSDK(object):
         
         Args:
             algorithm (str, optional)
-            derivation_path (str, optional)
+            derivation_path (str)
             compressed (boolean, optional)
         """
         
         url = "/v1/vault/public_key_info"
         if algorithm:
-            url += f"?algorithm=${algorithm}"
+            url += f"?algorithm={algorithm}"
         if derivation_path:
-            url += f"&derivationPath=${derivation_path}"
+            url += f"&derivationPath={derivation_path}"
         if compressed:
-            url += f"&compressed=${compressed}"
+            url += f"&compressed={compressed}"
             
         return self._get_request(url)
     
