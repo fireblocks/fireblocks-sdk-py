@@ -522,6 +522,7 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
         if not isinstance(source, TransferPeerPath):
+            print(source)
             raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
@@ -547,19 +548,19 @@ class FireblocksSDK(object):
             body["destination"] = destination.__dict__
             
         if cpu_staking:
-            body["cpu_staking"] = cpu_staking
+            body["cpuStaking"] = cpu_staking
             
         if network_staking:
-            body["network_staking"] = network_staking
+            body["networkStaking"] = network_staking
             
         if auto_staking:
-            body["auto_staking"] = auto_staking
+            body["autoStaking"] = auto_staking
         
         if customer_ref_id:
-            body["customer_ref_id"] = customer_ref_id
+            body["customerRefId"] = customer_ref_id
         
         if extra_parameters:
-            body["extra_parameters"] = extra_parameters
+            body["extraParameters"] = extra_parameters
             
 
         return self._post_request("/v1/transactions", body)
