@@ -704,6 +704,42 @@ class FireblocksSDK(object):
         }
         
         return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
+    
+    def get_public_key_info(self, algorithm=None, derivation_path=None, compressed=None ):
+        """Get the public key information
+        
+        Args:
+            algorithm (str, optional)
+            derivation_path (str, optional)
+            compressed (boolean, optional)
+        """
+        
+        url = "/v1/vault/public_key_info"
+        if algorithm:
+            url += f"?algorithm=${algorithm}"
+        if derivation_path:
+            url += f"&derivationPath=${derivation_path}"
+        if compressed:
+            url += f"&compressed=${compressed}"
+            
+        return self._get_request(url)
+    
+    def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
+        """Get the public key information for a vault account
+        
+        Args:
+            assetId (str)
+            vaultAccountId (number)
+            change (number)
+            addressIndex (number)
+            compressed (boolean, optional)
+        """
+        
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/{change}/{address_index}/public_key_info"
+        if compressed:
+            url += f"?compressed={compressed}"
+            
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
