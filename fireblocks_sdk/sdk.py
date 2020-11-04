@@ -498,7 +498,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, extra_parameters=None):
         """Creates a new transaction
 
         Args:
@@ -511,6 +511,11 @@ class FireblocksSDK(object):
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
+            cpu_staking (number, optional): Cpu stake for EOS transfer.
+            network_staking (number, optional): Network stake for EOS transfer.
+            auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
+            customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
+            extra_parameters (object, optional)
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -540,6 +545,16 @@ class FireblocksSDK(object):
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
                 raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
+            
+        if cpu_staking:
+            body["cpu_staking"] = cpu_staking
+            
+        if network_staking:
+            body["network_staking"] = network_staking
+            
+        if auto_staking:
+            body["auto_staking"] = auto_staking
+            
 
         return self._post_request("/v1/transactions", body)
 
