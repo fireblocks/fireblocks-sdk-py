@@ -554,6 +554,12 @@ class FireblocksSDK(object):
             
         if auto_staking:
             body["auto_staking"] = auto_staking
+        
+        if customer_ref_id:
+            body["customer_ref_id"] = customer_ref_id
+        
+        if extra_parameters:
+            body["extra_parameters"] = extra_parameters
             
 
         return self._post_request("/v1/transactions", body)
