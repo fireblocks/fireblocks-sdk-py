@@ -498,7 +498,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, extra_parameters=None):
         """Creates a new transaction
 
         Args:
@@ -511,6 +511,11 @@ class FireblocksSDK(object):
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
+            cpu_staking (number, optional): Cpu stake for EOS transfer.
+            network_staking (number, optional): Network stake for EOS transfer.
+            auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
+            customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
+            extra_parameters (object, optional)
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -540,6 +545,22 @@ class FireblocksSDK(object):
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
                 raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
+            
+        if cpu_staking:
+            body["cpuStaking"] = cpu_staking
+            
+        if network_staking:
+            body["networkStaking"] = network_staking
+            
+        if auto_staking:
+            body["autoStaking"] = auto_staking
+        
+        if customer_ref_id:
+            body["customerRefId"] = customer_ref_id
+        
+        if extra_parameters:
+            body["extraParameters"] = extra_parameters
+            
 
         return self._post_request("/v1/transactions", body)
 
@@ -704,6 +725,42 @@ class FireblocksSDK(object):
         }
         
         return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
+    
+    def get_public_key_info(self, algorithm, derivation_path, compressed=None ):
+        """Get the public key information
+        
+        Args:
+            algorithm (str, optional)
+            derivation_path (str)
+            compressed (boolean, optional)
+        """
+        
+        url = "/v1/vault/public_key_info"
+        if algorithm:
+            url += f"?algorithm={algorithm}"
+        if derivation_path:
+            url += f"&derivationPath={derivation_path}"
+        if compressed:
+            url += f"&compressed={compressed}"
+            
+        return self._get_request(url)
+    
+    def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
+        """Get the public key information for a vault account
+        
+        Args:
+            assetId (str)
+            vaultAccountId (number)
+            change (number)
+            addressIndex (number)
+            compressed (boolean, optional)
+        """
+        
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/{change}/{address_index}/public_key_info"
+        if compressed:
+            url += f"?compressed={compressed}"
+            
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
