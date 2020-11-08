@@ -761,6 +761,32 @@ class FireblocksSDK(object):
             url += f"?compressed={compressed}"
             
         return self._get_request(url)
+    
+    def get_gas_station_info(self):
+        "Get configuration and status of the Gas Station account"
+        
+        url = f"/v1/gas_station"
+
+        return self._get_request(url)
+    
+    def set_gas_station_configuration(self, gas_threshold, gas_cap, max_gas_price):
+        """Set configuration of the Gas Station account
+        
+        Args:
+            gasThreshold (str)
+            gasCap (str)
+            maxGasPrice (str, optional)
+        """
+        
+        url = f"/v1/gas_station/configuration"
+        
+        body = {
+            "gasThreshold": gas_threshold,
+            "gasCap": gas_cap,
+            "maxGasPrice": max_gas_price 
+        }
+
+        return self._put_request(url, body)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
