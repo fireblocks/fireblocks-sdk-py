@@ -762,14 +762,14 @@ class FireblocksSDK(object):
             
         return self._get_request(url)
     
-    def getGasStationInfo(self):
+    def get_gas_station_info(self):
         "Get configuration and status of the Gas Station account"
         
         url = f"/v1/gas_station"
 
         return self._get_request(url)
     
-    def setGasStationConfiguration(self, gas_threshold, gas_cap, max_gas_price):
+    def set_gas_station_configuration(self, gas_threshold, gas_cap, max_gas_price):
         """Set configuration of the Gas Station account
         
         Args:
