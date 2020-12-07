@@ -2,16 +2,16 @@ from distutils.core import setup
 setup(
   name = 'fireblocks_sdk',
   packages = ['fireblocks_sdk'],
-  version = '1.5.9',
+  version = '1.5.10',
   license='MIT',
   description = 'Fireblocks python SDK',
   url = 'https://github.com/fireblocks/fireblocks-sdk-py',
-  download_url = 'https://github.com/fireblocks/fireblocks-sdk-py/archive/v1.5.9.tar.gz',
+  download_url = 'https://github.com/fireblocks/fireblocks-sdk-py/archive/v1.5.10.tar.gz',
   keywords = ['Fireblocks', 'SDK'],
   install_requires=[
           'PyJWT==1.7.1',
           'cryptography>=2.7',
-          'requests==2.22.0',
+          'requests>=2.22.0',
       ],
   classifiers=[
     'Development Status :: 4 - Beta',
