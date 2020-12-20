@@ -361,6 +361,20 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
+    def drop_transaction(self, txid, fee_level=None):
+        """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
+
+        Args:
+            txid (str): The transaction id to drop
+            fee_level (str): The fee level of the dropping transaction 
+        """
+        body = {}
+
+        if fee_level:
+            body["feeLevel"] = fee_level
+
+        return self._post_request(f"/v1/transactions/{txid}/drop", body)
+
     def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None):
         """Creates a new vault account.
 
@@ -498,7 +512,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, extra_parameters=None):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None):
         """Creates a new transaction
 
         Args:
@@ -558,6 +572,9 @@ class FireblocksSDK(object):
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
         
+        if replace_tx_by_hash:
+            body["replaceTxByHash"] = replace_tx_by_hash
+
         if extra_parameters:
             body["extraParameters"] = extra_parameters
             
