@@ -804,6 +804,35 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+    
+    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
+        """Drop an ETH based transaction
+        
+        Args:
+            txId (str): The transaction id to be dropped.
+            fee_level (str, optional): transaction fee level, can be one of the following: LOW, MEDIUM, HIGH.
+            requested_fee (str, optional): requested fee for transaction.
+        """
+        url = f"/v1/transactions/{txid}/drop";
+        
+        body = {
+            "feeLevel": fee_level,
+            "requestedFee": requested_fee
+        }
+        
+        return self._post_request(url, body)
+    
+    def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
+        """Get max spendable amount per asset and vault.
+        
+        Args:
+            vault_account_id (str): The vault account Id.
+            asset_id (str): Asset id.
+            manual_signing (boolean, optional): False by default.
+        """
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}";
+        
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
