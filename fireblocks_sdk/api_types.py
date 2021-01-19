@@ -88,6 +88,12 @@ COMPOUND = "COMPOUND"
 
 PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND)
 
+HIGH = "HIGH"
+MEDIUM = "MEDIUM"
+LOW = "LOW"
+
+FEE_LEVEL = (HIGH, MEDIUM, LOW)
+
 class TransferTicketTerm(object):
     def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
         """Defines a transfer ticket's term
@@ -108,6 +114,18 @@ class TransferTicketTerm(object):
         if note:
             self.note = str(note)
         self.operation = operation
+        
+class TransactionDestination(object):
+    def __init__(self, amount, destination,):
+        """Defines destinaions for multiple outputs transaction
+
+        Args:
+          amount (double): The amount to transfer
+          destination (DestinationTransferPeerPath): The transfer destination
+        """
+
+        self.amount = str(amount)
+        self.destination = destination.__dict__
 
 
 class FireblocksApiException(Exception): pass
