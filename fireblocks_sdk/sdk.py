@@ -804,6 +804,15 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+    
+    def unfreezeTransactionById(self, txid):
+        """Unfreezes the selected transaction
+
+        Args:
+            txid (str): The transaction id
+        """
+
+        return self._post_request(f"/v1/transactions/{txid}/unfreeze", {})
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
