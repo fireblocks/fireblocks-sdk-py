@@ -422,17 +422,20 @@ class FireblocksSDK(object):
 
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
-    def create_vault_asset(self, vault_account_id, asset_id):
-        """Creates a new asset within an existing vault account
+    def set_auto_fuel(self, vault_account_id, auto_fuel):
+        """Sets autoFuel to true/false for a vault account
 
         Args:
             vault_account_id (str): The vault account Id
-            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
+            auto_fuel (boolean): The new value for the autoFuel flag
         """
+        body = {
+            "autoFuel": auto_fuel
+        }
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
 
-    def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id):
+    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None, auto_fuel=None):
         """Sets an AML/KYT customer reference ID for the vault account
 
         Args:
