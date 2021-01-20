@@ -25,10 +25,22 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/supported_assets")
 
-    def get_vault_accounts(self):
-        """Gets all vault accounts for your tenant"""
-
-        return self._get_request("/v1/vault/accounts")
+    def get_vault_accounts(self, name_prefix=None, name_suffix=None):
+        """Gets all vault accounts for your tenant
+        
+         Args:
+            name_prefix (string, optional): Vault name prefix
+            name_suffix (string, optional): Vault name suffix
+        """
+        url = f"/v1/vault/accounts?namePrefix"
+        
+        if name_prefix:
+            url += f"={name_prefix}"
+        
+        if name_suffix:
+            url = f"/v1/vault/accounts?nameSuffix={name_suffix}"
+        
+        return self._get_request(url)
 
     def get_vault_account(self, vault_account_id):
         """Deprecated - Replaced by get_vault_account_by_id
