@@ -3,7 +3,7 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage
 
 class FireblocksSDK(object):
 
@@ -512,7 +512,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None):
         """Creates a new transaction
 
         Args:
@@ -804,6 +804,26 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+    
+    def create_raw_transaction(self, raw_message, source=None, asset_id=None, note=None):
+        """Creates a new raw transaction with the specified parameters
+        
+        Args:
+            raw_message (RawMessage): The messages that should be signed
+            source (TransferPeerPath, optional): The transaction source
+            asset_id (str, optional): Transaction asset id
+            note (str, optional): A custome note that can be associated with the transaction
+        """
+        
+        if raw_message.algorithm not in SIGNING_ALGORITHM:
+            raise Exception("Got invalid signing algorithm type: " + raw_message.algorithm)
+            
+        if not all([isinstance(x, UnsignedMessage) for x in raw_message.messages]):
+            raise FireblocksApiException("Expected messages of type UnsignedMessage")
+        
+        raw_message.messages = [message.__dict__ for message in raw_message.messages]
+                
+        return self.create_transaction(asset_id, amount=0, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)     
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
