@@ -361,17 +361,21 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
-    def drop_transaction(self, txid, fee_level=None):
+    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
         """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
 
         Args:
             txid (str): The transaction id to drop
-            fee_level (str): The fee level of the dropping transaction 
+            fee_level (str): The fee level of the dropping transaction
+            requested_fee (str, optional): Requested fee for transaction
         """
         body = {}
 
         if fee_level:
             body["feeLevel"] = fee_level
+            
+        if requested_fee:
+            body["requestedFee"] = requested_fee
 
         return self._post_request(f"/v1/transactions/{txid}/drop", body)
 
@@ -804,24 +808,7 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
-    
-    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
-        """Drop an ETH based transaction
         
-        Args:
-            txId (str): The transaction id to be dropped.
-            fee_level (str, optional): transaction fee level, can be one of the following: LOW, MEDIUM, HIGH.
-            requested_fee (str, optional): requested fee for transaction.
-        """
-        url = f"/v1/transactions/{txid}/drop";
-        
-        body = {
-            "feeLevel": fee_level,
-            "requestedFee": requested_fee
-        }
-        
-        return self._post_request(url, body)
-    
     def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
         """Get max spendable amount per asset and vault.
         
