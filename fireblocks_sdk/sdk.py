@@ -812,13 +812,13 @@ class FireblocksSDK(object):
             name_prefix (string, optional): Vault name prefix
             name_suffix (string, optional): Vault name suffix
         """
-        url = f"/v1/vault/assets?namePrefix"
+        url = f"/v1/vault/assets"
 
         if name_prefix:
-            url += f"={name_prefix}"
+            url += f"?namePrefix={name_prefix}"
 
         if name_suffix:
-            url = f"/v1/vault/assets?nameSuffix={name_suffix}"
+            url += f"?nameSuffix={name_suffix}"
 
         return self._get_request(url)
 
