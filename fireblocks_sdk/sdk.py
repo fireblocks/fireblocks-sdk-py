@@ -814,9 +814,12 @@ class FireblocksSDK(object):
         """
         url = f"/v1/vault/assets"
 
+        if name_prefix and name_suffix:
+            url += f"?namePrefix={name_prefix}&nameSuffix={name_suffix}"
+        
         if name_prefix:
             url += f"?namePrefix={name_prefix}"
-
+        
         if name_suffix:
             url += f"?nameSuffix={name_suffix}"
 
