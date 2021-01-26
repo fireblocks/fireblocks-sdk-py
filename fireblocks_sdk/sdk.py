@@ -804,6 +804,23 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+    
+    def get_vault_assets_balance(self, name_prefix=None, name_suffix=None):
+        """Gets vault assets accumulated balance
+        
+         Args:
+            name_prefix (string, optional): Vault name prefix
+            name_suffix (string, optional): Vault name suffix
+        """
+        url = f"/v1/vault/assets?namePrefix"
+
+        if name_prefix:
+            url += f"={name_prefix}"
+
+        if name_suffix:
+            url = f"/v1/vault/assets?nameSuffix={name_suffix}"
+
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
