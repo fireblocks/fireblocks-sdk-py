@@ -26,7 +26,7 @@ class DestinationTransferPeerPath(TransferPeerPath):
 
         if one_time_address != None:
             self.oneTimeAddress = one_time_address
-        
+
 
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
@@ -106,7 +106,7 @@ class TransferTicketTerm(object):
           note (str, optional): Custom note that can be added to the term
 
         """
-    
+
         self.networkConnectionId = str(network_connection_id)
         self.outgoing = bool(outgoing)
         self.asset = str(asset)
@@ -114,10 +114,10 @@ class TransferTicketTerm(object):
         if note:
             self.note = str(note)
         self.operation = operation
-        
+
 class TransactionDestination(object):
-    def __init__(self, amount, destination,):
-        """Defines destinaions for multiple outputs transaction
+    def __init__(self, amount, destination):
+        """Defines destinations for multiple outputs transaction
 
         Args:
           amount (double): The amount to transfer
