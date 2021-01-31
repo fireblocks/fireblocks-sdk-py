@@ -848,6 +848,28 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+    
+    def get_vault_assets_balance(self, name_prefix=None, name_suffix=None):
+        """Gets vault assets accumulated balance
+        
+         Args:
+            name_prefix (string, optional): Vault name prefix
+            name_suffix (string, optional): Vault name suffix
+        """
+        url = f"/v1/vault/assets"
+
+        params = {}
+        
+        if name_prefix:
+            params['namePrefix'] = name_prefix
+        
+        if name_suffix:
+            params['nameSuffix'] = name_suffix
+            
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
 
     def create_raw_transaction(self, raw_message, source=None, asset_id=None, note=None):
         """Creates a new raw transaction with the specified parameters
