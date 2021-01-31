@@ -3,8 +3,7 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, FEE_LEVEL
-from fireblocks_sdk.api_types import TransactionDestination
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER
 
 class FireblocksSDK(object):
 
@@ -362,24 +361,6 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
-    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
-        """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
-
-        Args:
-            txid (str): The transaction id to drop
-            fee_level (str): The fee level of the dropping transaction
-            requested_fee (str, optional): Requested fee for transaction
-        """
-        body = {}
-
-        if fee_level:
-            body["feeLevel"] = fee_level
-
-        if requested_fee:
-            body["requestedFee"] = requested_fee
-
-        return self._post_request(f"/v1/transactions/{txid}/drop", body)
-
     def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None):
         """Creates a new vault account.
 
@@ -427,7 +408,17 @@ class FireblocksSDK(object):
 
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
-    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None, auto_fuel=None):
+    def create_vault_asset(self, vault_account_id, asset_id):
+        """Creates a new asset within an existing vault account
+
+        Args:
+            vault_account_id (str): The vault account Id
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
+        """
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
+
+    def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id):
         """Sets an AML/KYT customer reference ID for the vault account
 
         Args:
@@ -507,7 +498,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_price=None, gas_limit=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, destinations=None, extra_parameters=None):
+    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, extra_parameters=None):
         """Creates a new transaction
 
         Args:
@@ -516,11 +507,7 @@ class FireblocksSDK(object):
             destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
             fee (double, optional): Sathoshi/Latoshi per byte.
-            fee_level (FeeLevel, optional): Transaction fee level: either HIGH, MEDIUM, LOW.
-            fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
-            max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
-            gas_limit (number, optional): For ETH-based assets only.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
@@ -528,7 +515,6 @@ class FireblocksSDK(object):
             network_staking (number, optional): Network stake for EOS transfer.
             auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
-            destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
             extra_parameters (object, optional)
         """
 
@@ -540,30 +526,17 @@ class FireblocksSDK(object):
 
         body = {
             "assetId": asset_id,
+            "amount": amount,
             "source": source.__dict__,
             "waitForStatus": wait_for_status,
-            "operation": tx_type,
+            "operation": tx_type
         }
-
-        if amount:
-            body["amount"] = amount
 
         if fee:
             body["fee"] = fee
 
-        if fee_level:
-            if fee_level not in FEE_LEVEL:
-                raise FireblocksApiException("Got invalid fee level: " + fee_level)
-            body["feeLevel"] = fee_level
-
-        if fail_on_fee:
-            body["failOnFee"] = fail_on_fee
-
         if gas_price:
-            body["gasPrice"] = str(gas_price)
-
-        if gas_limit:
-            body["gasLimit"] = str(gas_limit)
+            body["gasPrice"] = gas_price
 
         if note:
             body["note"] = note
@@ -584,14 +557,6 @@ class FireblocksSDK(object):
 
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
-
-        if replace_tx_by_hash:
-            body["replaceTxByHash"] = replace_tx_by_hash
-
-        if any([not isinstance(x, TransactionDestination) for x in destinations]):
-            raise FireblocksApiException("Expected destinations of type TransactionDestination")
-
-        body['destinations'] = [dest.__dict__ for dest in destinations]
 
         if extra_parameters:
             body["extraParameters"] = extra_parameters
@@ -750,7 +715,7 @@ class FireblocksSDK(object):
         """Set the required number of confirmations for transaction by txhash
 
         Args:
-            txhash (str): The transaction hash
+            txhash (str): The transaction hash 
             required_confirmations_Number (number): Required confirmation threshold fot the txhash
         """
 
@@ -817,22 +782,10 @@ class FireblocksSDK(object):
         body = {
             "gasThreshold": gas_threshold,
             "gasCap": gas_cap,
-            "maxGasPrice": max_gas_price
+            "maxGasPrice": max_gas_price 
         }
 
         return self._put_request(url, body)
-
-    def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
-        """Get max spendable amount per asset and vault.
-
-        Args:
-            vault_account_id (str): The vault account Id.
-            asset_id (str): Asset id.
-            manual_signing (boolean, optional): False by default.
-        """
-        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}";
-
-        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
