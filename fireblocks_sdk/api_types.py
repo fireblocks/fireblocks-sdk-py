@@ -14,7 +14,7 @@ class TransferPeerPath(object):
         self.id = str(peer_id)
 
 class DestinationTransferPeerPath(TransferPeerPath):
-    def __init__(self, peer_type, peer_id, one_time_address=None):
+    def __init__(self, peer_type, peer_id=None, one_time_address=None):
         """Defines a destination for a transfer
 
         Args:
