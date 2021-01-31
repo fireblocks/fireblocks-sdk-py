@@ -3,7 +3,7 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, FEE_LEVEL
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL
 from fireblocks_sdk.api_types import TransactionDestination
 
 class FireblocksSDK(object):
@@ -28,24 +28,24 @@ class FireblocksSDK(object):
 
     def get_vault_accounts(self, name_prefix=None, name_suffix=None):
         """Gets all vault accounts for your tenant
-        
+
          Args:
             name_prefix (string, optional): Vault name prefix
             name_suffix (string, optional): Vault name suffix
         """
         url = f"/v1/vault/accounts"
-        
+
         params = {}
-        
+
         if name_prefix:
             params['namePrefix'] = name_prefix
-        
+
         if name_suffix:
             params['nameSuffix'] = name_suffix
-            
+
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
-        
+
         return self._get_request(url)
 
     def get_vault_account(self, vault_account_id):
@@ -534,7 +534,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None,):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None):
         """Creates a new transaction
 
         Args:
@@ -848,6 +848,26 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
+
+    def create_raw_transaction(self, raw_message, source=None, asset_id=None, note=None):
+        """Creates a new raw transaction with the specified parameters
+
+        Args:
+            raw_message (RawMessage): The messages that should be signed
+            source (TransferPeerPath, optional): The transaction source
+            asset_id (str, optional): Transaction asset id
+            note (str, optional): A custome note that can be associated with the transaction
+        """
+
+        if raw_message.algorithm not in SIGNING_ALGORITHM:
+            raise Exception("Got invalid signing algorithm type: " + raw_message.algorithm)
+
+        if not all([isinstance(x, UnsignedMessage) for x in raw_message.messages]):
+            raise FireblocksApiException("Expected messages of type UnsignedMessage")
+
+        raw_message.messages = [message.__dict__ for message in raw_message.messages]
+
+        return self.create_transaction(asset_id, amount=0, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
 
     def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
         """Get max spendable amount per asset and vault.
