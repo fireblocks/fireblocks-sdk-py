@@ -903,6 +903,19 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def set_auto_fuel(self, vault_account_id, auto_fuel):
+        """Sets autoFuel to true/false for a vault account
+
+        Args:
+            vault_account_id (str): The vault account Id
+            auto_fuel (boolean): The new value for the autoFuel flag
+        """
+        body = {
+            "autoFuel": auto_fuel
+        }
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
+
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
         headers = {
