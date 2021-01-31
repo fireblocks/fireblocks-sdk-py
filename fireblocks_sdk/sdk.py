@@ -517,7 +517,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_price=None, gas_limit=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, destinations=None, extra_parameters=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None,):
         """Creates a new transaction
 
         Args:
@@ -526,11 +526,7 @@ class FireblocksSDK(object):
             destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
             fee (double, optional): Sathoshi/Latoshi per byte.
-            fee_level (FeeLevel, optional): Transaction fee level: either HIGH, MEDIUM, LOW.
-            fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
-            max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
-            gas_limit (number, optional): For ETH-based assets only.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
@@ -538,8 +534,12 @@ class FireblocksSDK(object):
             network_staking (number, optional): Network stake for EOS transfer.
             auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
-            destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
             extra_parameters (object, optional)
+            destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
+            fee_level (FeeLevel, optional): Transaction fee level: either HIGH, MEDIUM, LOW.
+            fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
+            max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
+            gas_limit (number, optional): For ETH-based assets only.
         """
 
         if tx_type not in TRANSACTION_TYPES:
