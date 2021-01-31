@@ -37,13 +37,13 @@ class FireblocksSDK(object):
         params = {}
         
         if name_prefix:
-            params['name_prefix'] = name_prefix
+            params['namePrefix'] = name_prefix
         
         if name_suffix:
-            params['name_suffix'] = name_suffix
+            params['nameSuffix'] = name_suffix
             
         if params:
-            url = url + "?" + urllib.urlencode(params, True)
+            url = url + "?" + urllib.parse.urlencode(params)
         
         return self._get_request(url)
 
