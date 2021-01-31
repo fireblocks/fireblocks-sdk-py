@@ -34,14 +34,16 @@ class FireblocksSDK(object):
         """
         url = f"/v1/vault/accounts"
         
-        if name_prefix and name_suffix:
-            url += f"?namePrefix={name_prefix}&nameSuffix={name_suffix}"
+        params = {}
         
-        elif name_prefix:
-            url += f"?namePrefix={name_prefix}"
+        if name_prefix:
+            params['name_prefix'] = name_prefix
         
-        elif name_suffix:
-            url += f"?nameSuffix={name_suffix}"
+        if name_suffix:
+            params['name_suffix'] = name_suffix
+            
+        if params:
+            url = url + "?" + urllib.urlencode(params, True)
         
         return self._get_request(url)
 
