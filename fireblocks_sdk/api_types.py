@@ -26,7 +26,7 @@ class DestinationTransferPeerPath(TransferPeerPath):
 
         if one_time_address != None:
             self.oneTimeAddress = one_time_address
-        
+
 
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
@@ -96,6 +96,12 @@ MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
 
 SIGNING_ALGORITHM = (MPC_ECDSA_SECP256K1, MPC_EDDSA_ED25519)
 
+HIGH = "HIGH"
+MEDIUM = "MEDIUM"
+LOW = "LOW"
+
+FEE_LEVEL = (HIGH, MEDIUM, LOW)
+
 class TransferTicketTerm(object):
     def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
         """Defines a transfer ticket's term
@@ -108,7 +114,7 @@ class TransferTicketTerm(object):
           note (str, optional): Custom note that can be added to the term
 
         """
-    
+
         self.networkConnectionId = str(network_connection_id)
         self.outgoing = bool(outgoing)
         self.asset = str(asset)
@@ -150,5 +156,18 @@ class RawMessage(object):
             
         self.messages = messages
         self.algorithm = algorithm
+
+class TransactionDestination(object):
+    def __init__(self, amount, destination):
+        """Defines destinations for multiple outputs transaction
+
+        Args:
+          amount (double): The amount to transfer
+          destination (DestinationTransferPeerPath): The transfer destination
+        """
+
+        self.amount = str(amount)
+        self.destination = destination.__dict__
+
 
 class FireblocksApiException(Exception): pass

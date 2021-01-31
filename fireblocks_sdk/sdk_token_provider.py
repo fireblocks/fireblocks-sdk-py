@@ -2,6 +2,7 @@ import jwt
 import json
 import time
 import math
+import secrets
 from hashlib import sha256
 
 class SdkTokenProvider(object):
@@ -11,13 +12,13 @@ class SdkTokenProvider(object):
 
     def sign_jwt(self, path, body_json=""):
         timestamp = time.time()
-        timestamp_millisecs = int(timestamp * 1000)
+        nonce = secrets.randbits(63)
         timestamp_secs = math.floor(timestamp)
         path= path.replace("[", "%5B")
         path= path.replace("]", "%5D")
         token = {
             "uri": path,
-            "nonce": timestamp_millisecs,
+            "nonce": nonce,
             "iat": timestamp_secs,
             "exp": timestamp_secs + 55, 
             "sub": self.api_key,
