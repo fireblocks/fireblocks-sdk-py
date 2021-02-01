@@ -538,8 +538,8 @@ class FireblocksSDK(object):
         """Creates a new transaction
 
         Args:
-            asset_id (str): The asset symbol (e.g BTC, ETH)
-            source (TransferPeerPath): The transfer source
+            asset_id (str, optional): The asset symbol (e.g BTC, ETH)
+            source (TransferPeerPath, optional): The transfer source
             destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
             fee (double, optional): Sathoshi/Latoshi per byte.
@@ -562,15 +562,20 @@ class FireblocksSDK(object):
         if tx_type not in TRANSACTION_TYPES:
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
-        if not isinstance(source, TransferPeerPath):
-            raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
+        if source:
+            if not isinstance(source, TransferPeerPath):
+                raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
-            "assetId": asset_id,
-            "source": source.__dict__,
             "waitForStatus": wait_for_status,
             "operation": tx_type,
         }
+
+        if asset_id:
+            body["assetId"] = asset_id
+
+        if source:
+            body["source"] = source.__dict__
 
         if amount:
             body["amount"] = amount
@@ -614,11 +619,12 @@ class FireblocksSDK(object):
 
         if replace_tx_by_hash:
             body["replaceTxByHash"] = replace_tx_by_hash
+        
+        if destinations:
+            if any([not isinstance(x, TransactionDestination) for x in destinations]):
+                raise FireblocksApiException("Expected destinations of type TransactionDestination")
 
-        if any([not isinstance(x, TransactionDestination) for x in destinations]):
-            raise FireblocksApiException("Expected destinations of type TransactionDestination")
-
-        body['destinations'] = [dest.__dict__ for dest in destinations]
+            body['destinations'] = [dest.__dict__ for dest in destinations]
 
         if extra_parameters:
             body["extraParameters"] = extra_parameters
@@ -889,7 +895,7 @@ class FireblocksSDK(object):
 
         raw_message.messages = [message.__dict__ for message in raw_message.messages]
 
-        return self.create_transaction(asset_id, amount=0, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
+        return self.create_transaction(asset_id, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
 
     def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
         """Get max spendable amount per asset and vault.
