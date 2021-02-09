@@ -827,13 +827,16 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
     
-    def get_vault_balance_by_asset(self, asset_id):
+    def get_vault_balance_by_asset(self, asset_id=None):
         """Gets vault accumulated balance by asset
         
          Args:
-            asset_id (str): The asset symbol (e.g BTC, ETH)
+            asset_id (str, optional): The asset symbol (e.g BTC, ETH)
         """
-        url = f"/v1/vault/assets/{asset_id}"
+        url = f"/v1/vault/assets"
+        
+        if asset_id:
+            url += f"/{asset_id}"
 
         return self._get_request(url)
 
