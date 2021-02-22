@@ -921,6 +921,17 @@ class FireblocksSDK(object):
         }
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
+    
+    def validate_address(self, asset_id, address):
+        """Gets vault accumulated balance by asset
+        
+         Args:
+            asset_id (str): The asset symbol (e.g XRP, EOS)
+            address (str): The address to be verified
+        """
+        url = f"/v1/transactions/validate_address/{asset_id}/{address}"
+
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
