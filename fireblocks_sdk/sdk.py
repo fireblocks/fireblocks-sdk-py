@@ -805,22 +805,22 @@ class FireblocksSDK(object):
 
         return self._put_request(url, body)
     
-    def get_vault_assets_balance(self, account_name_prefix=None, account_name_suffix=None):
+    def get_vault_assets_balance(self, name_prefix=None, name_suffix=None):
         """Gets vault assets accumulated balance
         
          Args:
-            account_name_prefix (string, optional): Vault account name prefix
-            account_name_suffix (string, optional): Vault account name suffix
+            name_prefix (string, optional): Vault account name prefix
+            name_suffix (string, optional): Vault account name suffix
         """
         url = f"/v1/vault/assets"
 
         params = {}
         
-        if account_name_prefix:
-            params['accountNamePrefix'] = account_name_prefix
+        if name_prefix:
+            params['namePrefix'] = name_prefix
         
-        if account_name_suffix:
-            params['accountNameSuffix'] = account_name_suffix
+        if name_suffix:
+            params['nameSuffix'] = name_suffix
             
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
