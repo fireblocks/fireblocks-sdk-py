@@ -3,7 +3,8 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL
+from fireblocks_sdk.api_types import TransactionDestination
 
 class FireblocksSDK(object):
 
@@ -379,17 +380,21 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/cancel")
 
-    def drop_transaction(self, txid, fee_level=None):
+    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
         """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
 
         Args:
             txid (str): The transaction id to drop
-            fee_level (str): The fee level of the dropping transaction 
+            fee_level (str): The fee level of the dropping transaction
+            requested_fee (str, optional): Requested fee for transaction
         """
         body = {}
 
         if fee_level:
             body["feeLevel"] = fee_level
+
+        if requested_fee:
+            body["requestedFee"] = requested_fee
 
         return self._post_request(f"/v1/transactions/{txid}/drop", body)
 
@@ -426,7 +431,7 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide")
-    
+
     def update_vault_account(self, vault_account_id, name):
         """Updates a vault account.
 
@@ -530,12 +535,12 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount, source, destination=None , fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None):
         """Creates a new transaction
 
         Args:
-            asset_id (str): The asset symbol (e.g BTC, ETH)
-            source (TransferPeerPath): The transfer source
+            asset_id (str, optional): The asset symbol (e.g BTC, ETH)
+            source (TransferPeerPath, optional): The transfer source
             destination (DestinationTransferPeerPath, optional): The transfer destination. Leave empty (None) if the transaction has no destination
             amount (double): The amount
             fee (double, optional): Sathoshi/Latoshi per byte.
@@ -548,27 +553,50 @@ class FireblocksSDK(object):
             auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
             extra_parameters (object, optional)
+            destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
+            fee_level (FeeLevel, optional): Transaction fee level: either HIGH, MEDIUM, LOW.
+            fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
+            max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
+            gas_limit (number, optional): For ETH-based assets only.
         """
 
         if tx_type not in TRANSACTION_TYPES:
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
-        if not isinstance(source, TransferPeerPath):
-            raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
+        if source:
+            if not isinstance(source, TransferPeerPath):
+                raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
-            "assetId": asset_id,
-            "amount": amount,
-            "source": source.__dict__,
             "waitForStatus": wait_for_status,
-            "operation": tx_type
+            "operation": tx_type,
         }
+
+        if asset_id:
+            body["assetId"] = asset_id
+
+        if source:
+            body["source"] = source.__dict__
+
+        if amount:
+            body["amount"] = amount
 
         if fee:
             body["fee"] = fee
 
+        if fee_level:
+            if fee_level not in FEE_LEVEL:
+                raise FireblocksApiException("Got invalid fee level: " + fee_level)
+            body["feeLevel"] = fee_level
+
+        if fail_on_fee:
+            body["failOnFee"] = fail_on_fee
+
         if gas_price:
-            body["gasPrice"] = gas_price
+            body["gasPrice"] = str(gas_price)
+
+        if gas_limit:
+            body["gasLimit"] = str(gas_limit)
 
         if note:
             body["note"] = note
@@ -577,25 +605,30 @@ class FireblocksSDK(object):
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
                 raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
-            
+
         if cpu_staking:
             body["cpuStaking"] = cpu_staking
-            
+
         if network_staking:
             body["networkStaking"] = network_staking
-            
+
         if auto_staking:
             body["autoStaking"] = auto_staking
-        
+
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
-        
+
         if replace_tx_by_hash:
             body["replaceTxByHash"] = replace_tx_by_hash
+        
+        if destinations:
+            if any([not isinstance(x, TransactionDestination) for x in destinations]):
+                raise FireblocksApiException("Expected destinations of type TransactionDestination")
+
+            body['destinations'] = [dest.__dict__ for dest in destinations]
 
         if extra_parameters:
             body["extraParameters"] = extra_parameters
-            
 
         return self._post_request("/v1/transactions", body)
 
@@ -732,44 +765,44 @@ class FireblocksSDK(object):
 
 
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body)
-    
+
     def set_confirmation_threshold_for_txid(self, txid, required_confirmations_number):
         """Set the required number of confirmations for transaction
-        
+
         Args:
             txid (str): The transaction id
             required_confirmations_Number (number): Required confirmation threshold fot the txid
         """
-        
+
         body = {
             "numOfConfirmations": required_confirmations_number
         }
-        
+
         return self._post_request(f"/v1/transactions/{txid}/set_confirmation_threshold", body)
-    
+
     def set_confirmation_threshold_for_txhash(self, txhash, required_confirmations_number):
         """Set the required number of confirmations for transaction by txhash
-        
+
         Args:
-            txhash (str): The transaction hash 
+            txhash (str): The transaction hash
             required_confirmations_Number (number): Required confirmation threshold fot the txhash
         """
-        
+
         body = {
             "numOfConfirmations": required_confirmations_number
         }
-        
+
         return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
-    
+
     def get_public_key_info(self, algorithm, derivation_path, compressed=None ):
         """Get the public key information
-        
+
         Args:
             algorithm (str, optional)
             derivation_path (str)
             compressed (boolean, optional)
         """
-        
+
         url = "/v1/vault/public_key_info"
         if algorithm:
             url += f"?algorithm={algorithm}"
@@ -777,12 +810,12 @@ class FireblocksSDK(object):
             url += f"&derivationPath={derivation_path}"
         if compressed:
             url += f"&compressed={compressed}"
-            
+
         return self._get_request(url)
-    
+
     def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
         """Get the public key information for a vault account
-        
+
         Args:
             assetId (str)
             vaultAccountId (number)
@@ -790,35 +823,35 @@ class FireblocksSDK(object):
             addressIndex (number)
             compressed (boolean, optional)
         """
-        
+
         url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/{change}/{address_index}/public_key_info"
         if compressed:
             url += f"?compressed={compressed}"
-            
+
         return self._get_request(url)
-    
+
     def get_gas_station_info(self):
         "Get configuration and status of the Gas Station account"
-        
+
         url = f"/v1/gas_station"
 
         return self._get_request(url)
-    
+
     def set_gas_station_configuration(self, gas_threshold, gas_cap, max_gas_price):
         """Set configuration of the Gas Station account
-        
+
         Args:
             gasThreshold (str)
             gasCap (str)
             maxGasPrice (str, optional)
         """
-        
+
         url = f"/v1/gas_station/configuration"
-        
+
         body = {
             "gasThreshold": gas_threshold,
             "gasCap": gas_cap,
-            "maxGasPrice": max_gas_price 
+            "maxGasPrice": max_gas_price
         }
 
         return self._put_request(url, body)
@@ -855,6 +888,62 @@ class FireblocksSDK(object):
         
         if asset_id:
             url += f"/{asset_id}"
+
+        return self._get_request(url)
+
+    def create_raw_transaction(self, raw_message, source=None, asset_id=None, note=None):
+        """Creates a new raw transaction with the specified parameters
+
+        Args:
+            raw_message (RawMessage): The messages that should be signed
+            source (TransferPeerPath, optional): The transaction source
+            asset_id (str, optional): Transaction asset id
+            note (str, optional): A custome note that can be associated with the transaction
+        """
+
+        if raw_message.algorithm not in SIGNING_ALGORITHM:
+            raise Exception("Got invalid signing algorithm type: " + raw_message.algorithm)
+
+        if not all([isinstance(x, UnsignedMessage) for x in raw_message.messages]):
+            raise FireblocksApiException("Expected messages of type UnsignedMessage")
+
+        raw_message.messages = [message.__dict__ for message in raw_message.messages]
+
+        return self.create_transaction(asset_id, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
+
+    def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
+        """Get max spendable amount per asset and vault.
+
+        Args:
+            vault_account_id (str): The vault account Id.
+            asset_id (str): Asset id.
+            manual_signing (boolean, optional): False by default.
+        """
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}";
+
+        return self._get_request(url)
+
+    def set_auto_fuel(self, vault_account_id, auto_fuel):
+        """Sets autoFuel to true/false for a vault account
+
+        Args:
+            vault_account_id (str): The vault account Id
+            auto_fuel (boolean): The new value for the autoFuel flag
+        """
+        body = {
+            "autoFuel": auto_fuel
+        }
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
+    
+    def validate_address(self, asset_id, address):
+        """Gets vault accumulated balance by asset
+        
+         Args:
+            asset_id (str): The asset symbol (e.g XRP, EOS)
+            address (str): The address to be verified
+        """
+        url = f"/v1/transactions/validate_address/{asset_id}/{address}"
 
         return self._get_request(url)
 

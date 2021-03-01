@@ -26,15 +26,17 @@ class DestinationTransferPeerPath(TransferPeerPath):
 
         if one_time_address != None:
             self.oneTimeAddress = one_time_address
-        
+
 
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
 TRANSACTION_BURN = "BURN"
 TRANSACTION_SUPPLY_TO_COMPOUND = "SUPPLY_TO_COMPOUND"
 TRANSACTION_REDEEM_FROM_COMPOUND = "REDEEM_FROM_COMPOUND"
+RAW = "RAW"
+CONTRACT_CALL = "CONTRACT_CALL"
 
-TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND)
+TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND, RAW, CONTRACT_CALL)
 
 TRANSACTION_STATUS_SUBMITTED = "SUBMITTED"
 TRANSACTION_STATUS_QUEUED = "QUEUED"
@@ -85,8 +87,20 @@ UNKNOWN_PEER = "UNKNOWN"
 FIAT_ACCOUNT = "FIAT_ACCOUNT"
 NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
+ONE_TIME_ADDRESS = "ONE_TIME_ADDRESS"
 
-PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND)
+PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
+
+MPC_ECDSA_SECP256K1 = "MPC_ECDSA_SECP256K1"
+MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
+
+SIGNING_ALGORITHM = (MPC_ECDSA_SECP256K1, MPC_EDDSA_ED25519)
+
+HIGH = "HIGH"
+MEDIUM = "MEDIUM"
+LOW = "LOW"
+
+FEE_LEVEL = (HIGH, MEDIUM, LOW)
 
 class TransferTicketTerm(object):
     def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
@@ -100,7 +114,7 @@ class TransferTicketTerm(object):
           note (str, optional): Custom note that can be added to the term
 
         """
-    
+
         self.networkConnectionId = str(network_connection_id)
         self.outgoing = bool(outgoing)
         self.asset = str(asset)
@@ -108,6 +122,52 @@ class TransferTicketTerm(object):
         if note:
             self.note = str(note)
         self.operation = operation
+        
+class UnsignedMessage(object):
+    def __init__(self, content, bip44addressIndex=None, bip44change=None, derivationPath=None):
+        """Defines message to be signed by raw transaction
+
+        Args:
+          content (str): The message to be signed in hex format encoding
+          bip44addressIndex (number, optional):  BIP44 address_index path level
+          bip44change (number, optional): BIP44 change path level
+          derivationPath (list of numbers, optional): Should be passed only if asset and source were not specified
+        """
+    
+        self.content = content
+        
+        if bip44addressIndex:
+            self.bip44addressIndex = bip44addressIndex
+        
+        if bip44change:
+            self.bip44change = bip44change
+            
+        if derivationPath:
+            self.derivationPath = derivationPath
+
+class RawMessage(object):
+    def __init__(self, messages, algorithm):
+        """Defines raw message
+
+        Args:
+          messages (list of UnsignedMessage):
+          algorithm (str):
+        """
+            
+        self.messages = messages
+        self.algorithm = algorithm
+
+class TransactionDestination(object):
+    def __init__(self, amount, destination):
+        """Defines destinations for multiple outputs transaction
+
+        Args:
+          amount (double): The amount to transfer
+          destination (DestinationTransferPeerPath): The transfer destination
+        """
+
+        self.amount = str(amount)
+        self.destination = destination.__dict__
 
 
 class FireblocksApiException(Exception): pass
