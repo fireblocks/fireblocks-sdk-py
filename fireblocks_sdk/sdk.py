@@ -28,11 +28,12 @@ class FireblocksSDK(object):
 
     def get_vault_accounts(self, name_prefix=None, name_suffix=None):
         """Gets all vault accounts for your tenant
-
-         Args:
-            name_prefix (string, optional): Vault name prefix
-            name_suffix (string, optional): Vault name suffix
+        
+        Args:
+            name_prefix (string, optional): Vault account name prefix
+            name_suffix (string, optional): Vault account name suffix
         """
+
         url = f"/v1/vault/accounts"
 
         params = {}
@@ -859,8 +860,8 @@ class FireblocksSDK(object):
         """Gets vault assets accumulated balance
         
          Args:
-            name_prefix (string, optional): Vault name prefix
-            name_suffix (string, optional): Vault name suffix
+            account_name_prefix (string, optional): Vault account name prefix
+            account_name_suffix (string, optional): Vault account name suffix
         """
         url = f"/v1/vault/assets"
 
@@ -874,6 +875,19 @@ class FireblocksSDK(object):
             
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+    
+    def get_vault_balance_by_asset(self, asset_id=None):
+        """Gets vault accumulated balance by asset
+        
+         Args:
+            asset_id (str, optional): The asset symbol (e.g BTC, ETH)
+        """
+        url = f"/v1/vault/assets"
+        
+        if asset_id:
+            url += f"/{asset_id}"
 
         return self._get_request(url)
 
