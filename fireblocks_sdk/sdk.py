@@ -588,6 +588,9 @@ class FireblocksSDK(object):
             if fee_level not in FEE_LEVEL:
                 raise FireblocksApiException("Got invalid fee level: " + fee_level)
             body["feeLevel"] = fee_level
+            
+        if max_fee:
+            body["maxFee"] = max_fee
 
         if fail_on_fee:
             body["failOnFee"] = fail_on_fee
