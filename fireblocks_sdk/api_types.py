@@ -4,7 +4,7 @@ class TransferPeerPath(object):
         """Defines a source or a destination for a transfer
 
         Args:
-            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION or UNKNOWN_PEER
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS or UNKNOWN_PEER
             peer_id (str): the account/wallet id
         """
 
@@ -14,11 +14,11 @@ class TransferPeerPath(object):
         self.id = str(peer_id)
 
 class DestinationTransferPeerPath(TransferPeerPath):
-    def __init__(self, peer_type, peer_id, one_time_address=None):
+    def __init__(self, peer_type, peer_id=None, one_time_address=None):
         """Defines a destination for a transfer
 
         Args:
-            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION or UNKNOWN_PEER
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS or UNKNOWN_PEER
             peer_id (str): the account/wallet id
             one_time_address (JSON object): The destination address (and tag) for a non whitelisted address.
         """
@@ -36,7 +36,7 @@ TRANSACTION_REDEEM_FROM_COMPOUND = "REDEEM_FROM_COMPOUND"
 RAW = "RAW"
 CONTRACT_CALL = "CONTRACT_CALL"
 
-TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND, RAW, CONTRACT_CALL)
+TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND, RAW, CONTRACT_CALL, ONE_TIME_ADDRESS)
 
 TRANSACTION_STATUS_SUBMITTED = "SUBMITTED"
 TRANSACTION_STATUS_QUEUED = "QUEUED"
