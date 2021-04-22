@@ -398,7 +398,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/transactions/{txid}/drop", body)
 
-    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None):
+    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None, autoFuel=False):
         """Creates a new vault account.
 
         Args:
@@ -408,7 +408,8 @@ class FireblocksSDK(object):
         """
         body = {
             "name": name,
-            "hiddenOnUI": hiddenOnUI
+            "hiddenOnUI": hiddenOnUI,
+            "autoFuel": autoFuel
         }
 
         if customer_ref_id:
