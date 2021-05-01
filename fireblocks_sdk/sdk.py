@@ -28,7 +28,7 @@ class FireblocksSDK(object):
 
     def get_vault_accounts(self, name_prefix=None, name_suffix=None):
         """Gets all vault accounts for your tenant
-        
+
         Args:
             name_prefix (string, optional): Vault account name prefix
             name_suffix (string, optional): Vault account name suffix
@@ -433,6 +433,22 @@ class FireblocksSDK(object):
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide")
 
+    def freeze_transaction_by_id(self, txId):
+        """Freezes the selected transaction
+
+        Args:
+            txId (str): The transaction ID to freeze
+        """
+        return self._post_request(f"/v1/transactions/{txId}/freeze")
+
+    def unfreeze_transaction_by_id(self, txId):
+        """Unfreezes the selected transaction
+
+        Args:
+            txId (str): The transaction ID to unfreeze
+        """
+        return self._post_request(f"/v1/transactions/{txId}/unfreeze")
+
     def update_vault_account(self, vault_account_id, name):
         """Updates a vault account.
 
@@ -589,7 +605,7 @@ class FireblocksSDK(object):
             if fee_level not in FEE_LEVEL:
                 raise FireblocksApiException("Got invalid fee level: " + fee_level)
             body["feeLevel"] = fee_level
-            
+
         if max_fee:
             body["maxFee"] = max_fee
 
@@ -624,7 +640,7 @@ class FireblocksSDK(object):
 
         if replace_tx_by_hash:
             body["replaceTxByHash"] = replace_tx_by_hash
-        
+
         if destinations:
             if any([not isinstance(x, TransactionDestination) for x in destinations]):
                 raise FireblocksApiException("Expected destinations of type TransactionDestination")
@@ -859,10 +875,10 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
-    
+
     def get_vault_assets_balance(self, account_name_prefix=None, account_name_suffix=None):
         """Gets vault assets accumulated balance
-        
+
          Args:
             account_name_prefix (string, optional): Vault account name prefix
             account_name_suffix (string, optional): Vault account name suffix
@@ -870,26 +886,26 @@ class FireblocksSDK(object):
         url = f"/v1/vault/assets"
 
         params = {}
-        
+
         if account_name_prefix:
             params['accountNamePrefix'] = account_name_prefix
-        
+
         if account_name_suffix:
             params['accountNameSuffix'] = account_name_suffix
-            
+
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
 
         return self._get_request(url)
-    
+
     def get_vault_balance_by_asset(self, asset_id=None):
         """Gets vault accumulated balance by asset
-        
+
          Args:
             asset_id (str, optional): The asset symbol (e.g BTC, ETH)
         """
         url = f"/v1/vault/assets"
-        
+
         if asset_id:
             url += f"/{asset_id}"
 
@@ -939,10 +955,10 @@ class FireblocksSDK(object):
         }
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
-    
+
     def validate_address(self, asset_id, address):
         """Gets vault accumulated balance by asset
-        
+
          Args:
             asset_id (str): The asset symbol (e.g XRP, EOS)
             address (str): The address to be verified
