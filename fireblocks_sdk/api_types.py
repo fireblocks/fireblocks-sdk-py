@@ -35,6 +35,7 @@ TRANSACTION_SUPPLY_TO_COMPOUND = "SUPPLY_TO_COMPOUND"
 TRANSACTION_REDEEM_FROM_COMPOUND = "REDEEM_FROM_COMPOUND"
 RAW = "RAW"
 CONTRACT_CALL = "CONTRACT_CALL"
+ONE_TIME_ADDRESS = "ONE_TIME_ADDRESS"
 
 TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND, RAW, CONTRACT_CALL, ONE_TIME_ADDRESS)
 
@@ -122,7 +123,7 @@ class TransferTicketTerm(object):
         if note:
             self.note = str(note)
         self.operation = operation
-        
+
 class UnsignedMessage(object):
     def __init__(self, content, bip44addressIndex=None, bip44change=None, derivationPath=None):
         """Defines message to be signed by raw transaction
@@ -133,15 +134,15 @@ class UnsignedMessage(object):
           bip44change (number, optional): BIP44 change path level
           derivationPath (list of numbers, optional): Should be passed only if asset and source were not specified
         """
-    
+
         self.content = content
-        
+
         if bip44addressIndex:
             self.bip44addressIndex = bip44addressIndex
-        
+
         if bip44change:
             self.bip44change = bip44change
-            
+
         if derivationPath:
             self.derivationPath = derivationPath
 
@@ -153,7 +154,7 @@ class RawMessage(object):
           messages (list of UnsignedMessage):
           algorithm (str):
         """
-            
+
         self.messages = messages
         self.algorithm = algorithm
 
