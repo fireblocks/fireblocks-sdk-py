@@ -83,7 +83,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
 
-    def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None):
+    def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None, idempotency_key=None):
         """Generates a new address for an asset in a vault account
 
         Args:
@@ -93,7 +93,7 @@ class FireblocksSDK(object):
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or '', "customerRefId": customer_ref_id or ''})
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or '', "customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def set_address_description(self, vault_account_id, asset_id, address, tag=None, description=None):
         """Sets the description of an existing address
@@ -146,7 +146,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}")
 
-    def transfer_to_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount):
+    def transfer_to_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None):
         """Transfer to a subaccount from a main exchange account
 
         Args:
@@ -160,9 +160,9 @@ class FireblocksSDK(object):
             "amount": amount
         }
 
-        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_to_subaccount", body)
+        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_to_subaccount", body, idempotency_key)
 
-    def transfer_from_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount):
+    def transfer_from_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None):
         """Transfer from a subaccount to a main exchange account
 
         Args:
@@ -176,7 +176,7 @@ class FireblocksSDK(object):
             "amount": amount
         }
 
-        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_from_subaccount", body)
+        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_from_subaccount", body, idempotency_key)
 
     def get_fiat_accounts(self):
         """Gets all fiat accounts for your tenant"""
@@ -192,7 +192,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/fiat_accounts/{account_id}")
 
-    def redeem_to_linked_dda(self, account_id, amount):
+    def redeem_to_linked_dda(self, account_id, amount, idempotency_key=None):
         """Redeem from a fiat account to a linked DDA
 
         Args:
@@ -203,9 +203,9 @@ class FireblocksSDK(object):
             "amount": amount,
         }
 
-        return self._post_request(f"/v1/fiat_accounts/{account_id}/redeem_to_linked_dda", body)
+        return self._post_request(f"/v1/fiat_accounts/{account_id}/redeem_to_linked_dda", body, idempotency_key)
 
-    def deposit_from_linked_dda(self, account_id, amount):
+    def deposit_from_linked_dda(self, account_id, amount, idempotency_key=None):
         """Deposit to a fiat account from a linked DDA
 
         Args:
@@ -216,7 +216,7 @@ class FireblocksSDK(object):
             "amount": amount,
         }
 
-        return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body)
+        return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body, idempotency_key)
 
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
@@ -340,7 +340,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/estimate_network_fee?assetId={asset_id}")
 
-    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER):
+    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER, idempotency_key=None):
         """Estimates transaction fee
 
         Args:
@@ -369,18 +369,18 @@ class FireblocksSDK(object):
                 raise FireblocksApiException("Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
-        return self._post_request("/v1/transactions/estimate_fee", body)
+        return self._post_request("/v1/transactions/estimate_fee", body, idempotency_key)
 
-    def cancel_transaction_by_id(self, txid):
+    def cancel_transaction_by_id(self, txid, idempotency_key=None):
         """Cancels the selected transaction
 
         Args:
             txid (str): The transaction id to cancel
         """
 
-        return self._post_request(f"/v1/transactions/{txid}/cancel")
+        return self._post_request(f"/v1/transactions/{txid}/cancel", idempotency_key)
 
-    def drop_transaction(self, txid, fee_level=None, requested_fee=None):
+    def drop_transaction(self, txid, fee_level=None, requested_fee=None, idempotency_key=None):
         """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
 
         Args:
@@ -396,9 +396,9 @@ class FireblocksSDK(object):
         if requested_fee:
             body["requestedFee"] = requested_fee
 
-        return self._post_request(f"/v1/transactions/{txid}/drop", body)
+        return self._post_request(f"/v1/transactions/{txid}/drop", body, idempotency_key)
 
-    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None, autoFuel=False):
+    def create_vault_account(self, name, hiddenOnUI=False, customer_ref_id=None, autoFuel=False, idempotency_key=None):
         """Creates a new vault account.
 
         Args:
@@ -415,39 +415,39 @@ class FireblocksSDK(object):
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
 
-        return self._post_request("/v1/vault/accounts", body)
+        return self._post_request("/v1/vault/accounts", body, idempotency_key)
 
-    def hide_vault_account(self, vault_account_id):
+    def hide_vault_account(self, vault_account_id, idempotency_key=None):
         """Hides the vault account from being visible in the web console
 
         Args:
             vault_account_id (str): The vault account Id
         """
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/hide")
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/hide", idempotency_key)
 
-    def unhide_vault_account(self, vault_account_id):
+    def unhide_vault_account(self, vault_account_id, idempotency_key=None):
         """Returns the vault account to being visible in the web console
 
         Args:
             vault_account_id (str): The vault account Id
         """
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide")
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide", idempotency_key)
 
-    def freeze_transaction_by_id(self, txId):
+    def freeze_transaction_by_id(self, txId, idempotency_key=None):
         """Freezes the selected transaction
 
         Args:
             txId (str): The transaction ID to freeze
         """
-        return self._post_request(f"/v1/transactions/{txId}/freeze")
+        return self._post_request(f"/v1/transactions/{txId}/freeze", idempotency_key)
 
-    def unfreeze_transaction_by_id(self, txId):
+    def unfreeze_transaction_by_id(self, txId, idempotency_key=None):
         """Unfreezes the selected transaction
 
         Args:
             txId (str): The transaction ID to unfreeze
         """
-        return self._post_request(f"/v1/transactions/{txId}/unfreeze")
+        return self._post_request(f"/v1/transactions/{txId}/unfreeze", idempotency_key)
 
     def update_vault_account(self, vault_account_id, name):
         """Updates a vault account.
@@ -462,7 +462,7 @@ class FireblocksSDK(object):
 
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
-    def create_vault_asset(self, vault_account_id, asset_id):
+    def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
         """Creates a new asset within an existing vault account
 
         Args:
@@ -470,9 +470,9 @@ class FireblocksSDK(object):
             asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key)
 
-    def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id):
+    def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the vault account
 
         Args:
@@ -480,9 +480,9 @@ class FireblocksSDK(object):
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
-    def set_vault_account_customer_ref_id_for_address(self, vault_account_id, asset_id, address, customer_ref_id=None):
+    def set_vault_account_customer_ref_id_for_address(self, vault_account_id, asset_id, address, customer_ref_id=None, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the given address
 
         Args:
@@ -492,10 +492,10 @@ class FireblocksSDK(object):
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
 
-    def create_external_wallet(self, name, customer_ref_id):
+    def create_external_wallet(self, name, customer_ref_id, idempotency_key=None):
         """Creates a new external wallet
 
         Args:
@@ -503,9 +503,9 @@ class FireblocksSDK(object):
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''})
+        return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
 
-    def create_internal_wallet(self, name, customer_ref_id=None):
+    def create_internal_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new internal wallet
 
         Args:
@@ -513,9 +513,9 @@ class FireblocksSDK(object):
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''})
+        return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
 
-    def create_external_wallet_asset(self, wallet_id, asset_id, address, tag=None):
+    def create_external_wallet_asset(self, wallet_id, asset_id, address, tag=None, idempotency_key=None):
         """Creates a new asset within an exiting external wallet
 
         Args:
@@ -530,10 +530,10 @@ class FireblocksSDK(object):
             body["tag"] = tag
 
         return self._post_request(
-            f"/v1/external_wallets/{wallet_id}/{asset_id}", body
+            f"/v1/external_wallets/{wallet_id}/{asset_id}", body, idempotency_key
             )
 
-    def create_internal_wallet_asset(self, wallet_id, asset_id, address, tag=None):
+    def create_internal_wallet_asset(self, wallet_id, asset_id, address, tag=None, idempotency_key=None):
         """Creates a new asset within an exiting internal wallet
 
         Args:
@@ -548,11 +548,11 @@ class FireblocksSDK(object):
             body["tag"] = tag
 
         return self._post_request(
-            f"/v1/internal_wallets/{wallet_id}/{asset_id}", body
+            f"/v1/internal_wallets/{wallet_id}/{asset_id}", body, idempotency_key
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None):
         """Creates a new transaction
 
         Args:
@@ -650,7 +650,7 @@ class FireblocksSDK(object):
         if extra_parameters:
             body["extraParameters"] = extra_parameters
 
-        return self._post_request("/v1/transactions", body)
+        return self._post_request("/v1/transactions", body, idempotency_key)
 
     def delete_internal_wallet(self, wallet_id):
         """Deletes a single internal wallet
@@ -690,7 +690,7 @@ class FireblocksSDK(object):
 
         return self._delete_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
 
-    def set_customer_ref_id_for_internal_wallet(self, wallet_id, customer_ref_id=None):
+    def set_customer_ref_id_for_internal_wallet(self, wallet_id, customer_ref_id=None, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the specific internal wallet
 
         Args:
@@ -698,9 +698,9 @@ class FireblocksSDK(object):
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+        return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
-    def set_customer_ref_id_for_external_wallet(self, wallet_id, customer_ref_id=None):
+    def set_customer_ref_id_for_external_wallet(self, wallet_id, customer_ref_id=None, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the specific external wallet
 
         Args:
@@ -708,14 +708,14 @@ class FireblocksSDK(object):
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
         """
 
-        return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''})
+        return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def get_transfer_tickets(self):
         """Gets all transfer tickets of your tenant"""
 
         return self._get_request("/v1/transfer_tickets")
 
-    def create_transfer_ticket(self, terms, external_ticket_id=None, description=None):
+    def create_transfer_ticket(self, terms, external_ticket_id=None, description=None, idempotency_key=None):
         """Creates a new transfer ticket
 
         Args:
@@ -737,7 +737,7 @@ class FireblocksSDK(object):
 
         body['terms'] = [term.__dict__ for term in terms]
 
-        return self._post_request(f"/v1/transfer_tickets", body)
+        return self._post_request(f"/v1/transfer_tickets", body, idempotency_key)
 
     def get_transfer_ticket_by_id(self, ticket_id):
         """Retrieve a transfer ticket
@@ -758,16 +758,16 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}")
 
-    def cancel_transfer_ticket(self, ticket_id):
+    def cancel_transfer_ticket(self, ticket_id, idempotency_key=None):
         """Cancel a transfer ticket
 
         Args:
             ticket_id (str): The ID of the transfer ticket to cancel
         """
 
-        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel")
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel", idempotency_key)
 
-    def execute_ticket_term(self, ticket_id, term_id, source=None):
+    def execute_ticket_term(self, ticket_id, term_id, source=None, idempotency_key=None):
         """Initiate a transfer ticket transaction
 
         Args:
@@ -784,9 +784,9 @@ class FireblocksSDK(object):
             body["source"] = source.__dict__
 
 
-        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body)
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body, idempotency_key)
 
-    def set_confirmation_threshold_for_txid(self, txid, required_confirmations_number):
+    def set_confirmation_threshold_for_txid(self, txid, required_confirmations_number, idempotency_key=None):
         """Set the required number of confirmations for transaction
 
         Args:
@@ -798,9 +798,9 @@ class FireblocksSDK(object):
             "numOfConfirmations": required_confirmations_number
         }
 
-        return self._post_request(f"/v1/transactions/{txid}/set_confirmation_threshold", body)
+        return self._post_request(f"/v1/transactions/{txid}/set_confirmation_threshold", body, idempotency_key)
 
-    def set_confirmation_threshold_for_txhash(self, txhash, required_confirmations_number):
+    def set_confirmation_threshold_for_txhash(self, txhash, required_confirmations_number, idempotency_key=None):
         """Set the required number of confirmations for transaction by txhash
 
         Args:
@@ -812,7 +812,7 @@ class FireblocksSDK(object):
             "numOfConfirmations": required_confirmations_number
         }
 
-        return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body)
+        return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body, idempotency_key)
 
     def get_public_key_info(self, algorithm, derivation_path, compressed=None ):
         """Get the public key information
@@ -943,7 +943,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def set_auto_fuel(self, vault_account_id, auto_fuel):
+    def set_auto_fuel(self, vault_account_id, auto_fuel, idempotency_key=None):
         """Sets autoFuel to true/false for a vault account
 
         Args:
@@ -954,7 +954,7 @@ class FireblocksSDK(object):
             "autoFuel": auto_fuel
         }
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_auto_fuel", body, idempotency_key)
 
     def validate_address(self, asset_id, address):
         """Gets vault accumulated balance by asset
@@ -993,13 +993,20 @@ class FireblocksSDK(object):
         else:
             return response.json()
 
-    def _post_request(self, path, body={}):
+    def _post_request(self, path, body={}, idempotency_key=None):
         token = self.token_provider.sign_jwt(path, body)
-        headers = {
-            "X-API-Key": self.api_key,
-            "Authorization": f"Bearer {token}"
-        }
-
+        if idempotency_key is None:
+            headers = {
+                "X-API-Key": self.api_key,
+                "Authorization": f"Bearer {token}"
+            }
+        else:
+            headers = {
+                "X-API-Key": self.api_key,
+                "Authorization": f"Bearer {token}",
+                "Idempotency-Key": idempotency_key
+            }
+            
         response = requests.post(self.base_url + path, headers=headers, json=body)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
