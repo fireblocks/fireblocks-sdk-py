@@ -91,6 +91,7 @@ class FireblocksSDK(object):
             asset_id (string): The ID of the asset for which to generate the deposit address
             description (string, optional): A description for the new address
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or '', "customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -154,6 +155,7 @@ class FireblocksSDK(object):
             subaccount_id (string): The ID of the subaccount in the exchange
             asset_id (string): The asset to transfer
             amount (double): The amount to transfer
+            idempotency_key (str, optional)
         """
         body = {
             "subaccountId": subaccount_id,
@@ -170,6 +172,7 @@ class FireblocksSDK(object):
             subaccount_id (string): The ID of the subaccount in the exchange
             asset_id (string): The asset to transfer
             amount (double): The amount to transfer
+            idempotency_key (str, optional)
         """
         body = {
             "subaccountId": subaccount_id,
@@ -198,6 +201,7 @@ class FireblocksSDK(object):
         Args:
             account_id (string): The fiat account ID in Fireblocks
             amount (double): The amount to transfer
+            idempotency_key (str, optional)
         """
         body = {
             "amount": amount,
@@ -211,6 +215,7 @@ class FireblocksSDK(object):
         Args:
             account_id (string): The fiat account ID in Fireblocks
             amount (double): The amount to transfer
+            idempotency_key (str, optional)
         """
         body = {
             "amount": amount,
@@ -349,6 +354,7 @@ class FireblocksSDK(object):
             destination (DestinationTransferPeerPath, optional): The transfer destination.
             amount (str): The amount
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
+            idempotency_key (str, optional)
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -376,6 +382,7 @@ class FireblocksSDK(object):
 
         Args:
             txid (str): The transaction id to cancel
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/transactions/{txid}/cancel", idempotency_key)
@@ -387,6 +394,7 @@ class FireblocksSDK(object):
             txid (str): The transaction id to drop
             fee_level (str): The fee level of the dropping transaction
             requested_fee (str, optional): Requested fee for transaction
+            idempotency_key (str, optional)
         """
         body = {}
 
@@ -405,6 +413,7 @@ class FireblocksSDK(object):
             name (str): A name for the new vault account
             hiddenOnUI (boolean): Specifies whether the vault account is hidden from the web console, false by default
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
         body = {
             "name": name,
@@ -422,6 +431,7 @@ class FireblocksSDK(object):
 
         Args:
             vault_account_id (str): The vault account Id
+            idempotency_key (str, optional)
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/hide", idempotency_key)
 
@@ -430,6 +440,7 @@ class FireblocksSDK(object):
 
         Args:
             vault_account_id (str): The vault account Id
+            idempotency_key (str, optional)
         """
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide", idempotency_key)
 
@@ -438,6 +449,7 @@ class FireblocksSDK(object):
 
         Args:
             txId (str): The transaction ID to freeze
+            idempotency_key (str, optional)
         """
         return self._post_request(f"/v1/transactions/{txId}/freeze", idempotency_key)
 
@@ -446,6 +458,7 @@ class FireblocksSDK(object):
 
         Args:
             txId (str): The transaction ID to unfreeze
+            idempotency_key (str, optional)
         """
         return self._post_request(f"/v1/transactions/{txId}/unfreeze", idempotency_key)
 
@@ -468,6 +481,7 @@ class FireblocksSDK(object):
         Args:
             vault_account_id (str): The vault account Id
             asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key)
@@ -478,6 +492,7 @@ class FireblocksSDK(object):
         Args:
             vault_account_id (str): The vault account Id
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -490,6 +505,7 @@ class FireblocksSDK(object):
             asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
             address (string): The address for which to set the customer reference id
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -501,6 +517,7 @@ class FireblocksSDK(object):
         Args:
             name (str): A name for the new external wallet
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -511,6 +528,7 @@ class FireblocksSDK(object):
         Args:
             name (str): A name for the new internal wallet
             customer_ref_id (str, optional): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -523,6 +541,7 @@ class FireblocksSDK(object):
             asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
             address (str): The wallet address
             tag (str, optional): (for ripple only) The ripple account tag
+            idempotency_key (str, optional)
         """
 
         body = {"address": address}
@@ -541,6 +560,7 @@ class FireblocksSDK(object):
             asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
             address (str): The wallet address
             tag (str, optional): (for ripple only) The ripple account tag
+            idempotency_key (str, optional)
         """
 
         body = {"address": address}
@@ -575,6 +595,7 @@ class FireblocksSDK(object):
             fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
             max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_limit (number, optional): For ETH-based assets only.
+            idempotency_key (str, optional)
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -696,6 +717,7 @@ class FireblocksSDK(object):
         Args:
             wallet_id (string): The external wallet ID
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -706,6 +728,7 @@ class FireblocksSDK(object):
         Args:
             wallet_id (string): The external wallet ID
             customer_ref_id (str): The ID for AML providers to associate the owner of funds with transactions
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
@@ -722,6 +745,7 @@ class FireblocksSDK(object):
             terms (list of TransferTicketTerm objects): The list of TransferTicketTerm
             external_ticket_id (str, optional): The ID for of the transfer ticket on customer's platform
             description (str, optional): A description for the new ticket
+            idempotency_key (str, optional)
         """
 
         body = {}
@@ -763,6 +787,7 @@ class FireblocksSDK(object):
 
         Args:
             ticket_id (str): The ID of the transfer ticket to cancel
+            idempotency_key (str, optional)
         """
 
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel", idempotency_key)
@@ -792,6 +817,7 @@ class FireblocksSDK(object):
         Args:
             txid (str): The transaction id
             required_confirmations_Number (number): Required confirmation threshold fot the txid
+            idempotency_key (str, optional)
         """
 
         body = {
@@ -806,6 +832,7 @@ class FireblocksSDK(object):
         Args:
             txhash (str): The transaction hash
             required_confirmations_Number (number): Required confirmation threshold fot the txhash
+            idempotency_key (str, optional)
         """
 
         body = {
@@ -814,7 +841,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/txHash/{txhash}/set_confirmation_threshold", body, idempotency_key)
 
-    def get_public_key_info(self, algorithm, derivation_path, compressed=None ):
+    def get_public_key_info(self, algorithm, derivation_path, compressed=None):
         """Get the public key information
 
         Args:
@@ -833,7 +860,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
+    def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None):
         """Get the public key information for a vault account
 
         Args:
@@ -939,7 +966,7 @@ class FireblocksSDK(object):
             asset_id (str): Asset id.
             manual_signing (boolean, optional): False by default.
         """
-        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}";
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}"
 
         return self._get_request(url)
 
@@ -949,6 +976,7 @@ class FireblocksSDK(object):
         Args:
             vault_account_id (str): The vault account Id
             auto_fuel (boolean): The new value for the autoFuel flag
+            idempotency_key (str, optional)
         """
         body = {
             "autoFuel": auto_fuel
