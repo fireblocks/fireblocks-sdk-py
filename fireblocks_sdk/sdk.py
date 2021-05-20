@@ -86,6 +86,15 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses")
 
+    def get_unspent_inputs(self, vault_account_id, asset_id):
+        """Gets utxo list for an asset in a vault account
+        Args:
+            vault_account_id (string): The id of the requested account
+            asset_id (string): The symbol of the requested asset (like BTC, DASH and utxo based assets)
+        """
+
+        return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/unspent_inputs")
+
     def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None):
         """Generates a new address for an asset in a vault account
 
@@ -830,10 +839,9 @@ class FireblocksSDK(object):
         if algorithm:
             url += f"?algorithm={algorithm}"
         if derivation_path:
-            url += f"&derivationPath={derivation_path}"
+            url += f"&derivationPath={urllib.parse.quote(derivation_path)}"
         if compressed:
             url += f"&compressed={compressed}"
-
         return self._get_request(url)
 
     def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
