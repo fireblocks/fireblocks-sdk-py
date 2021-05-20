@@ -839,10 +839,9 @@ class FireblocksSDK(object):
         if algorithm:
             url += f"?algorithm={algorithm}"
         if derivation_path:
-            url += f"&derivationPath={derivation_path}"
+            url += f"&derivationPath={urllib.parse.quote(derivation_path)}"
         if compressed:
             url += f"&compressed={compressed}"
-
         return self._get_request(url)
 
     def get_public_key_info_for_vault_account(self, asset_id, vault_account_id, change, address_index, compressed=None ):
