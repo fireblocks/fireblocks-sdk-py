@@ -584,7 +584,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, treat_as_gross_amount=None):
         """Creates a new transaction
 
         Args:
@@ -608,6 +608,7 @@ class FireblocksSDK(object):
             max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_limit (number, optional): For ETH-based assets only.
             idempotency_key (str, optional)
+            treat_as_gross_amount (bool, optional): Determine if amount should be treated as gross or net
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -673,6 +674,9 @@ class FireblocksSDK(object):
 
         if replace_tx_by_hash:
             body["replaceTxByHash"] = replace_tx_by_hash
+
+        if treat_as_gross_amount:
+            body["treatAsGrossAmount"] = treat_as_gross_amount
 
         if destinations:
             if any([not isinstance(x, TransactionDestination) for x in destinations]):
