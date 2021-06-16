@@ -26,6 +26,11 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/supported_assets")
 
+    def get_usage_limits(self):
+            """Gets api usage limits for userId"""
+
+            return self._get_request("/v1/usage_limits")
+
     def get_vault_accounts(self, name_prefix=None, name_suffix=None, min_amount_threshold=None):
         """Gets all vault accounts for your tenant
 
@@ -1045,7 +1050,7 @@ class FireblocksSDK(object):
                 "Authorization": f"Bearer {token}",
                 "Idempotency-Key": idempotency_key
             }
-            
+
         response = requests.post(self.base_url + path, headers=headers, json=body)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
