@@ -44,7 +44,7 @@ class FireblocksSDK(object):
         if name_suffix:
             params['nameSuffix'] = name_suffix
 
-        if min_amount_threshold:
+        if min_amount_threshold is not None:
             params['minAmountThreshold'] = min_amount_threshold
 
         if params:
@@ -628,7 +628,7 @@ class FireblocksSDK(object):
         if source:
             body["source"] = source.__dict__
 
-        if amount:
+        if amount is not None:
             body["amount"] = amount
 
         if fee:
@@ -1045,7 +1045,7 @@ class FireblocksSDK(object):
                 "Authorization": f"Bearer {token}",
                 "Idempotency-Key": idempotency_key
             }
-            
+
         response = requests.post(self.base_url + path, headers=headers, json=body)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
