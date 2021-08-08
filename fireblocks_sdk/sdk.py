@@ -354,7 +354,7 @@ class FireblocksSDK(object):
             external_tx_id (str): The external id of the transaction
         """
 
-        return self._get_request(f"/v1/transactions/externalTxId/{external_tx_id}")
+        return self._get_request(f"/v1/transactions/external_tx_id/{external_tx_id}")
 
 
     def get_fee_for_asset(self, asset_id):
