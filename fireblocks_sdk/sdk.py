@@ -347,6 +347,15 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/transactions/{txid}")
 
+    def get_transaction_by_external_id(self, external_tx_id):
+        """Gets detailed information for a single transaction
+
+        Args:
+            external_tx_id (str): The external id of the transaction
+        """
+
+        return self._get_request(f"/v1/transactions/external_tx_id/{external_tx_id}")
+
 
     def get_fee_for_asset(self, asset_id):
         """Gets the estimated fees for an asset
@@ -584,7 +593,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None):
         """Creates a new transaction
 
         Args:
@@ -608,6 +617,7 @@ class FireblocksSDK(object):
             max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_limit (number, optional): For ETH-based assets only.
             idempotency_key (str, optional)
+            external_tx_id (str, optional): A unique key for transaction provided externally
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -682,6 +692,9 @@ class FireblocksSDK(object):
 
         if extra_parameters:
             body["extraParameters"] = extra_parameters
+
+        if external_tx_id:
+            body["externalTxId"] = external_tx_id
 
         return self._post_request("/v1/transactions", body, idempotency_key)
 
