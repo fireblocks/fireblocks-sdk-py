@@ -1022,7 +1022,9 @@ class FireblocksSDK(object):
     def get_users(self):
         """Gets all users of your tenant"""
 
-        return self._get_request("/v1/users")
+        url = "/v1/users"
+
+        return self._get_request(url)
 
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
