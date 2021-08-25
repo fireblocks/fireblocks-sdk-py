@@ -282,7 +282,7 @@ class FireblocksSDK(object):
         if assets:
             params['assets'] = assets
         if source_type:
-            params['sourcetype'] = source_type
+            params['sourceType'] = source_type
         if source_id:
             params['sourceId'] = source_id
         if dest_type:
