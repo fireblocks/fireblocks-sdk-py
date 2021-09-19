@@ -1019,6 +1019,11 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def resend_webhooks(self):
+        """Resend failed webhooks of your tenant"""
+
+        return self._post_request("/v1/webhooks/resend")
+
     def _get_request(self, path):
         token = self.token_provider.sign_jwt(path)
         headers = {
