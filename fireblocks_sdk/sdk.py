@@ -257,7 +257,7 @@ class FireblocksSDK(object):
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
-            next_or_previous_path (str, optional): get transactions matching the path
+            next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
         """
         if next_or_previous_path:
             index = next_or_previous_path.index('/v1/')
@@ -265,7 +265,7 @@ class FireblocksSDK(object):
             suffix_path = next_or_previous_path[index:length]
             return self._get_request(suffix_path, True)
         else:
-            return self._get_base_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id, dest_type, dest_id, True)
+            return self._get_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id, dest_type, dest_id, True)
 
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
@@ -291,9 +291,9 @@ class FireblocksSDK(object):
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
         """
-        return self._get_base_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id)
+        return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id)
 
-    def _get_base_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id, page_mode=False):
+    def _get_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id, page_mode=False):
         path = "/v1/transactions"
         params = {}
 
