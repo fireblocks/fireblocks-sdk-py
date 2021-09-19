@@ -237,7 +237,11 @@ class FireblocksSDK(object):
 
     def get_transactions_with_page_info(self, before=0, after=None, status=None, limit=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None, next_or_previous_path=None):
-        """Gets a list of transactions matching the given filter or path
+        """Gets a list of transactions matching the given filters or path.
+        Note that "next_or_previous_path" is mutually exclusive with other parameters.
+        If you wish to iterate over the nextPage/prevPage pages, please provide only the "next_or_previous_path" parameter from `pageDetails` response
+        example:
+            get_transactions_with_page_info(next_or_previous_path=response[pageDetails][nextPage])
 
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
@@ -269,7 +273,7 @@ class FireblocksSDK(object):
 
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
-        """Gets a list of transactions matching the given filter
+        """Gets a list of transactions matching the given filters
 
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
