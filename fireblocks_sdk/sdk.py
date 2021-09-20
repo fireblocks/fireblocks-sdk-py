@@ -1019,6 +1019,11 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def resend_webhooks(self):
+        """Resend failed webhooks of your tenant"""
+
+        return self._post_request("/v1/webhooks/resend")
+
     def get_users(self):
         """Gets all users of your tenant"""
 
