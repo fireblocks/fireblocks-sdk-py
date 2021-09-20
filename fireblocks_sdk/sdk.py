@@ -326,7 +326,6 @@ class FireblocksSDK(object):
             params['destType'] = dest_type
         if dest_id:
             params['destId'] = dest_id
-
         if params:
             path = path + "?" + urllib.parse.urlencode(params)
 
