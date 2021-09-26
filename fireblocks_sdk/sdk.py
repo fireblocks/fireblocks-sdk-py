@@ -629,7 +629,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
         """Creates a new transaction
 
         Args:
@@ -655,6 +655,7 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
             external_tx_id (str, optional): A unique key for transaction provided externally
             treat_as_gross_amount (bool, optional): Determine if amount should be treated as gross or net
+            force_sweep (bool, optional): Determine if transaction should be treated as a forced sweep
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -735,6 +736,9 @@ class FireblocksSDK(object):
 
         if external_tx_id:
             body["externalTxId"] = external_tx_id
+
+        if force_sweep:
+            body["forceSweep"] = force_sweep
 
         return self._post_request("/v1/transactions", body, idempotency_key)
 
