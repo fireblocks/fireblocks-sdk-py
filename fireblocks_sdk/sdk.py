@@ -263,7 +263,9 @@ class FireblocksSDK(object):
             dest_id (str, optional): Only gets transactions with given dest_id
             next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
         """
-        if next_or_previous_path:
+        if next_or_previous_path is not None:
+            if not next_or_previous_path:
+                return {'transactions': [], 'pageDetails': {'prevPage': '', 'nextPage': ''}}
             index = next_or_previous_path.index('/v1/')
             length = len(next_or_previous_path) - 1
             suffix_path = next_or_previous_path[index:length]
@@ -1084,7 +1086,7 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
             if page_mode:
-                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers['prev-page'], 'nextPage': response.headers['next-page']}}
+                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers.get('prev-page', ''), 'nextPage': response.headers.get('next-page', '')}}
             else:
                 return response_data
 
