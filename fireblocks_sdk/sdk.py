@@ -235,9 +235,45 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body, idempotency_key)
 
+    def get_transactions_with_page_info(self, before=0, after=None, status=None, limit=None, txhash=None,
+                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None, next_or_previous_path=None):
+        """Gets a list of transactions matching the given filters or path.
+        Note that "next_or_previous_path" is mutually exclusive with other parameters.
+        If you wish to iterate over the nextPage/prevPage pages, please provide only the "next_or_previous_path" parameter from `pageDetails` response
+        example:
+            get_transactions_with_page_info(next_or_previous_path=response[pageDetails][nextPage])
+
+        Args:
+            before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
+            after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
+            status (str, optional): Only gets transactions with the specified status, which should one of the following:
+                SUBMITTED, QUEUED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING_3RD_PARTY_MANUAL_APPROVAL,
+                PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
+                CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
+            limit (int, optional): Limit the amount of returned results. If not specified, a limit of 200 results will be used
+            txhash (str, optional): Only gets transactions with the specified txHash
+            assets (str, optional): Filter results for specified assets
+            source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                NETWORK_CONNECTION, COMPOUND
+            source_id (str, optional): Only gets transactions with given source_id
+            dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                NETWORK_CONNECTION, COMPOUND
+            dest_id (str, optional): Only gets transactions with given dest_id
+            next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
+        """
+        if next_or_previous_path:
+            index = next_or_previous_path.index('/v1/')
+            length = len(next_or_previous_path) - 1
+            suffix_path = next_or_previous_path[index:length]
+            return self._get_request(suffix_path, True)
+        else:
+            return self._get_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id, dest_type, dest_id, True)
+
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
-        """Gets a list of transactions matching the given filter
+        """Gets a list of transactions matching the given filters
 
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
@@ -259,9 +295,10 @@ class FireblocksSDK(object):
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
         """
+        return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id)
 
+    def _get_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id, page_mode=False):
         path = "/v1/transactions"
-
         params = {}
 
         if status and status not in TRANSACTION_STATUS_TYPES:
@@ -289,11 +326,10 @@ class FireblocksSDK(object):
             params['destType'] = dest_type
         if dest_id:
             params['destId'] = dest_id
-
         if params:
             path = path + "?" + urllib.parse.urlencode(params)
 
-        return self._get_request(path)
+        return self._get_request(path, page_mode)
 
     def get_internal_wallets(self):
         """Gets all internal wallets for your tenant"""
@@ -1019,6 +1055,18 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def resend_webhooks(self):
+        """Resend failed webhooks of your tenant"""
+
+        return self._post_request("/v1/webhooks/resend")
+
+    def get_users(self):
+        """Gets all users of your tenant"""
+
+        url = "/v1/users"
+
+        return self._get_request(url)
+
     def get_off_exchanges(self):
         """
         Get your connected off exchanges virtual accounts
@@ -1048,7 +1096,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url)
 
-    def _get_request(self, path):
+    def _get_request(self, path, page_mode=False):
         token = self.token_provider.sign_jwt(path)
         headers = {
             "X-API-Key": self.api_key,
@@ -1056,10 +1104,14 @@ class FireblocksSDK(object):
         }
 
         response = requests.get(self.base_url + path, headers=headers)
+        response_data = response.json()
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
-            return response.json()
+            if page_mode:
+                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers['prev-page'], 'nextPage': response.headers['next-page']}}
+            else:
+                return response_data
 
     def _delete_request(self, path):
         token = self.token_provider.sign_jwt(path)
