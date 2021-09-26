@@ -1080,7 +1080,7 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
             if page_mode:
-                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers['prev-page'], 'nextPage': response.headers['next-page']}}
+                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers.get('prev-page', ''), 'nextPage': response.headers.get('next-page', '')}}
             else:
                 return response_data
 
