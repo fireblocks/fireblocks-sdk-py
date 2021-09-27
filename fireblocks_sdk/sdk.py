@@ -631,7 +631,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None):
         """Creates a new transaction
 
         Args:
@@ -708,14 +708,8 @@ class FireblocksSDK(object):
                 raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
-        if cpu_staking:
-            body["cpuStaking"] = cpu_staking
-
-        if network_staking:
-            body["networkStaking"] = network_staking
-
-        if auto_staking:
-            body["autoStaking"] = auto_staking
+        if network_fee:
+            body["networkFee"] = network_fee
 
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
