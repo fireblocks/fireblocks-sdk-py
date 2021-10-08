@@ -263,7 +263,9 @@ class FireblocksSDK(object):
             dest_id (str, optional): Only gets transactions with given dest_id
             next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
         """
-        if next_or_previous_path:
+        if next_or_previous_path is not None:
+            if not next_or_previous_path:
+                return {'transactions': [], 'pageDetails': {'prevPage': '', 'nextPage': ''}}
             index = next_or_previous_path.index('/v1/')
             length = len(next_or_previous_path) - 1
             suffix_path = next_or_previous_path[index:length]
@@ -629,7 +631,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, cpu_staking=None, network_staking=None, auto_staking=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
         """Creates a new transaction
 
         Args:
@@ -642,9 +644,7 @@ class FireblocksSDK(object):
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
-            cpu_staking (number, optional): Cpu stake for EOS transfer.
-            network_staking (number, optional): Network stake for EOS transfer.
-            auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
+            network_fee (str, optional): Transaction blockchain fee (For Ethereum, you can't pass gasPrice, gasLimit and networkFee all together)
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
             extra_parameters (object, optional)
             destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
@@ -707,14 +707,8 @@ class FireblocksSDK(object):
                 raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
             body["destination"] = destination.__dict__
 
-        if cpu_staking:
-            body["cpuStaking"] = cpu_staking
-
-        if network_staking:
-            body["networkStaking"] = network_staking
-
-        if auto_staking:
-            body["autoStaking"] = auto_staking
+        if network_fee:
+            body["networkFee"] = network_fee
 
         if customer_ref_id:
             body["customerRefId"] = customer_ref_id
@@ -1088,7 +1082,7 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
             if page_mode:
-                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers['prev-page'], 'nextPage': response.headers['next-page']}}
+                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers.get('prev-page', ''), 'nextPage': response.headers.get('next-page', '')}}
             else:
                 return response_data
 
