@@ -631,7 +631,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
         """Creates a new transaction
 
         Args:
@@ -644,9 +644,7 @@ class FireblocksSDK(object):
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             note (str, optional): A custome note that can be associated with the transaction.
-            cpu_staking (number, optional): Cpu stake for EOS transfer.
-            network_staking (number, optional): Network stake for EOS transfer.
-            auto_staking: (boolean, optional): Auto stake for EOS transfer. Staking will be managed by fireblocks.
+            network_fee (str, optional): Transaction blockchain fee (For Ethereum, you can't pass gasPrice, gasLimit and networkFee all together)
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
             extra_parameters (object, optional)
             destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
@@ -657,6 +655,7 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
             external_tx_id (str, optional): A unique key for transaction provided externally
             treat_as_gross_amount (bool, optional): Determine if amount should be treated as gross or net
+            force_sweep (bool, optional): Determine if transaction should be treated as a forced sweep
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -731,6 +730,9 @@ class FireblocksSDK(object):
 
         if external_tx_id:
             body["externalTxId"] = external_tx_id
+
+        if force_sweep:
+            body["forceSweep"] = force_sweep
 
         return self._post_request("/v1/transactions", body, idempotency_key)
 
