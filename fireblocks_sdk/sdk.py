@@ -26,6 +26,11 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/supported_assets")
 
+    def get_usage_limits(self):
+            """Gets api usage limits for userId"""
+
+            return self._get_request("/v1/usage_limits")
+
     def get_vault_accounts(self, name_prefix=None, name_suffix=None, min_amount_threshold=None):
         """Gets all vault accounts for your tenant
 
