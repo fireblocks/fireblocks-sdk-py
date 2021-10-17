@@ -11,7 +11,8 @@ class TransferPeerPath(object):
         if peer_type not in PEER_TYPES:
             raise Exception("Got invalid transfer peer type: " + peer_type)
         self.type = peer_type
-        self.id = str(peer_id)
+        if peer_id is not None:
+            self.id = str(peer_id)
 
 class DestinationTransferPeerPath(TransferPeerPath):
     def __init__(self, peer_type, peer_id=None, one_time_address=None):

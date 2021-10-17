@@ -26,7 +26,7 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/supported_assets")
 
-    def get_vault_accounts(self, name_prefix=None, name_suffix=None, min_amount_threshold=None):
+    def get_vault_accounts(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, assetId=None):
         """Gets all vault accounts for your tenant
 
         Args:
@@ -46,6 +46,9 @@ class FireblocksSDK(object):
 
         if min_amount_threshold is not None:
             params['minAmountThreshold'] = min_amount_threshold
+
+        if assetId is not None:
+            params['assetId'] = assetId
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
