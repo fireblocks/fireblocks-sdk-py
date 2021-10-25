@@ -447,7 +447,7 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/transactions/{txid}/cancel", idempotency_key)
+        return self._post_request(f"/v1/transactions/{txid}/cancel", idempotency_key=idempotency_key)
 
     def drop_transaction(self, txid, fee_level=None, requested_fee=None, idempotency_key=None):
         """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
@@ -495,7 +495,7 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
             idempotency_key (str, optional)
         """
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/hide", idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/hide", idempotency_key=idempotency_key)
 
     def unhide_vault_account(self, vault_account_id, idempotency_key=None):
         """Returns the vault account to being visible in the web console
@@ -504,7 +504,7 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
             idempotency_key (str, optional)
         """
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide", idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/unhide", idempotency_key=idempotency_key)
 
     def freeze_transaction_by_id(self, txId, idempotency_key=None):
         """Freezes the selected transaction
@@ -513,7 +513,7 @@ class FireblocksSDK(object):
             txId (str): The transaction ID to freeze
             idempotency_key (str, optional)
         """
-        return self._post_request(f"/v1/transactions/{txId}/freeze", idempotency_key)
+        return self._post_request(f"/v1/transactions/{txId}/freeze", idempotency_key=idempotency_key)
 
     def unfreeze_transaction_by_id(self, txId, idempotency_key=None):
         """Unfreezes the selected transaction
@@ -522,7 +522,7 @@ class FireblocksSDK(object):
             txId (str): The transaction ID to unfreeze
             idempotency_key (str, optional)
         """
-        return self._post_request(f"/v1/transactions/{txId}/unfreeze", idempotency_key)
+        return self._post_request(f"/v1/transactions/{txId}/unfreeze", idempotency_key=idempotency_key)
 
     def update_vault_account(self, vault_account_id, name):
         """Updates a vault account.
@@ -546,7 +546,7 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key=idempotency_key)
 
     def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the vault account
@@ -856,7 +856,7 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel", idempotency_key)
+        return self._post_request(f"/v1/transfer_tickets/{ticket_id}/cancel", idempotency_key=idempotency_key)
 
     def execute_ticket_term(self, ticket_id, term_id, source=None, idempotency_key=None):
         """Initiate a transfer ticket transaction
