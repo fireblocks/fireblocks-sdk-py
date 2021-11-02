@@ -1013,8 +1013,9 @@ class FireblocksSDK(object):
             note (str, optional): A custome note that can be associated with the transaction
         """
 
-        if raw_message.algorithm not in SIGNING_ALGORITHM:
-            raise Exception("Got invalid signing algorithm type: " + raw_message.algorithm)
+        if asset_id is None:
+            if raw_message.algorithm not in SIGNING_ALGORITHM:
+                raise Exception("Got invalid signing algorithm type: " + raw_message.algorithm)
 
         if not all([isinstance(x, UnsignedMessage) for x in raw_message.messages]):
             raise FireblocksApiException("Expected messages of type UnsignedMessage")
