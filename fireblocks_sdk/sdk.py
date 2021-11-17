@@ -634,7 +634,7 @@ class FireblocksSDK(object):
             )
 
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_low_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
         """Creates a new transaction
 
         Args:
@@ -652,7 +652,7 @@ class FireblocksSDK(object):
             extra_parameters (object, optional)
             destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
             fee_level (FeeLevel, optional): Transaction fee level: either HIGH, MEDIUM, LOW.
-            fail_on_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
+            fail_on_low_fee (bool, optional): False by default, if set to true and MEDIUM fee level is higher than the one specified in the transaction, the transction will fail.
             max_fee (str, optional): The maximum fee (gas price or fee per byte) that should be payed for the transaction.
             gas_limit (number, optional): For ETH-based assets only.
             idempotency_key (str, optional)
@@ -693,8 +693,8 @@ class FireblocksSDK(object):
         if max_fee:
             body["maxFee"] = max_fee
 
-        if fail_on_fee:
-            body["failOnFee"] = fail_on_fee
+        if fail_on_low_fee:
+            body["failOnLowFee"] = fail_on_low_fee
 
         if gas_price:
             body["gasPrice"] = str(gas_price)
