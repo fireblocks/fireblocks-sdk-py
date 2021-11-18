@@ -25,4 +25,4 @@ class SdkTokenProvider(object):
             "bodyHash": sha256(json.dumps(body_json).encode("utf-8")).hexdigest()
         }
 
-        return jwt.encode(token, key=self.private_key, algorithm="RS256").decode('utf-8')
+        return jwt.encode(token, key=self.private_key, algorithm="RS256")
