@@ -1073,6 +1073,35 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def get_off_exchanges(self):
+        """
+        Get your connected off exchanges virtual accounts
+        """
+        url = f"/v1/off_exchanges"
+
+        return self._get_request(url)
+
+    def get_off_exchange_by_id(self, off_exchange_id):
+        """
+        Get your connected off exchange by it's ID
+        :param off_exchange_id: ID of the off exchange virtual account
+        :return: off exchange entity
+        """
+
+        url = f"/v1/off_exchanges/{off_exchange_id}"
+
+        return self._get_request(url)
+
+    def settle_off_exchange_by_id(self, off_exchange_id):
+        """
+        Create a settle request to your off exchange by it's ID
+        :param off_exchange_id: ID of the off exchange virtual account
+        """
+
+        url = f"/v1/off_exchanges/{off_exchange_id}/settle"
+
+        return self._post_request(url)
+
     def _get_request(self, path, page_mode=False):
         token = self.token_provider.sign_jwt(path)
         headers = {
