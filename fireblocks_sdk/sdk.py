@@ -15,7 +15,7 @@ class FireblocksSDK(object):
             private_key (str): A string representation of your private key (in PEM format)
             api_key (str): Your api key. This is a uuid you received from Fireblocks
             base_url (str): The fireblocks server URL. Leave empty to use the default server
-            timeout (number): Timeout for http requests
+            timeout (number): Timeout for http requests in seconds
         """
         self.private_key = private_key
         self.api_key = api_key
