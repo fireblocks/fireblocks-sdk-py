@@ -25,8 +25,10 @@ class DestinationTransferPeerPath(TransferPeerPath):
         """
         TransferPeerPath.__init__(self, peer_type, peer_id)
 
-        if one_time_address != None:
+        if one_time_address is not None:
             self.oneTimeAddress = one_time_address
+        if peer_id is not None:
+            self.peer_id = peer_id
 
 
 TRANSACTION_TRANSFER = "TRANSFER"

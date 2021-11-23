@@ -8,18 +8,20 @@ from fireblocks_sdk.api_types import TransactionDestination
 
 class FireblocksSDK(object):
 
-    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io"):
+    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None):
         """Creates a new Fireblocks API Client.
 
         Args:
             private_key (str): A string representation of your private key (in PEM format)
             api_key (str): Your api key. This is a uuid you received from Fireblocks
             base_url (str): The fireblocks server URL. Leave empty to use the default server
+            timeout (number): Timeout for http requests
         """
         self.private_key = private_key
         self.api_key = api_key
         self.base_url = api_base_url
         self.token_provider = SdkTokenProvider(private_key, api_key)
+        self.timeout = timeout
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1109,7 +1111,7 @@ class FireblocksSDK(object):
             "Authorization": f"Bearer {token}"
         }
 
-        response = requests.get(self.base_url + path, headers=headers)
+        response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
         response_data = response.json()
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
@@ -1126,7 +1128,7 @@ class FireblocksSDK(object):
             "Authorization": f"Bearer {token}"
         }
 
-        response = requests.delete(self.base_url + path, headers=headers)
+        response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
@@ -1146,7 +1148,7 @@ class FireblocksSDK(object):
                 "Idempotency-Key": idempotency_key
             }
 
-        response = requests.post(self.base_url + path, headers=headers, json=body)
+        response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
@@ -1160,7 +1162,7 @@ class FireblocksSDK(object):
             "Content-Type": "application/json"
         }
 
-        response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body))
+        response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         if response.status_code >= 300:
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
         else:
