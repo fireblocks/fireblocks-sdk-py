@@ -573,7 +573,7 @@ class FireblocksSDK(object):
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
 
-    def create_external_wallet(self, name, customer_ref_id, idempotency_key=None):
+    def create_external_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new external wallet
 
         Args:
