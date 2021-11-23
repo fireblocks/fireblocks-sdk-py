@@ -1,7 +1,5 @@
 # The Official Python SDK for Fireblocks API
-
-## Version
-1.5
+[![PyPI version](https://badge.fury.io/py/fireblocks-sdk.svg)](https://badge.fury.io/py/fireblocks-sdk)
 
 ## About
 This repository contains the official Python SDK for Fireblocks API.
