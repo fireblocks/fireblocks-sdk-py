@@ -1114,9 +1114,7 @@ class FireblocksSDK(object):
         response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
         response_data = response.json()
         if response.status_code >= 300:
-            error_code = None
-            if response_data.get('code') is not None:
-                error_code = response_data.get('code')
+            error_code = response_data.get('code')
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             if page_mode:
@@ -1133,9 +1131,7 @@ class FireblocksSDK(object):
 
         response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
         if response.status_code >= 300:
-            error_code = None
-            if response.json().get("code") is not None:
-                error_code = response.json().get("code")
+            error_code = response.json().get("code")
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
@@ -1156,9 +1152,7 @@ class FireblocksSDK(object):
 
         response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         if response.status_code >= 300:
-            error_code = None
-            if response.json().get("code") is not None:
-                error_code = response.json().get("code")
+            error_code = response.json().get("code")
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
@@ -1173,9 +1167,7 @@ class FireblocksSDK(object):
 
         response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         if response.status_code >= 300:
-            error_code = None
-            if response.json().get("code") is not None:
-                error_code = response.json().get("code")
+            error_code = response.json().get("code")
             raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
