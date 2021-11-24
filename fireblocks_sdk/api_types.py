@@ -171,4 +171,14 @@ class TransactionDestination(object):
         self.destination = destination.__dict__
 
 
-class FireblocksApiException(Exception): pass
+class FireblocksApiException(Exception):
+    """Exception raised for Fireblocks sdk errors
+
+    Attributes:
+        message: explanation of the error
+        error_code: error code of the error
+    """
+    def __init__(self, message="Fireblocks SDK error", error_code=None):
+        self.message = message
+        self.error_code = error_code
+        super().__init__(self.message)
