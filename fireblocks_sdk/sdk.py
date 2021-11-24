@@ -3,8 +3,11 @@ import urllib
 import json
 
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, \
+    TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, \
+    UnsignedMessage, FEE_LEVEL
 from fireblocks_sdk.api_types import TransactionDestination
+
 
 class FireblocksSDK(object):
 
@@ -100,7 +103,8 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/unspent_inputs")
 
-    def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None, idempotency_key=None):
+    def generate_new_address(self, vault_account_id, asset_id, description=None, customer_ref_id=None,
+                             idempotency_key=None):
         """Generates a new address for an asset in a vault account
 
         Args:
@@ -111,7 +115,9 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses", { "description": description or '', "customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses",
+                                  {"description": description or '', "customerRefId": customer_ref_id or ''},
+                                  idempotency_key)
 
     def set_address_description(self, vault_account_id, asset_id, address, tag=None, description=None):
         """Sets the description of an existing address
@@ -124,9 +130,11 @@ class FireblocksSDK(object):
             description (string, optional): The description to set, or none for no description
         """
         if tag:
-            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}:{tag}", { "description": description or ''})
+            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}:{tag}",
+                                     {"description": description or ''})
         else:
-            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}", { "description": description or ''})
+            return self._put_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}",
+                                     {"description": description or ''})
 
     def get_network_connections(self):
         """Gets all network connections for your tenant"""
@@ -179,7 +187,8 @@ class FireblocksSDK(object):
             "amount": amount
         }
 
-        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_to_subaccount", body, idempotency_key)
+        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_to_subaccount",
+                                  body, idempotency_key)
 
     def transfer_from_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None):
         """Transfer from a subaccount to a main exchange account
@@ -196,7 +205,8 @@ class FireblocksSDK(object):
             "amount": amount
         }
 
-        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_from_subaccount", body, idempotency_key)
+        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}/transfer_from_subaccount",
+                                  body, idempotency_key)
 
     def get_fiat_accounts(self):
         """Gets all fiat accounts for your tenant"""
@@ -241,7 +251,8 @@ class FireblocksSDK(object):
         return self._post_request(f"/v1/fiat_accounts/{account_id}/deposit_from_linked_dda", body, idempotency_key)
 
     def get_transactions_with_page_info(self, before=0, after=None, status=None, limit=None, txhash=None,
-                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None, next_or_previous_path=None):
+                                        assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None,
+                                        next_or_previous_path=None):
         """Gets a list of transactions matching the given filters or path.
         Note that "next_or_previous_path" is mutually exclusive with other parameters.
         If you wish to iterate over the nextPage/prevPage pages, please provide only the "next_or_previous_path" parameter from `pageDetails` response
@@ -276,7 +287,8 @@ class FireblocksSDK(object):
             suffix_path = next_or_previous_path[index:length]
             return self._get_request(suffix_path, True)
         else:
-            return self._get_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id, dest_type, dest_id, True)
+            return self._get_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id,
+                                          dest_type, dest_id, True)
 
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
                          assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
@@ -302,9 +314,11 @@ class FireblocksSDK(object):
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
         """
-        return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id)
+        return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id,
+                                      dest_type, dest_id)
 
-    def _get_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id, dest_type, dest_id, page_mode=False):
+    def _get_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id,
+                          dest_type, dest_id, page_mode=False):
         path = "/v1/transactions"
         params = {}
 
@@ -321,7 +335,7 @@ class FireblocksSDK(object):
             params['limit'] = limit
         if order_by:
             params['orderBy'] = order_by
-        if  txhash:
+        if txhash:
             params['txHash'] = txhash
         if assets:
             params['assets'] = assets
@@ -358,7 +372,6 @@ class FireblocksSDK(object):
             asset_id (str): The asset id to query
         """
         return self._get_request(f"/v1/internal_wallets/{wallet_id}/{asset_id}")
-
 
     def get_external_wallets(self):
         """Gets all external wallets for your tenant"""
@@ -399,7 +412,6 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/transactions/external_tx_id/{external_tx_id}")
 
-
     def get_fee_for_asset(self, asset_id):
         """Gets the estimated fees for an asset
 
@@ -409,7 +421,8 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/estimate_network_fee?assetId={asset_id}")
 
-    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None , tx_type=TRANSACTION_TRANSFER, idempotency_key=None):
+    def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None, tx_type=TRANSACTION_TRANSFER,
+                                     idempotency_key=None):
         """Estimates transaction fee
 
         Args:
@@ -425,7 +438,8 @@ class FireblocksSDK(object):
             raise FireblocksApiException("Got invalid transaction type: " + tx_type)
 
         if not isinstance(source, TransferPeerPath):
-            raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
+            raise FireblocksApiException(
+                "Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
             "assetId": asset_id,
@@ -436,7 +450,9 @@ class FireblocksSDK(object):
 
         if destination:
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
-                raise FireblocksApiException("Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
+                raise FireblocksApiException(
+                    "Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(
+                        destination))
             body["destination"] = destination.__dict__
 
         return self._post_request("/v1/transactions/estimate_fee", body, idempotency_key)
@@ -559,9 +575,11 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/set_customer_ref_id",
+                                  {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
-    def set_vault_account_customer_ref_id_for_address(self, vault_account_id, asset_id, address, customer_ref_id=None, idempotency_key=None):
+    def set_vault_account_customer_ref_id_for_address(self, vault_account_id, asset_id, address, customer_ref_id=None,
+                                                      idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the given address
 
         Args:
@@ -572,8 +590,9 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
-
+        return self._post_request(
+            f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id",
+            {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def create_external_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new external wallet
@@ -584,7 +603,8 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request("/v1/external_wallets", {"name": name, "customerRefId": customer_ref_id or ''},
+                                  idempotency_key)
 
     def create_internal_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new internal wallet
@@ -595,7 +615,8 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request("/v1/internal_wallets", {"name": name, "customerRefId": customer_ref_id or ''},
+                                  idempotency_key)
 
     def create_external_wallet_asset(self, wallet_id, asset_id, address, tag=None, idempotency_key=None):
         """Creates a new asset within an exiting external wallet
@@ -614,7 +635,7 @@ class FireblocksSDK(object):
 
         return self._post_request(
             f"/v1/external_wallets/{wallet_id}/{asset_id}", body, idempotency_key
-            )
+        )
 
     def create_internal_wallet_asset(self, wallet_id, asset_id, address, tag=None, idempotency_key=None):
         """Creates a new asset within an exiting internal wallet
@@ -633,10 +654,13 @@ class FireblocksSDK(object):
 
         return self._post_request(
             f"/v1/internal_wallets/{wallet_id}/{asset_id}", body, idempotency_key
-            )
+        )
 
-
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None, wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None, customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None, fee_level=None, fail_on_low_fee=None, max_fee=None, gas_limit=None, idempotency_key=None, external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
+    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None,
+                           wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None,
+                           customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None,
+                           fee_level=None, fail_on_low_fee=None, max_fee=None, gas_limit=None, idempotency_key=None,
+                           external_tx_id=None, treat_as_gross_amount=None, force_sweep=None):
         """Creates a new transaction
 
         Args:
@@ -668,7 +692,8 @@ class FireblocksSDK(object):
 
         if source:
             if not isinstance(source, TransferPeerPath):
-                raise FireblocksApiException("Expected transaction source of type TransferPeerPath, but got type: " + type(source))
+                raise FireblocksApiException(
+                    "Expected transaction source of type TransferPeerPath, but got type: " + type(source))
 
         body = {
             "waitForStatus": wait_for_status,
@@ -709,7 +734,9 @@ class FireblocksSDK(object):
 
         if destination:
             if not isinstance(destination, (TransferPeerPath, DestinationTransferPeerPath)):
-                raise FireblocksApiException("Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(destination))
+                raise FireblocksApiException(
+                    "Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(
+                        destination))
             body["destination"] = destination.__dict__
 
         if network_fee:
@@ -788,7 +815,8 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request(f"/v1/internal_wallets/{wallet_id}/set_customer_ref_id",
+                                  {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def set_customer_ref_id_for_external_wallet(self, wallet_id, customer_ref_id=None, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the specific external wallet
@@ -799,7 +827,8 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id", {"customerRefId": customer_ref_id or ''}, idempotency_key)
+        return self._post_request(f"/v1/external_wallets/{wallet_id}/set_customer_ref_id",
+                                  {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def get_transfer_tickets(self):
         """Gets all transfer tickets of your tenant"""
@@ -873,9 +902,9 @@ class FireblocksSDK(object):
 
         if source:
             if not isinstance(source, TransferPeerPath):
-                raise FireblocksApiException("Expected ticket term source Of type TransferPeerPath, but got type: " + type(source))
+                raise FireblocksApiException(
+                    "Expected ticket term source Of type TransferPeerPath, but got type: " + type(source))
             body["source"] = source.__dict__
-
 
         return self._post_request(f"/v1/transfer_tickets/{ticket_id}/{term_id}/transfer", body, idempotency_key)
 
@@ -1024,7 +1053,8 @@ class FireblocksSDK(object):
 
         raw_message.messages = [message.__dict__ for message in raw_message.messages]
 
-        return self.create_transaction(asset_id, source=source, tx_type="RAW", extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
+        return self.create_transaction(asset_id, source=source, tx_type="RAW",
+                                       extra_parameters={"rawMessageData": raw_message.__dict__}, note=note)
 
     def get_max_spendable_amount(self, vault_account_id, asset_id, manual_signing=False):
         """Get max spendable amount per asset and vault.
@@ -1114,10 +1144,13 @@ class FireblocksSDK(object):
         response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
         response_data = response.json()
         if response.status_code >= 300:
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
+            error_code = response_data.get('code')
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             if page_mode:
-                return {'transactions': response_data, 'pageDetails': {'prevPage': response.headers.get('prev-page', ''), 'nextPage': response.headers.get('next-page', '')}}
+                return {'transactions': response_data,
+                        'pageDetails': {'prevPage': response.headers.get('prev-page', ''),
+                                        'nextPage': response.headers.get('next-page', '')}}
             else:
                 return response_data
 
@@ -1130,7 +1163,8 @@ class FireblocksSDK(object):
 
         response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
         if response.status_code >= 300:
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
+            error_code = response.json().get("code")
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
 
@@ -1150,7 +1184,8 @@ class FireblocksSDK(object):
 
         response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         if response.status_code >= 300:
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
+            error_code = response.json().get("code")
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
 
@@ -1164,12 +1199,7 @@ class FireblocksSDK(object):
 
         response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         if response.status_code >= 300:
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
+            error_code = response.json().get("code")
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
         else:
             return response.json()
-
-
-
-
-
-
