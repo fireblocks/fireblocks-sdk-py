@@ -9,6 +9,22 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
 from fireblocks_sdk.api_types import TransactionDestination
 
 
+def handle_response(response, page_mode=False):
+    response_data = response.json()
+    if response.status_code >= 300:
+        if type(response_data) is dict:
+            error_code = response_data.get("code")
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
+        else:
+            raise FireblocksApiException("Got an error from fireblocks server: " + response.text)
+    else:
+        if page_mode:
+            return {'transactions': response_data,
+                    'pageDetails': {'prevPage': response.headers.get('prev-page', ''),
+                                    'nextPage': response.headers.get('next-page', '')}}
+        return response_data
+
+
 class FireblocksSDK(object):
 
     def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None):
@@ -1142,17 +1158,7 @@ class FireblocksSDK(object):
         }
 
         response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
-        response_data = response.json()
-        if response.status_code >= 300:
-            error_code = response_data.get('code')
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
-        else:
-            if page_mode:
-                return {'transactions': response_data,
-                        'pageDetails': {'prevPage': response.headers.get('prev-page', ''),
-                                        'nextPage': response.headers.get('next-page', '')}}
-            else:
-                return response_data
+        return handle_response(response, page_mode)
 
     def _delete_request(self, path):
         token = self.token_provider.sign_jwt(path)
@@ -1162,11 +1168,7 @@ class FireblocksSDK(object):
         }
 
         response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
-        if response.status_code >= 300:
-            error_code = response.json().get("code")
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
-        else:
-            return response.json()
+        return handle_response(response)
 
     def _post_request(self, path, body={}, idempotency_key=None):
         token = self.token_provider.sign_jwt(path, body)
@@ -1183,11 +1185,7 @@ class FireblocksSDK(object):
             }
 
         response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
-        if response.status_code >= 300:
-            error_code = response.json().get("code")
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
-        else:
-            return response.json()
+        return handle_response(response)
 
     def _put_request(self, path, body={}):
         token = self.token_provider.sign_jwt(path, body)
@@ -1198,8 +1196,4 @@ class FireblocksSDK(object):
         }
 
         response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
-        if response.status_code >= 300:
-            error_code = response.json().get("code")
-            raise FireblocksApiException("Got an error from fireblocks server: " + response.text, error_code)
-        else:
-            return response.json()
+        return handle_response(response)
