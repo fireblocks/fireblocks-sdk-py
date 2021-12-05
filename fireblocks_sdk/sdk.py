@@ -581,6 +581,17 @@ class FireblocksSDK(object):
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key=idempotency_key)
+    
+    def activate_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
+        """Retry to create a vault asset for a vault asset that failed
+
+        Args:
+            vault_account_id (str): The vault account Id
+            asset_id (str): The symbol of the asset to add (e.g BTC, ETH)
+            idempotency_key (str, optional)
+        """
+
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/activate", idempotency_key=idempotency_key)
 
     def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the vault account
