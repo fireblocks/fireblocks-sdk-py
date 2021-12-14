@@ -1163,25 +1163,11 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_off_exchange_accounts(self):
-        """Get off exchange accounts"""
-
-        return self._get_request("/v1/off_exchange_accounts")
-
-    def get_off_exchange_accounts_by_id(self, off_exchange_id):
-        """Get off exchange account by virtual account id
-
-        Args:
-            off_exchange_id (string) the Id of the off-exchange
-        """
-
-        return self._get_request(f"/v1/off_exchange_accounts/{off_exchange_id}")
-
     def get_off_exchanges(self):
         """
         Get your connected off exchanges virtual accounts
         """
-        url = f"/v1/off_exchanges"
+        url = f"/v1/off_exchange_accounts"
 
         return self._get_request(url)
 
@@ -1192,7 +1178,7 @@ class FireblocksSDK(object):
         :return: off exchange entity
         """
 
-        url = f"/v1/off_exchanges/{off_exchange_id}"
+        url = f"/v1/off_exchange_accounts/{off_exchange_id}"
 
         return self._get_request(url)
 
