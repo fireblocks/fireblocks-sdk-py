@@ -1000,6 +1000,37 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def allocate_funds_to_private_ledger(self, vault_account_id, asset, allocation_id, amount, treat_as_gross_amount=None, idempotency_key=None):
+        """Allocate funds from your default balance to a private ledger
+
+        Args:
+            vault_account_id (string)
+            asset (string)
+            allocation_id (string)
+            amount (string)
+            treat_as_gross_amount (bool, optional)
+            idempotency_key (string, optional)
+        """
+
+        url = f"/v1/vault/accounts/${vault_account_id}/${asset}/lock_allocation"
+
+        return self._post_request(url, {"allocationId": allocation_id, "amount": amount, "treatAsGrossAmount": treat_as_gross_amount or False}, idempotency_key)
+
+    def deallocate_funds_from_private_ledger(self, vault_account_id, asset, allocation_id, amount, idempotency_key=None):
+        """deallocate funds from a private ledger to your default balance
+
+        Args:
+            vault_account_id (string)
+            asset (string)
+            allocation_id (string)
+            amount (string)
+            idempotency_key (string, optional)
+        """
+
+        url = f"/v1/vault/accounts/${vault_account_id}/${asset}/release_allocation"
+
+        return self._post_request(url, {"allocationId": allocation_id, "amount": amount}, idempotency_key)
+
     def get_gas_station_info(self):
         "Get configuration and status of the Gas Station account"
 
@@ -1131,6 +1162,20 @@ class FireblocksSDK(object):
         url = "/v1/users"
 
         return self._get_request(url)
+
+    def get_off_exchange_accounts(self):
+        """Get off exchange accounts"""
+
+        return self._get_request("/v1/off_exchange_accounts")
+
+    def get_off_exchange_accounts_by_id(self, off_exchange_id):
+        """Get off exchange account by virtual account id
+
+        Args:
+            off_exchange_id (string) the Id of the off-exchange
+        """
+
+        return self._get_request(f"/v1/off_exchange_accounts/{off_exchange_id}")
 
     def get_off_exchanges(self):
         """
