@@ -1012,7 +1012,7 @@ class FireblocksSDK(object):
             idempotency_key (string, optional)
         """
 
-        url = f"/v1/vault/accounts/${vault_account_id}/${asset}/lock_allocation"
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset}/lock_allocation"
 
         return self._post_request(url, {"allocationId": allocation_id, "amount": amount, "treatAsGrossAmount": treat_as_gross_amount or False}, idempotency_key)
 
@@ -1027,7 +1027,7 @@ class FireblocksSDK(object):
             idempotency_key (string, optional)
         """
 
-        url = f"/v1/vault/accounts/${vault_account_id}/${asset}/release_allocation"
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset}/release_allocation"
 
         return self._post_request(url, {"allocationId": allocation_id, "amount": amount}, idempotency_key)
 
