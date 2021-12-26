@@ -101,6 +101,15 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
 
+    def get_vault_account_asset_refresh_balance(self, vault_account_id, asset_id):
+        """Gets a single vault account asset after forcing refresh from the blockchain
+        Args:
+            vault_account_id (string): The id of the requested account
+            asset_id (string): The symbol of the requested asset (e.g BTC, ETH)
+        """
+
+        return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/balance")
+
     def get_deposit_addresses(self, vault_account_id, asset_id):
         """Gets deposit addresses for an asset in a vault account
         Args:
@@ -581,7 +590,7 @@ class FireblocksSDK(object):
         """
 
         return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}", idempotency_key=idempotency_key)
-    
+
     def activate_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
         """Retry to create a vault asset for a vault asset that failed
 
