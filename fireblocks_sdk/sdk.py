@@ -1156,6 +1156,21 @@ class FireblocksSDK(object):
 
         return self._post_request("/v1/webhooks/resend")
 
+    def resend_transaction_webhooks_by_id(self, tx_id, resend_created, resend_status_updated):
+        """Resend webhooks of transaction
+        
+        Args:
+            tx_id (str): The transaction for which the message is sent.
+            resend_created (boolean): If true, a webhook will be sent for the creation of the transaction.
+            resend_status_updated (boolean): If true, a webhook will be sent for the status of the transaction.
+        """
+        body = {
+            "resendCreated": resend_created,
+            "resendStatusUpdated": resend_status_updated
+        }
+
+        return self._post_request(f"/v1/webhooks/resend/{tx_id}", body)
+
     def get_users(self):
         """Gets all users of your tenant"""
 
