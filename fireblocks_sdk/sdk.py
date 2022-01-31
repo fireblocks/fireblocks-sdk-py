@@ -10,7 +10,10 @@ from fireblocks_sdk.api_types import TransactionDestination
 
 
 def handle_response(response, page_mode=False):
-    response_data = response.json()
+    try:
+        response_data = response.json()
+    except JSONDecodeError:
+        response_data = None
     if response.status_code >= 300:
         if type(response_data) is dict:
             error_code = response_data.get("code")
@@ -600,7 +603,8 @@ class FireblocksSDK(object):
             idempotency_key (str, optional)
         """
 
-        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/activate", idempotency_key=idempotency_key)
+        return self._post_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/activate",
+                                  idempotency_key=idempotency_key)
 
     def set_vault_account_customer_ref_id(self, vault_account_id, customer_ref_id, idempotency_key=None):
         """Sets an AML/KYT customer reference ID for the vault account
@@ -1009,7 +1013,8 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def allocate_funds_to_private_ledger(self, vault_account_id, asset, allocation_id, amount, treat_as_gross_amount=None, idempotency_key=None):
+    def allocate_funds_to_private_ledger(self, vault_account_id, asset, allocation_id, amount,
+                                         treat_as_gross_amount=None, idempotency_key=None):
         """Allocate funds from your default balance to a private ledger
 
         Args:
@@ -1023,9 +1028,11 @@ class FireblocksSDK(object):
 
         url = f"/v1/vault/accounts/{vault_account_id}/{asset}/lock_allocation"
 
-        return self._post_request(url, {"allocationId": allocation_id, "amount": amount, "treatAsGrossAmount": treat_as_gross_amount or False}, idempotency_key)
+        return self._post_request(url, {"allocationId": allocation_id, "amount": amount,
+                                        "treatAsGrossAmount": treat_as_gross_amount or False}, idempotency_key)
 
-    def deallocate_funds_from_private_ledger(self, vault_account_id, asset, allocation_id, amount, idempotency_key=None):
+    def deallocate_funds_from_private_ledger(self, vault_account_id, asset, allocation_id, amount,
+                                             idempotency_key=None):
         """deallocate funds from a private ledger to your default balance
 
         Args:
