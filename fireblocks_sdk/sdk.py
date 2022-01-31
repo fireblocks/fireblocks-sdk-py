@@ -12,7 +12,7 @@ from fireblocks_sdk.api_types import TransactionDestination
 def handle_response(response, page_mode=False):
     try:
         response_data = response.json()
-    except JSONDecodeError:
+    except:
         response_data = None
     if response.status_code >= 300:
         if type(response_data) is dict:
