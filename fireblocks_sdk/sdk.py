@@ -450,7 +450,7 @@ class FireblocksSDK(object):
         return self._get_request(f"/v1/estimate_network_fee?assetId={asset_id}")
 
     def estimate_fee_for_transaction(self, asset_id, amount, source, destination=None, tx_type=TRANSACTION_TRANSFER,
-                                     idempotency_key=None):
+                                     idempotency_key=None, destinations=None):
         """Estimates transaction fee
 
         Args:
@@ -460,6 +460,7 @@ class FireblocksSDK(object):
             amount (str): The amount
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
             idempotency_key (str, optional)
+            destinations (list of TransactionDestination objects, optional): For UTXO based assets, send to multiple destinations which should be specified using this field.
         """
 
         if tx_type not in TRANSACTION_TYPES:
@@ -482,6 +483,11 @@ class FireblocksSDK(object):
                     "Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: " + type(
                         destination))
             body["destination"] = destination.__dict__
+
+        if destinations:
+            if any([not isinstance(x, TransactionDestination) for x in destinations]):
+                raise FireblocksApiException("Expected destinations of type TransactionDestination")
+            body['destinations'] = [dest.__dict__ for dest in destinations]
 
         return self._post_request("/v1/transactions/estimate_fee", body, idempotency_key)
 
@@ -1174,7 +1180,7 @@ class FireblocksSDK(object):
 
     def resend_transaction_webhooks_by_id(self, tx_id, resend_created, resend_status_updated):
         """Resend webhooks of transaction
-        
+
         Args:
             tx_id (str): The transaction for which the message is sent.
             resend_created (boolean): If true, a webhook will be sent for the creation of the transaction.
