@@ -1053,23 +1053,34 @@ class FireblocksSDK(object):
 
         return self._post_request(url, {"allocationId": allocation_id, "amount": amount}, idempotency_key)
 
-    def get_gas_station_info(self):
-        "Get configuration and status of the Gas Station account"
+    def get_gas_station_info(self, asset_id=None):
+        """Get configuration and status of the Gas Station account"
+        
+        Args:
+            asset_id (string, optional)
+        """
 
         url = f"/v1/gas_station"
 
+        if asset_id:
+            url = url + "/{asset_id}"
+
         return self._get_request(url)
 
-    def set_gas_station_configuration(self, gas_threshold, gas_cap, max_gas_price):
+    def set_gas_station_configuration(self, gas_threshold, gas_cap, max_gas_price=None, asset_id=None):
         """Set configuration of the Gas Station account
 
         Args:
             gasThreshold (str)
             gasCap (str)
             maxGasPrice (str, optional)
+            asset_id (str, optional)
         """
 
         url = f"/v1/gas_station/configuration"
+        
+        if asset_id:
+            url = url + "/{asset_id}"
 
         body = {
             "gasThreshold": gas_threshold,
