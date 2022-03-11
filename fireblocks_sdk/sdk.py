@@ -350,8 +350,11 @@ class FireblocksSDK(object):
         path = "/v1/transactions"
         params = {}
 
-        if status and status not in TRANSACTION_STATUS_TYPES:
-            raise FireblocksApiException("Got invalid transaction type: " + status)
+        if status:
+            statuses = status.split(",")
+            for s in statuses:
+                if s not in TRANSACTION_STATUS_TYPES:
+                    raise FireblocksApiException("Got invalid transaction type: " + s)
 
         if before:
             params['before'] = before
