@@ -702,7 +702,7 @@ class FireblocksSDK(object):
             f"/v1/internal_wallets/{wallet_id}/{asset_id}", body, idempotency_key
         )
 
-    def create_transaction(self, asset_id, amount=None, source=None, destination=None, fee=None, gas_price=None,
+    def create_transaction(self, asset_id=None, amount=None, source=None, destination=None, fee=None, gas_price=None,
                            wait_for_status=False, tx_type=TRANSACTION_TRANSFER, note=None, network_fee=None,
                            customer_ref_id=None, replace_tx_by_hash=None, extra_parameters=None, destinations=None,
                            fee_level=None, fail_on_low_fee=None, max_fee=None, gas_limit=None, idempotency_key=None,
