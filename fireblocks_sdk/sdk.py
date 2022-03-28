@@ -1063,7 +1063,7 @@ class FireblocksSDK(object):
         url = f"/v1/gas_station"
 
         if asset_id:
-            url = url + "/{asset_id}"
+            url = url + f"/{asset_id}"
 
         return self._get_request(url)
 
@@ -1080,7 +1080,7 @@ class FireblocksSDK(object):
         url = f"/v1/gas_station/configuration"
         
         if asset_id:
-            url = url + "/{asset_id}"
+            url = url + f"/{asset_id}"
 
         body = {
             "gasThreshold": gas_threshold,
