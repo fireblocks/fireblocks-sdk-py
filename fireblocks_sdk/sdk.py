@@ -56,6 +56,8 @@ class FireblocksSDK(object):
         Args:
             name_prefix (string, optional): Vault account name prefix
             name_suffix (string, optional): Vault account name suffix
+            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
+            assetId (string, optional): The asset symbol
         """
 
         url = f"/v1/vault/accounts"
@@ -73,6 +75,51 @@ class FireblocksSDK(object):
 
         if assetId is not None:
             params['assetId'] = assetId
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
+    def get_vault_accounts_with_page_info(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, prev_or_next_page_url=None):
+        """Gets a page of vault accounts for your tenant according to filters given
+
+        Args:
+            name_prefix (string, optional): Vault account name prefix
+            name_suffix (string, optional): Vault account name suffix
+            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
+            asset_id (string, optional): The asset symbol
+            order_by (ASC/DESC, optional): Order of results by vault creation time (default: DESC)
+            limit (number, optional): Results page size
+            prev_or_next_page_url (string, optional): The full url to next/previous results page as returned from previous requests
+        """
+
+        if prev_or_next_page_url is not None:
+            index = prev_or_next_page_url.index("/v1/")
+            url = prev_or_next_page_url[index:]
+            return self._get_request(url)
+
+        url = f"/v1/vault/accounts-paged"
+
+        params = {}
+
+        if name_prefix:
+            params['namePrefix'] = name_prefix
+
+        if name_suffix:
+            params['nameSuffix'] = name_suffix
+
+        if min_amount_threshold is not None:
+            params['minAmountThreshold'] = min_amount_threshold
+
+        if asset_id is not None:
+            params['assetId'] = asset_id
+
+        if order_by is not None:
+            params['orderBy'] = order_by
+
+        if limit is not None:
+            params['limit'] = limit
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
