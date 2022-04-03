@@ -103,6 +103,7 @@ LOW = "LOW"
 
 FEE_LEVEL = (HIGH, MEDIUM, LOW)
 
+
 class TransferTicketTerm(object):
     def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
         """Defines a transfer ticket's term
@@ -123,6 +124,7 @@ class TransferTicketTerm(object):
         if note:
             self.note = str(note)
         self.operation = operation
+
 
 class UnsignedMessage(object):
     def __init__(self, content, bip44addressIndex=None, bip44change=None, derivationPath=None):
@@ -146,6 +148,7 @@ class UnsignedMessage(object):
         if derivationPath:
             self.derivationPath = derivationPath
 
+
 class RawMessage(object):
     def __init__(self, messages, algorithm):
         """Defines raw message
@@ -157,6 +160,7 @@ class RawMessage(object):
 
         self.messages = messages
         self.algorithm = algorithm
+
 
 class TransactionDestination(object):
     def __init__(self, amount, destination):
@@ -182,3 +186,32 @@ class FireblocksApiException(Exception):
         self.message = message
         self.error_code = error_code
         super().__init__(self.message)
+
+
+class PagedVaultAccountsRequestFilters(object):
+    """ Optional filters to apply for request
+
+    Args
+        name_prefix (string, optional): Vault account name prefix
+        name_suffix (string, optional): Vault account name suffix
+        min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
+        asset_id (string, optional): The asset symbol
+        order_by (ASC/DESC, optional): Order of results by vault creation time (default: DESC)
+        limit (number, optional): Results page size
+        before (string, optional): cursor string received from previous request
+        after (string, optional): cursor string received from previous request
+
+    Constraints
+        - You should only insert 'name_prefix' or 'name_suffix' (or none of them), but not both
+        - You should only insert 'before' or 'after' (or none of them), but not both
+        - For default and max 'limit' values please see: https://docs.fireblocks.com/api/swagger-ui/#/
+    """
+    def __init__(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, before=None, after=None):
+        self.name_prefix = name_prefix
+        self.name_suffix = name_suffix
+        self.min_amount_threshold = min_amount_threshold
+        self.asset_id = asset_id
+        self.order_by = order_by
+        self.limit = limit
+        self.before = before
+        self.after = after

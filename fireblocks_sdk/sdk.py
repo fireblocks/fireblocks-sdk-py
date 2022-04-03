@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 import requests
 import urllib
 import json
@@ -5,7 +7,7 @@ import json
 from .sdk_token_provider import SdkTokenProvider
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, \
     TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, \
-    UnsignedMessage, FEE_LEVEL
+    UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters
 from fireblocks_sdk.api_types import TransactionDestination
 
 
@@ -81,16 +83,11 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_vault_accounts_with_page_info(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, prev_or_next_page_url=None):
+    def get_vault_accounts_with_page_info(self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters, prev_or_next_page_url=None):
         """Gets a page of vault accounts for your tenant according to filters given
 
         Args:
-            name_prefix (string, optional): Vault account name prefix
-            name_suffix (string, optional): Vault account name suffix
-            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
-            asset_id (string, optional): The asset symbol
-            order_by (ASC/DESC, optional): Order of results by vault creation time (default: DESC)
-            limit (number, optional): Results page size
+            paged_vault_accounts_request_filters (object, optional): Possible filters to apply for request
             prev_or_next_page_url (string, optional): The full url to next/previous results page as returned from previous requests
         """
 
@@ -99,7 +96,9 @@ class FireblocksSDK(object):
             url = prev_or_next_page_url[index:]
             return self._get_request(url)
 
-        url = f"/v1/vault/accounts-paged"
+        url = f"/v1/vault/accounts_paged"
+        name_prefix, name_suffix, min_amount_threshold, asset_id, order_by, limit, before, after = \
+            attrgetter('name_prefix', 'name_suffix', 'min_amount_threshold', 'asset_id', 'order_by', 'limit', 'before', 'after')(paged_vault_accounts_request_filters)
 
         params = {}
 
