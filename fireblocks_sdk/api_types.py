@@ -155,11 +155,12 @@ class RawMessage(object):
 
         Args:
           messages (list of UnsignedMessage):
-          algorithm (str):
+          algorithm (str, optional):
         """
 
         self.messages = messages
-        self.algorithm = algorithm
+        if algorithm:
+            self.algorithm = algorithm
 
 
 class TransactionDestination(object):
