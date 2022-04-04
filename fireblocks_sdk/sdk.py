@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 import requests
 import urllib
 import json
@@ -5,7 +7,7 @@ import json
 from .sdk_token_provider import SdkTokenProvider
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, \
     TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, \
-    UnsignedMessage, FEE_LEVEL
+    UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters
 from fireblocks_sdk.api_types import TransactionDestination
 
 
@@ -56,6 +58,8 @@ class FireblocksSDK(object):
         Args:
             name_prefix (string, optional): Vault account name prefix
             name_suffix (string, optional): Vault account name suffix
+            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
+            assetId (string, optional): The asset symbol
         """
 
         url = f"/v1/vault/accounts"
@@ -73,6 +77,48 @@ class FireblocksSDK(object):
 
         if assetId is not None:
             params['assetId'] = assetId
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
+    def get_vault_accounts_with_page_info(self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters):
+        """Gets a page of vault accounts for your tenant according to filters given
+
+        Args:
+            paged_vault_accounts_request_filters (object, optional): Possible filters to apply for request
+        """
+
+        url = f"/v1/vault/accounts_paged"
+        name_prefix, name_suffix, min_amount_threshold, asset_id, order_by, limit, before, after = \
+            attrgetter('name_prefix', 'name_suffix', 'min_amount_threshold', 'asset_id', 'order_by', 'limit', 'before', 'after')(paged_vault_accounts_request_filters)
+
+        params = {}
+
+        if name_prefix:
+            params['namePrefix'] = name_prefix
+
+        if name_suffix:
+            params['nameSuffix'] = name_suffix
+
+        if min_amount_threshold is not None:
+            params['minAmountThreshold'] = min_amount_threshold
+
+        if asset_id is not None:
+            params['assetId'] = asset_id
+
+        if order_by is not None:
+            params['orderBy'] = order_by
+
+        if limit is not None:
+            params['limit'] = limit
+
+        if before is not None:
+            params['before'] = before
+
+        if after is not None:
+            params['after'] = after
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
