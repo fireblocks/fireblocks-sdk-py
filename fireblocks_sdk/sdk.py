@@ -83,18 +83,12 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_vault_accounts_with_page_info(self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters, prev_or_next_page_url=None):
+    def get_vault_accounts_with_page_info(self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters):
         """Gets a page of vault accounts for your tenant according to filters given
 
         Args:
             paged_vault_accounts_request_filters (object, optional): Possible filters to apply for request
-            prev_or_next_page_url (string, optional): The full url to next/previous results page as returned from previous requests
         """
-
-        if prev_or_next_page_url is not None:
-            index = prev_or_next_page_url.index("/v1/")
-            url = prev_or_next_page_url[index:]
-            return self._get_request(url)
 
         url = f"/v1/vault/accounts_paged"
         name_prefix, name_suffix, min_amount_threshold, asset_id, order_by, limit, before, after = \
@@ -119,6 +113,12 @@ class FireblocksSDK(object):
 
         if limit is not None:
             params['limit'] = limit
+
+        if before is not None:
+            params['before'] = before
+
+        if after is not None:
+            params['after'] = after
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
