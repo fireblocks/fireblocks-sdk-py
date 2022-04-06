@@ -150,7 +150,7 @@ class UnsignedMessage(object):
 
 
 class RawMessage(object):
-    def __init__(self, messages, algorithm):
+    def __init__(self, messages, algorithm=None):
         """Defines raw message
 
         Args:
