@@ -251,8 +251,8 @@ class FireblocksSDK(object):
 
         Args:
             exchange_account_id (string): The exchange ID in Fireblocks
-            srcAsset (string): The source asset to convert from
-            destAsset (string): The destination asset to convert to
+            src_asset (string): The source asset to convert from
+            dest_asset (string): The destination asset to convert to
             amount (double): The amount to transfer
             idempotency_key (str, optional)
         """
