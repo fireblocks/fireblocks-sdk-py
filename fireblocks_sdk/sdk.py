@@ -246,6 +246,24 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/exchange_accounts/{exchange_account_id}/{asset_id}")
 
+    def convert_exchange_account_asset(self, exchange_account_id, src_asset, dest_asset, amount, idempotency_key=None):
+        """Convert an asset at an Exchange Account
+
+        Args:
+            exchange_account_id (string): The exchange ID in Fireblocks
+            srcAsset (string): The source asset to convert from
+            destAsset (string): The destination asset to convert to
+            amount (double): The amount to transfer
+            idempotency_key (str, optional)
+        """
+        body = {
+            "srcAsset": src_asset,
+            "destAsset": dest_asset,
+            "amount": amount
+        }
+
+        return self._post_request(f"/v1/exchange_accounts/{exchange_account_id}/convert", body, idempotency_key)
+
     def transfer_to_subaccount(self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None):
         """Transfer to a subaccount from a main exchange account
 
