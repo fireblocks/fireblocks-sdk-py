@@ -1276,15 +1276,52 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def settle_off_exchange_by_id(self, off_exchange_id):
+    def settle_off_exchange_by_id(self, off_exchange_id, idempotency_key=None):
         """
         Create a settle request to your off exchange by it's ID
         :param off_exchange_id: ID of the off exchange virtual account
+        :param idempotency_key
         """
 
         url = f"/v1/off_exchanges/{off_exchange_id}/settle"
 
-        return self._post_request(url)
+        return self._post_request(url, {}, idempotency_key)
+
+    def set_fee_payer_configuration(self, base_asset, fee_payer_account_id, idempotency_key=None):
+        """
+        Setting fee payer configuration for base asset
+        :param base_asset: ID of the base asset you want to configure fee payer for (for example: SOL)
+        :param fee_payer_account_id: ID of the vault account you want your fee to be paid from
+        :param idempotency_key
+        """
+
+        url = f"/v1/fee_payer/{base_asset}"
+
+        body = {
+            "feePayerAccountId": fee_payer_account_id
+        }
+
+        return self._post_request(url, body, idempotency_key)
+
+    def get_fee_payer_configuration(self, base_asset):
+        """
+        Get fee payer configuration for base asset
+        :param base_asset: ID of the base asset
+        :return: the fee payer configuration
+        """
+
+        url = f"/v1/fee_payer/{base_asset}"
+
+        return self._get_request(url)
+
+    def remove_fee_payer_configuration(self, base_asset):
+        """
+        Delete fee payer configuration for base asset
+        :param base_asset: ID of the base asset
+        """
+        url = f"/v1/fee_payer/{base_asset}"
+
+        return self._delete_request(url)
 
     def _get_request(self, path, page_mode=False):
         token = self.token_provider.sign_jwt(path)
