@@ -720,7 +720,7 @@ class FireblocksSDK(object):
       return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
    
     def create_contract_wallet_asset(self, wallet_id, assetId, address, tag=None, idempotency_key=None):
-      """Creates a new contract wallet
+      """Creates a new contract wallet asset
 
       Args:
       wallet_id (str): The wallet id
