@@ -468,6 +468,31 @@ class FireblocksSDK(object):
         """
         return self._get_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
 
+
+
+    def get_contract_wallets(self):
+      """Gets all contract wallets for your tenant      
+      """
+      return self._get_request(f"/v1/contracts")
+
+    def get_contract_wallet(self, wallet_id):
+      """Gets a single contract wallet
+      
+      Args:
+      wallet_id (str): The contract wallet ID
+      """
+      return self._get_request(f"/v1/contracts/{wallet_id}")
+
+    def get_contract_wallet_asset(self, wallet_id, asset_id):
+      """Gets a single contract wallet asset
+      
+      Args:
+      wallet_id (str): The contract wallet ID
+      asset_id (str): The asset ID
+      """
+      return self._get_request(f"/v1/contracts/{wallet_id}/{asset_id}")
+
+
     def get_transaction_by_id(self, txid):
         """Gets detailed information for a single transaction
 
@@ -686,6 +711,26 @@ class FireblocksSDK(object):
             f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses/{address}/set_customer_ref_id",
             {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
+    def create_contract_wallet(self, name, idempotency_key=None):
+      """Creates a new contract wallet
+
+      Args:
+      name (str): A name for the new contract wallet
+      """
+      return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
+   
+    def create_contract_wallet_asset(self, wallet_id, assetId, address, tag=None, idempotency_key=None):
+      """Creates a new contract wallet asset
+
+      Args:
+      wallet_id (str): The wallet id
+      assetId (str): The asset to add
+      address (str): The wallet address
+      tag (str): (for ripple only) The ripple account tag
+      """
+      return self._post_request(f"/v1/contracts/{wallet_id}/{assetId}", {"address": address, "tag": tag}, idempotency_key)
+
+
     def create_external_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new external wallet
 
@@ -860,6 +905,24 @@ class FireblocksSDK(object):
 
         return self._post_request("/v1/transactions", body, idempotency_key)
 
+    def delete_contract_wallet(self, wallet_id):
+        """Deletes a single contract wallet
+
+        Args:
+            wallet_id (string): The contract wallet ID
+        """
+        return self._delete_request(f"/v1/contracts/{wallet_id}")
+
+    def delete_contract_wallet_asset(self, wallet_id, asset_id):
+        """Deletes a single contract wallet
+
+        Args:
+            wallet_id (string): The contract wallet ID
+            asset_id (string): The asset ID
+        """
+
+        return self._delete_request(f"/v1/contracts/{wallet_id}/{asset_id}")
+    
     def delete_internal_wallet(self, wallet_id):
         """Deletes a single internal wallet
 
