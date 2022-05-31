@@ -12,7 +12,7 @@ class FeePayerConfiguration(Deserializable):
         self.fee_payer_accountId = fee_payer_account_id
 
     @classmethod
-    def deserialize(cls, data: Dict[str, any]) -> FeePayerConfiguration:
+    def deserialize(cls, data: Dict[str, str]) -> FeePayerConfiguration:
         return cls(
             data.get('feePayerAccountId')
         )

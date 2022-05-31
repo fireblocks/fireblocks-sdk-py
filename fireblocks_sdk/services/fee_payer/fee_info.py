@@ -8,7 +8,7 @@ from fireblocks_sdk.entities.deserializable import Deserializable
 class FeeInfo(Deserializable):
 
     @classmethod
-    def deserialize(cls, data: Dict[str, any]) -> FeeInfo:
+    def deserialize(cls, data: Dict[str, str]) -> FeeInfo:
         return cls(
             data.get('networkFee'),
             data.get('serviceFee'),

@@ -20,7 +20,7 @@ class TermResponse(Deserializable):
         self.note = note
 
     @classmethod
-    def deserialize(cls: T, data: Dict) -> TermResponse:
+    def deserialize(cls: T, data: Dict[str]) -> TermResponse:
         return cls(
             data.get('termId'),
             data.get('networkConnectionId'),

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Union
 
 from fireblocks_sdk.entities.deserializable import Deserializable
 
 
 class ExternalWalletAsset(Deserializable):
 
-    def __init__(self, id: str, status: str, address: str, tag: str, activation_time: str) -> None:
+    def __init__(self, id: str, status: str, address: str, tag: str, activation_time: Union[str, None]) -> None:
         super().__init__()
         self.id = id
         self.status = status

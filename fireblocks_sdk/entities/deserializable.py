@@ -9,5 +9,5 @@ T = TypeVar('T')
 class Deserializable(Generic[T]):
     @classmethod
     @abstractmethod
-    def deserialize(cls: T, data: Dict[str, any]) -> T:
+    def deserialize(cls: T, data: Dict[str]) -> T:
         pass

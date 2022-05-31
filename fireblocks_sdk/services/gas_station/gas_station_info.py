@@ -14,7 +14,7 @@ class GasStationInfoConfiguration(Deserializable):
         self.max_gas_price = max_gas_price
 
     @classmethod
-    def deserialize(cls, data: Dict[str, any]) -> GasStationInfoConfiguration:
+    def deserialize(cls, data: Dict[str]) -> GasStationInfoConfiguration:
         return cls(
             data.get('gasThreshold'),
             data.get('gasCap'),
@@ -30,7 +30,7 @@ class GasStationInfo(Deserializable):
         self.configuration = configuration
 
     @classmethod
-    def deserialize(cls, data: Dict[str, any]) -> GasStationInfo:
+    def deserialize(cls, data: Dict[str]) -> GasStationInfo:
         return cls(
             data.get('balance'),
             GasStationInfoConfiguration.deserialize(data.get('configuration'))
