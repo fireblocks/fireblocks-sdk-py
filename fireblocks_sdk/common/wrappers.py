@@ -1,3 +1,4 @@
+import functools
 from typing import TypeVar
 
 from fireblocks_sdk.entities.deserializable import Deserializable
@@ -7,6 +8,7 @@ T = TypeVar('T')
 
 def response_deserializer(response_type: T) -> T:
     def inner(func) -> T:
+        @functools.wraps(func)
         def wrapper(*args, **kwargs) -> T:
             return_value = func(*args, **kwargs)
             if isinstance(return_value, list):

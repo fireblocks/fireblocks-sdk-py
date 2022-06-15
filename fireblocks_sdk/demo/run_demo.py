@@ -10,6 +10,7 @@ to the correct values corresponding the environment you are working with.
 
 import inspect
 import json
+import os
 from typing import Dict, List
 
 import inquirer
@@ -17,16 +18,11 @@ from inquirer.themes import GreenPassion
 
 from fireblocks_sdk import FireblocksSDK
 
-"""
-Change these:
-"""
-API_SERVER_ADDRESS = 'https://api.fireblocks.io'
-PRIVATE_KEY_PATH = '<PATH-TO-PRIVATE-KEY-FILE>'
-USER_ID = '<API-USER-ID>'
-
+API_SERVER_ADDRESS = os.getenv('API_SERVER_ADDRESS', 'https://api.fireblocks.io')
+PRIVATE_KEY_PATH = os.getenv('PRIVATE_KEY_PATH', '')
+USER_ID = os.getenv('USER_ID', '')
 
 class DemoRunner:
-
     def __init__(self, api_server: str, key_path: str, user_id: str) -> None:
         private_key = open(key_path, 'r').read()
         self.client = FireblocksSDK(private_key, user_id, api_server)
@@ -58,7 +54,13 @@ class DemoRunner:
             print(f'entered_params: {entered_params}')
 
             service, method = requested_action.split('::')
-            return_value = getattr(getattr(self.client, service), method)(*entered_params.values())
+
+            if entered_params:
+                return_value = getattr(getattr(self.client, service), method)(
+                    *entered_params.values() if entered_params else None)
+            else:
+                return_value = getattr(getattr(self.client, service), method)()
+
             self.print_obj(return_value)
             continue
 
@@ -83,9 +85,7 @@ class DemoRunner:
             for m in object_methods:
                 service, method = m.split('::')
                 method_instance = getattr(getattr(self.client, service), method)
-                method_args_spec = inspect.getfullargspec(method_instance)
-
-                methods[m] = method_args_spec[0][1:]
+                methods[m] = list(inspect.signature(method_instance).parameters.keys())
 
         return methods
 

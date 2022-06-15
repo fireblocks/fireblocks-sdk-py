@@ -12,7 +12,7 @@ setup(
     install_requires=[
         'PyJWT>=2.3.0',
         'cryptography>=2.7',
-        'requests>=2.22.0',
+        'requests>=2.22.0'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
