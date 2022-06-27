@@ -36,10 +36,14 @@ jobs:
           echo $tag
           git remote update
           git fetch
+          echo "finished fetching"
           git checkout --track origin/master
+          echo "finished checkout"
           git config --global user.email "github-actions@github.com"
           git config --global user.name "Github Actions"
+          echo "finished configuration"
           bumpversion patch --new-version $tag
+          echo "bumpversion finished"
           git add .
           git commit -m "release $tag"
           git push
