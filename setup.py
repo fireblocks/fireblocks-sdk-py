@@ -5,6 +5,8 @@ setup(
   version = '1.16.0',
   license='MIT',
   description = 'Fireblocks python SDK',
+  long_description="""Fireblocks python SDK""",
+  long_description_content_type='text/markdown',
   url = 'https://github.com/fireblocks/fireblocks-sdk-py',
   download_url = 'https://github.com/fireblocks/fireblocks-sdk-py/archive/v1.16.0.tar.gz',
   keywords = ['Fireblocks', 'SDK'],
