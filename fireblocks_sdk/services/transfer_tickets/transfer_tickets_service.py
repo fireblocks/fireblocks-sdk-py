@@ -78,7 +78,7 @@ class TransferTicketsService(BaseService):
 
         return self.connector.post(f"/v1/transfer_tickets/{ticket_id}/cancel", idempotency_key=idempotency_key)
 
-    def execute_ticket_term(self, ticket_id, term_id, source: TransferPeerPath = None, idempotency_key=None):
+    def execute_transfer_ticket_term(self, ticket_id, term_id, source: TransferPeerPath = None, idempotency_key=None):
         """Initiate a transfer ticket transaction
 
         Args:

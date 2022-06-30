@@ -90,7 +90,7 @@ class FireblocksSDK:
 
         return self.connector.get(url)
 
-    def get_off_exchanges(self):
+    def get_off_exchange_accounts(self):
         """
         Get your connected off exchanges virtual accounts
         """
@@ -98,7 +98,7 @@ class FireblocksSDK:
 
         return self.connector.get(url)
 
-    def get_off_exchange_by_id(self, off_exchange_id):
+    def get_off_exchange_account_by_id(self, off_exchange_id):
         """
         Get your connected off exchange by it's ID
         :param off_exchange_id: ID of the off exchange virtual account
@@ -109,7 +109,7 @@ class FireblocksSDK:
 
         return self.connector.get(url)
 
-    def settle_off_exchange_by_id(self, off_exchange_id, idempotency_key=None):
+    def settle_off_exchange_account_by_id(self, off_exchange_id, idempotency_key=None):
         """
         Create a settle request to your off exchange by it's ID
         :param off_exchange_id: ID of the off exchange virtual account

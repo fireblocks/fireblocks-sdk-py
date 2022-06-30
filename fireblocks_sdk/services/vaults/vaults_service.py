@@ -261,7 +261,7 @@ class VaultsService(BaseService):
         return self.connector.post(f"/v1/vault/accounts/{vault_account_id}/{asset_id}/activate",
                                    idempotency_key=idempotency_key)
 
-    def set_vault_account_customer_ref_id(self, vault_account_id: str, customer_ref_id: str,
+    def set_customer_ref_id_for_vault_account(self, vault_account_id: str, customer_ref_id: str,
                                           idempotency_key: Union[str, None] = None):
         """Sets an AML/KYT customer reference ID for the vault account
 
@@ -275,7 +275,7 @@ class VaultsService(BaseService):
                                    {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     @response_deserializer(OperationSuccessResponse)
-    def set_vault_account_customer_ref_id_for_address(self, vault_account_id: str, asset_id: str, address: str,
+    def set_customer_ref_id_for_address(self, vault_account_id: str, asset_id: str, address: str,
                                                       customer_ref_id: Union[str, None] = None,
                                                       idempotency_key: Union[
                                                           str, None] = None) -> OperationSuccessResponse:

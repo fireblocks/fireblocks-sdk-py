@@ -157,7 +157,7 @@ class TransactionsService(BaseService):
         return self.connector.get(f"/v1/transactions/{tx_id}").content
 
     @response_deserializer(TransactionResponse)
-    def get_transaction_by_external_id(self, external_tx_id) -> TransactionResponse:
+    def get_transaction_by_external_tx_id(self, external_tx_id) -> TransactionResponse:
         """Gets detailed information for a single transaction
 
         Args:
