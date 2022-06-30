@@ -1,12 +1,17 @@
 import json
 from typing import Dict, Union
 
+import pkg_resources
 import requests
 
 from fireblocks_sdk import FireblocksApiException
 from fireblocks_sdk.entities.api_response import ApiResponse
 from fireblocks_sdk.sdk_token_provider import SdkTokenProvider
 
+SDK_BUILD_PLATFORM = pkg_resources.get_build_platform()
+SDK_VERSION = pkg_resources.get_distribution("fireblocks_sdk").version
+SDK_PACKAGE = 'fireblocks-sdk-py'
+SDK_USER_AGENT = f'{SDK_PACKAGE}/{SDK_VERSION} ({SDK_BUILD_PLATFORM})'
 
 class RestConnector:
     def __init__(self, token_provider: SdkTokenProvider, base_url: str, api_key: str, timeout: int) -> None:
@@ -19,7 +24,8 @@ class RestConnector:
         token = self.token_provider.sign_jwt(path, json.dumps(body) if body else json.dumps({}))
         headers = {
             "X-API-Key": self.api_key,
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {token}",
+            "User-Agent": SDK_USER_AGENT
         }
 
         if idempotency_key:
