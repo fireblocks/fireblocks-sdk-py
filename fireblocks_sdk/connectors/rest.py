@@ -1,4 +1,5 @@
 import json
+import platform
 from typing import Dict, Union
 
 import pkg_resources
@@ -10,8 +11,9 @@ from fireblocks_sdk.sdk_token_provider import SdkTokenProvider
 
 SDK_BUILD_PLATFORM = pkg_resources.get_build_platform()
 SDK_VERSION = pkg_resources.get_distribution("fireblocks_sdk").version
+
 SDK_PACKAGE = 'fireblocks-sdk-py'
-SDK_USER_AGENT = f'{SDK_PACKAGE}/{SDK_VERSION} ({SDK_BUILD_PLATFORM})'
+SDK_USER_AGENT = f'{SDK_PACKAGE}/{SDK_VERSION}; Python {platform.python_version()} ({SDK_BUILD_PLATFORM})'
 
 class RestConnector:
     def __init__(self, token_provider: SdkTokenProvider, base_url: str, api_key: str, timeout: int) -> None:
