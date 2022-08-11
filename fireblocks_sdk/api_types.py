@@ -23,10 +23,15 @@ class DestinationTransferPeerPath(TransferPeerPath):
             peer_id (str): the account/wallet id
             one_time_address (JSON object): The destination address (and tag) for a non whitelisted address.
         """
-        TransferPeerPath.__init__(self, peer_type, peer_id)
+        if peer_type not in PEER_TYPES:
+            raise Exception("Got invalid transfer peer type: " + peer_type)
+        self.type = peer_type
 
-        if one_time_address != None:
+        if one_time_address is not None:
             self.oneTimeAddress = one_time_address
+
+        if peer_id is not None:
+            self.id = str(peer_id)
 
 
 TRANSACTION_TRANSFER = "TRANSFER"
