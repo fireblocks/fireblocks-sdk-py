@@ -33,7 +33,6 @@ class DestinationTransferPeerPath(TransferPeerPath):
         if peer_id is not None:
             self.id = str(peer_id)
 
-
 TRANSACTION_TRANSFER = "TRANSFER"
 TRANSACTION_MINT = "MINT"
 TRANSACTION_BURN = "BURN"
