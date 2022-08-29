@@ -32,6 +32,46 @@ class TransactionResponse(Deserializable):
                  authorization_info: AuthorizationInfo, index: int, reward_info: RewardInfo,
                  fee_payer_info: FeePayerInfo) -> None:
         super().__init__()
+        self.id = id
+        self.asset_id = asset_id
+        self.source = source
+        self.destination = destination
+        self.amount = amount
+        self.fee = fee
+        self.network_fee = network_fee
+        self.amount_usd = amount_usd
+        self.net_amount = net_amount
+        self.created_at = created_at
+        self.last_updated = last_updated
+        self.status = status
+        self.tx_hash = tx_hash
+        self.num_confirmations = num_confirmations
+        self.sub_status = sub_status
+        self.signed_by = signed_by
+        self.created_by = created_by
+        self.rejected_by = rejected_by
+        self.destination_address = destination_address
+        self.destination_address_description = destination_address_description
+        self.destination_tag = destination_tag
+        self.address_type = address_type
+        self.note = note
+        self.exchange_tx_id = exchange_tx_id
+        self.requested_amount = requested_amount
+        self.service_fee = service_fee
+        self.fee_currency = fee_currency
+        self.aml_screening_result = aml_screening_result
+        self.customer_ref_id = customer_ref_id
+        self.amount_info = amount_info
+        self.fee_info = fee_info
+        self.signed_messages = signed_messages
+        self.extra_parameters = extra_parameters
+        self.external_tx_id = external_tx_id
+        self.destinations = destinations
+        self.block_info = block_info
+        self.authorization_info = authorization_info
+        self.index = index
+        self.reward_info = reward_info
+        self.fee_payer_info = fee_payer_info
 
     @classmethod
     def deserialize(cls, data: Dict[str, any]) -> TransactionResponse:

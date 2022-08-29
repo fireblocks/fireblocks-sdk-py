@@ -8,6 +8,8 @@ from fireblocks_sdk.services.vaults.vaults_service import VaultsService
 from fireblocks_sdk.services.wallets.wallets_service import WalletsService
 from fireblocks_sdk.services.web_hooks.web_hooks_service import WebHooksService
 from .common.wrappers import response_deserializer
+from .entities.off_exchange_entity_response import OffExchangeEntityResponse
+from .entities.user import User
 from .sdk_token_provider import SdkTokenProvider
 from .services.contracts.contracts_service import ContractsService
 from .services.exchange.exchange_service import ExchangeService
@@ -83,22 +85,25 @@ class FireblocksSDK:
 
         return self.connector.post(f"/v1/txHash/{txhash}/set_confirmation_threshold", body, idempotency_key)
 
-    def get_users(self):
+    @response_deserializer(User)
+    def get_users(self) -> List[User]:
         """Gets all users of your tenant"""
 
         url = "/v1/users"
 
-        return self.connector.get(url)
+        return self.connector.get(url).content
 
-    def get_off_exchange_accounts(self):
+    @response_deserializer(OffExchangeEntityResponse)
+    def get_off_exchange_accounts(self) -> List[OffExchangeEntityResponse]:
         """
         Get your connected off exchanges virtual accounts
         """
         url = f"/v1/off_exchange_accounts"
 
-        return self.connector.get(url)
+        return self.connector.get(url).content
 
-    def get_off_exchange_account_by_id(self, off_exchange_id):
+    @response_deserializer(OffExchangeEntityResponse)
+    def get_off_exchange_account_by_id(self, off_exchange_id) -> OffExchangeEntityResponse:
         """
         Get your connected off exchange by it's ID
         :param off_exchange_id: ID of the off exchange virtual account
@@ -107,7 +112,7 @@ class FireblocksSDK:
 
         url = f"/v1/off_exchange_accounts/{off_exchange_id}"
 
-        return self.connector.get(url)
+        return self.connector.get(url).content
 
     def settle_off_exchange_account_by_id(self, off_exchange_id, idempotency_key=None):
         """
