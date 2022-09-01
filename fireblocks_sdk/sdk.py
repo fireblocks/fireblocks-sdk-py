@@ -215,7 +215,7 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/network_connections")
 
-    def create_network_connection(self, local_network_id: str, remote_network_id: str, routing_policy=None, idempotency_key=None):
+    def create_network_connection(self, local_network_id: str, remote_network_id: str, routing_policy={}, idempotency_key=None):
         """Creates a network connection
         Args:
             localNetworkId (str): The local netowrk profile's id
@@ -231,7 +231,7 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/network_connections", body, idempotency_key)
 
-    def get_network_connection_by_id(self, connection_id):
+    def get_network_connection_by_id(self, connection_id: str):
         """Gets a single network connection
         Args:
             connection_id (string): The network connection's id
@@ -239,7 +239,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_connections/{connection_id}")
 
-    def remove_network_connection(self, connection_id):
+    def remove_network_connection(self, connection_id: str):
         """Removes a network connection
         Args:
             connection_id (string): The network connection's id
@@ -247,7 +247,7 @@ class FireblocksSDK(object):
 
         return self._delete_request(f"/v1/network_connections/{connection_id}")
 
-    def set_network_connection_routing_policy(self, connection_id, routing_policy, idempotency_key=None):
+    def set_network_connection_routing_policy(self, connection_id: str, routing_policy={}, idempotency_key=None):
         """Sets routing policy for a network connection
         Args:
             connection_id (string): The network connection's id
@@ -266,7 +266,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_ids")
 
-    def create_network_id(self, name: str, routing_policy=None, idempotency_key=None):
+    def create_network_id(self, name: str, routing_policy={}, idempotency_key=None):
         """Creates a new network profile
         Args:
             name (str): A name for the new network profile
