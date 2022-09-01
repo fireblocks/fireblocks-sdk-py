@@ -215,13 +215,105 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/network_connections")
 
-    def get_network_connection_by_id(self, connection_id):
-        """Gets a single network connection by id
+    def create_network_connection(self, local_network_id: str, remote_network_id: str, routing_policy=None, idempotency_key=None):
+        """Creates a network connection
         Args:
-            connection_id (string): The ID of the network connection
+            localNetworkId (str): The local netowrk profile's id
+            remoteNetworkId (str): The remote network profile's id
+            routingPolicy (RoutingPolicy): The desired routing policy for the connection
+        """
+
+        body = {
+            "localNetworkId": local_network_id,
+            "remoteNetworkId": remote_network_id,
+            "routingPolicy": routing_policy
+        }
+
+        return self._post_request(f"/v1/network_connections", body, idempotency_key)
+
+    def get_network_connection_by_id(self, connection_id):
+        """Gets a single network connection
+        Args:
+            connection_id (string): The network connection's id
         """
 
         return self._get_request(f"/v1/network_connections/{connection_id}")
+
+    def remove_network_connection(self, connection_id):
+        """Removes a network connection
+        Args:
+            connection_id (string): The network connection's id
+        """
+
+        return self._delete_request(f"/v1/network_connections/{connection_id}")
+
+    def set_network_connection_routing_policy(self, connection_id, routing_policy, idempotency_key=None):
+        """Sets routing policy for a network connection
+        Args:
+            connection_id (string): The network connection's id
+            routing_policy (routingPolicy): The desired routing policy
+        """
+
+        body = {
+            "routingPolicy": routing_policy
+        }
+
+        return self._patch_request(f"/v1/network_connections/{connection_id}/set_routing_policy", body, idempotency_key)
+
+    def get_discoverable_network_ids(self):
+        """Gets all discoverable network profiles
+        """
+
+        return self._get_request(f"/v1/network_ids")
+
+    def create_network_id(self, name: str, routing_policy=None, idempotency_key=None):
+        """Creates a new network profile
+        Args:
+            name (str): A name for the new network profile
+            routing_policy (routingPolicy): The desired routing policy for the network
+        """
+
+        body = {
+            "name": name,
+            "routingPolicy": routing_policy
+        }
+
+        return self._post_request(f"/v1/network_ids", body, idempotency_key)
+
+
+    def get_network_id(self, network_id: str):
+        """Gets a single network profile
+        Args:
+            network_id (str): The network profile's id
+        """
+
+        return self._get_request(f"/v1/network_ids/{network_id}")
+
+    def set_network_id_discoverability(self, network_id: str, is_discoverable: bool, idempotency_key=None):
+        """Sets discoverability for network profile
+        Args:
+            network_id (str): The network profile's id
+            is_discoverable: (bool) The desired discoverability to set
+        """
+
+        body = {
+            "isDiscoverable": is_discoverable
+        }
+
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_discoverability", body, idempotency_key)
+
+    def set_network_id_routing_policy(self, network_id: str, routing_policy, idempotency_key=None):
+        """Sets routing policy for network profile
+        Args:
+            network_id (str): The network profile's id
+            routing_policy: (routingPolicy) The desired routing policy
+        """
+
+        body = {
+            "routingPolicy": routing_policy
+        }
+
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_routing_policy", body, idempotency_key)
 
     def get_exchange_accounts(self):
         """Gets all exchange accounts for your tenant"""
@@ -1432,4 +1524,21 @@ class FireblocksSDK(object):
         }
 
         response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
+        return handle_response(response)
+
+    def _patch_request(self, path, body={}, idempotency_key=None):
+        token = self.token_provider.sign_jwt(path, body)
+        if idempotency_key is None:
+            headers = {
+                "X-API-Key": self.api_key,
+                "Authorization": f"Bearer {token}"
+            }
+        else:
+            headers = {
+                "X-API-Key": self.api_key,
+                "Authorization": f"Bearer {token}",
+                "Idempotency-Key": idempotency_key
+            }
+
+        response = requests.patch(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
