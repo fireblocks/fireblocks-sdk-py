@@ -280,7 +280,6 @@ class FireblocksSDK(object):
 
         return self._post_request(f"/v1/network_ids", body, idempotency_key)
 
-
     def get_network_id(self, network_id: str):
         """Gets a single network profile
         Args:
