@@ -326,7 +326,7 @@ class FireblocksSDK(object):
 
     def get_transactions_with_page_info(self, before=0, after=None, status=None, limit=None, txhash=None,
                                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None,
-                                        next_or_previous_path=None):
+                                        next_or_previous_path=None, sort=None):
         """Gets a list of transactions matching the given filters or path.
         Note that "next_or_previous_path" is mutually exclusive with other parameters.
         If you wish to iterate over the nextPage/prevPage pages, please provide only the "next_or_previous_path" parameter from `pageDetails` response
@@ -352,6 +352,8 @@ class FireblocksSDK(object):
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
             next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
+            sort (str, optional): Possible values are ASC or DESC, DESC is the default behavior for getting transaction
+                from latests to the oldest.
         """
         if next_or_previous_path is not None:
             if not next_or_previous_path:
@@ -362,10 +364,10 @@ class FireblocksSDK(object):
             return self._get_request(suffix_path, True)
         else:
             return self._get_transactions(before, after, status, limit, None, txhash, assets, source_type, source_id,
-                                          dest_type, dest_id, True)
+                                          dest_type, dest_id, sort, True)
 
     def get_transactions(self, before=0, after=0, status=None, limit=None, order_by=None, txhash=None,
-                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None):
+                         assets=None, source_type=None, source_id=None, dest_type=None, dest_id=None, sort=None):
         """Gets a list of transactions matching the given filters
 
         Args:
@@ -387,12 +389,14 @@ class FireblocksSDK(object):
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
                 NETWORK_CONNECTION, COMPOUND
             dest_id (str, optional): Only gets transactions with given dest_id
+            sort (str, optional): Possible values are ASC or DESC, DESC is the default behavior for getting transaction
+                from latests to the oldest.
         """
         return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id,
-                                      dest_type, dest_id)
+                                      dest_type, dest_id, sort)
 
     def _get_transactions(self, before, after, status, limit, order_by, txhash, assets, source_type, source_id,
-                          dest_type, dest_id, page_mode=False):
+                          dest_type, dest_id, sort, page_mode=False):
         path = "/v1/transactions"
         params = {}
 
@@ -421,6 +425,8 @@ class FireblocksSDK(object):
             params['destType'] = dest_type
         if dest_id:
             params['destId'] = dest_id
+        if sort:
+            params['sort'] = sort
         if params:
             path = path + "?" + urllib.parse.urlencode(params)
 
