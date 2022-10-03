@@ -1720,7 +1720,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
     
-    def create_signer_connection(self, payload, idempotency_key=None):
+    def create_signer_connection(self, payload: Any, idempotency_key: str = None):
         """
         Initiate a new signer connection
         :param payload: The required parameters for the connection type
@@ -1732,7 +1732,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url, payload, idempotency_key)
 
-    def submit_signer_connection(self, session_id, approve):
+    def submit_signer_connection(self, session_id: str, approve: bool):
         """
         Approve or Reject the initiated connection
         :param session_id: The ID of the session
@@ -1747,7 +1747,7 @@ class FireblocksSDK(object):
 
         return self._put_request(url, body)
     
-    def remove_signer_connection(self, session_id):
+    def remove_signer_connection(self, session_id: str):
         """
         Remove an existing connection
         :param session_id: The ID of the session
