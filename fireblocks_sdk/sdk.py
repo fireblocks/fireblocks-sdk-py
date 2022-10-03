@@ -1709,6 +1709,53 @@ class FireblocksSDK(object):
         url = f"/v1/fee_payer/{base_asset}"
 
         return self._delete_request(url)
+    
+    def get_all_signer_connections(self):
+        """
+        Get all signer connections of the current user
+        :return: Array of sessions
+        """
+
+        url = f"/v1/connections"
+
+        return self._get_request(url)
+    
+    def create_signer_connection(self, payload, idempotency_key=None):
+        """
+        Initiate a new signer connection
+        :param payload: The required parameters for the connection type
+        :param idempotency_key: Idempotency key
+        :return: The created session's ID and its metadata
+        """
+
+        url = f"/v1/connections"
+
+        return self._post_request(url, payload, idempotency_key)
+
+    def submit_signer_connection(self, session_id, approve):
+        """
+        Approve or Reject the initiated connection
+        :param session_id: The ID of the session
+        :param approve: Whether you approve the connection or not
+        """
+
+        url = f"/v1/connections/{session_id}"
+
+        body = {
+            "approve": approve
+        }
+
+        return self._put_request(url, body)
+    
+    def remove_signer_connection(self, session_id):
+        """
+        Remove an existing connection
+        :param session_id: The ID of the session
+        """
+
+        url = f"/v1/connections/{session_id}"
+
+        return self._delete_request(url)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
