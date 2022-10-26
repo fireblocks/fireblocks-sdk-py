@@ -1525,19 +1525,12 @@ class FireblocksSDK(object):
         response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         return handle_response(response)
 
-    def _patch_request(self, path, body={}, idempotency_key=None):
+    def _patch_request(self, path, body={}):
         token = self.token_provider.sign_jwt(path, body)
-        if idempotency_key is None:
-            headers = {
-                "X-API-Key": self.api_key,
-                "Authorization": f"Bearer {token}"
-            }
-        else:
-            headers = {
-                "X-API-Key": self.api_key,
-                "Authorization": f"Bearer {token}",
-                "Idempotency-Key": idempotency_key
-            }
+        headers = {
+            "X-API-Key": self.api_key,
+            "Authorization": f"Bearer {token}"
+        }
 
         response = requests.patch(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
