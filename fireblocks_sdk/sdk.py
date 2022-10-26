@@ -247,7 +247,7 @@ class FireblocksSDK(object):
 
         return self._delete_request(f"/v1/network_connections/{connection_id}")
 
-    def set_network_connection_routing_policy(self, connection_id: str, routing_policy={}, idempotency_key=None):
+    def set_network_connection_routing_policy(self, connection_id: str, routing_policy={}):
         """Sets routing policy for a network connection
         Args:
             connection_id (string): The network connection's id
@@ -258,7 +258,7 @@ class FireblocksSDK(object):
             "routingPolicy": routing_policy
         }
 
-        return self._patch_request(f"/v1/network_connections/{connection_id}/set_routing_policy", body, idempotency_key)
+        return self._patch_request(f"/v1/network_connections/{connection_id}/set_routing_policy", body)
 
     def get_discoverable_network_ids(self):
         """Gets all discoverable network profiles
@@ -266,7 +266,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_ids")
 
-    def create_network_id(self, name: str, routing_policy={}, idempotency_key=None):
+    def create_network_id(self, name: str, routing_policy={}):
         """Creates a new network profile
         Args:
             name (str): A name for the new network profile
@@ -278,7 +278,7 @@ class FireblocksSDK(object):
             "routingPolicy": routing_policy
         }
 
-        return self._post_request(f"/v1/network_ids", body, idempotency_key)
+        return self._post_request(f"/v1/network_ids", body)
 
     def get_network_id(self, network_id: str):
         """Gets a single network profile
@@ -288,7 +288,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_ids/{network_id}")
 
-    def set_network_id_discoverability(self, network_id: str, is_discoverable: bool, idempotency_key=None):
+    def set_network_id_discoverability(self, network_id: str, is_discoverable: bool):
         """Sets discoverability for network profile
         Args:
             network_id (str): The network profile's id
@@ -299,9 +299,9 @@ class FireblocksSDK(object):
             "isDiscoverable": is_discoverable
         }
 
-        return self._patch_request(f"/v1/network_ids/{network_id}/set_discoverability", body, idempotency_key)
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_discoverability", body)
 
-    def set_network_id_routing_policy(self, network_id: str, routing_policy, idempotency_key=None):
+    def set_network_id_routing_policy(self, network_id: str, routing_policy):
         """Sets routing policy for network profile
         Args:
             network_id (str): The network profile's id
@@ -312,7 +312,7 @@ class FireblocksSDK(object):
             "routingPolicy": routing_policy
         }
 
-        return self._patch_request(f"/v1/network_ids/{network_id}/set_routing_policy", body, idempotency_key)
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_routing_policy", body)
 
     def get_exchange_accounts(self):
         """Gets all exchange accounts for your tenant"""
