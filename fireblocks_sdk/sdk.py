@@ -260,6 +260,15 @@ class FireblocksSDK(object):
 
         return self._patch_request(f"/v1/network_connections/{connection_id}/set_routing_policy", body)
 
+    def validate_peer_destination(self, connection_id: str, asset_type: str):
+        """Sets routing policy for a network connection
+        Args:
+            connection_id (string): The network connection's id
+            asset_type (routingAsset): The desired asset type
+        """
+
+        return self._get_request(f"/v1/network_connections/{connection_id}/is_third_party_routing/{asset_type}")
+
     def get_discoverable_network_ids(self):
         """Gets all discoverable network profiles
         """
