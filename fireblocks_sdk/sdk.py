@@ -47,6 +47,70 @@ class FireblocksSDK(object):
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
 
+    def get_nft_by_id(self, token_id: str):
+        url = "/v1/nfts/tokens/" + token_id
+
+        return self._get_request(url)
+
+    def get_nft_list(self, ids: str):
+        """
+        Example list: "1,2,3,4"
+        """
+        url = f"/v1/nfts/tokens"
+
+        params = {"ids": ids}
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
+    def refresh_token_metadata(self, token_id: str):
+        """
+
+        :param token_id:
+        :return:
+        """
+        url = "/v1/nfts/tokens/" + token_id
+        return self._put_request(path=url)
+
+    def update_nft_balance(self, blockchain_descriptor: str, vault_id: str):
+        """
+
+        :param blockchain_descriptor:
+        :param vault_id:
+        :return:
+        """
+        url = "/v1/nfts/ownership/tokens"
+        body = {
+            "blockchainDescriptor": blockchain_descriptor,
+            "vaultAccountId": vault_id
+        }
+
+        return self._put_request(path=url, body=body)
+
+    def fetch_all_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: str = ""):
+        """
+
+        """
+        url = f"/v1/nfts/ownership/tokens"
+
+        params = {}
+
+        if blockchain_descriptor:
+            params['blockchainDescriptor'] = blockchain_descriptor
+
+        if vault_account_id:
+            params['vaultAccountId'] = vault_account_id
+
+        if ids:
+            params['ids'] = ids
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
 
