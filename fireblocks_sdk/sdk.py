@@ -47,12 +47,12 @@ class FireblocksSDK(object):
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
 
-    def get_nft_by_id(self, token_id: str):
+    def get_nft(self, token_id: str):
         url = "/v1/nfts/tokens/" + token_id
 
         return self._get_request(url)
 
-    def get_nft_list(self, ids: str):
+    def get_nfts(self, ids: str):
         """
         Example list: "1,2,3,4"
         """
@@ -65,7 +65,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def refresh_token_metadata(self, token_id: str):
+    def refresh_nft_metadata(self, token_id: str):
         """
 
         :param token_id:
@@ -74,7 +74,7 @@ class FireblocksSDK(object):
         url = "/v1/nfts/tokens/" + token_id
         return self._put_request(path=url)
 
-    def update_nft_balance(self, blockchain_descriptor: str, vault_id: str):
+    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_id: str):
         """
 
         :param blockchain_descriptor:
@@ -89,7 +89,7 @@ class FireblocksSDK(object):
 
         return self._put_request(path=url, body=body)
 
-    def fetch_all_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: str = ""):
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: str = ""):
         """
 
         """
