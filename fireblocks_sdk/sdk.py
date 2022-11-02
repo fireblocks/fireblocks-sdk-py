@@ -52,13 +52,13 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_nfts(self, ids: str):
+    def get_nfts(self, token_ids: str):
         """
         Example list: "1,2,3,4"
         """
         url = f"/v1/nfts/tokens"
 
-        params = {"ids": ids}
+        params = {"ids": token_ids}
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
@@ -89,7 +89,7 @@ class FireblocksSDK(object):
 
         return self._put_request(path=url, body=body)
 
-    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: str = ""):
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: str = ""):
         """
 
         """
@@ -103,8 +103,8 @@ class FireblocksSDK(object):
         if vault_account_id:
             params['vaultAccountId'] = vault_account_id
 
-        if ids:
-            params['ids'] = ids
+        if token_ids:
+            params['ids'] = token_ids
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
