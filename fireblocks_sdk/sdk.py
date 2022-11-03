@@ -74,20 +74,26 @@ class FireblocksSDK(object):
         url = "/v1/nfts/tokens/" + token_id
         return self._put_request(path=url)
 
-    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_id: str):
+    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_account_id: str):
         """
 
         :param blockchain_descriptor:
-        :param vault_id:
+        :param vault_account_id:
         :return:
         """
         url = "/v1/nfts/ownership/tokens"
-        body = {
-            "blockchainDescriptor": blockchain_descriptor,
-            "vaultAccountId": vault_id
-        }
 
-        return self._put_request(path=url, body=body)
+        params = {}
+        if blockchain_descriptor:
+            params['blockchainDescriptor'] = blockchain_descriptor
+
+        if vault_account_id:
+            params['vaultAccountId'] = vault_account_id
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._put_request(path=url)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: str = ""):
         """
