@@ -1,5 +1,5 @@
 from operator import attrgetter
-from typing import List
+from typing import List, Dict
 
 import requests
 import urllib
@@ -72,10 +72,7 @@ class FireblocksSDK(object):
         if page_size:
             params['pageSize'] = page_size
 
-        if params:
-            url = url + "?" + urllib.parse.urlencode(params)
-
-        return self._get_request(url)
+        return self._get_request(url, query_params=params)
 
     def refresh_nft_metadata(self, token_id: str):
         """
@@ -102,10 +99,7 @@ class FireblocksSDK(object):
         if vault_account_id:
             params['vaultAccountId'] = vault_account_id
 
-        if params:
-            url = url + "?" + urllib.parse.urlencode(params)
-
-        return self._put_request(path=url)
+        return self._get_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: List[str] = None,
                        page_cursor: str = '', page_size: int = 100):
@@ -131,10 +125,7 @@ class FireblocksSDK(object):
         if page_size:
             params['pageSize'] = page_size
 
-        if params:
-            url = url + "?" + urllib.parse.urlencode(params)
-
-        return self._get_request(url)
+        return self._get_request(url, query_params=params)
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1570,7 +1561,11 @@ class FireblocksSDK(object):
 
         return self._delete_request(url)
 
-    def _get_request(self, path, page_mode=False):
+    def _get_request(self, path, page_mode=False, query_params: Dict = None):
+
+        if query_params:
+            path = path + "?" + urllib.parse.urlencode(query_params)
+
         token = self.token_provider.sign_jwt(path)
         headers = {
             "X-API-Key": self.api_key,
