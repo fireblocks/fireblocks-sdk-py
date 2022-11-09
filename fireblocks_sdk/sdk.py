@@ -1,4 +1,5 @@
 from operator import attrgetter
+from typing import List
 
 import requests
 import urllib
@@ -52,16 +53,17 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_nfts(self, token_ids: str, page_cursor: str = '', page_size: int = 100):
+    def get_nfts(self, token_ids: List[str], page_cursor: str = '', page_size: int = 100):
         """
         Example list: "1,2,3,4"
         """
         url = f"/v1/nfts/tokens"
 
+        if len(token_ids) <= 0:
+            raise FireblocksApiException("Invalid token_ids. Should contain at least 1 token id")
+
         params = {
-            "ids": token_ids,
-            "pageCursor": page_cursor,
-            "pageSize": page_size,
+            "ids": ",".join(token_ids),
         }
 
         if page_cursor:
