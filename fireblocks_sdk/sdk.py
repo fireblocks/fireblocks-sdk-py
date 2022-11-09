@@ -107,7 +107,7 @@ class FireblocksSDK(object):
 
         return self._put_request(path=url)
 
-    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: str = "",
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: List[str] = None,
                        page_cursor: str = '', page_size: int = 100):
         """
 
@@ -123,7 +123,7 @@ class FireblocksSDK(object):
             params['vaultAccountId'] = vault_account_id
 
         if token_ids:
-            params['ids'] = token_ids
+            params['ids'] = ",".join(token_ids)
 
         if page_cursor:
             params['pageCursor'] = page_cursor
