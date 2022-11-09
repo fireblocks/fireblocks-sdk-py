@@ -52,13 +52,23 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_nfts(self, token_ids: str):
+    def get_nfts(self, token_ids: str, page_cursor: str = '', page_size: int = 100):
         """
         Example list: "1,2,3,4"
         """
         url = f"/v1/nfts/tokens"
 
-        params = {"ids": token_ids}
+        params = {
+            "ids": token_ids,
+            "pageCursor": page_cursor,
+            "pageSize": page_size,
+        }
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
@@ -95,7 +105,8 @@ class FireblocksSDK(object):
 
         return self._put_request(path=url)
 
-    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: str = ""):
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: str = "",
+                       page_cursor: str = '', page_size: int = 100):
         """
 
         """
@@ -111,6 +122,12 @@ class FireblocksSDK(object):
 
         if token_ids:
             params['ids'] = token_ids
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
