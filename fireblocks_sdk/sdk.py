@@ -48,22 +48,22 @@ class FireblocksSDK(object):
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
 
-    def get_nft(self, token_id: str):
-        url = "/v1/nfts/tokens/" + token_id
+    def get_nft(self, id: str):
+        url = "/v1/nfts/tokens/" + id
 
         return self._get_request(url)
 
-    def get_nfts(self, token_ids: List[str], page_cursor: str = '', page_size: int = 100):
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100):
         """
         Example list: "1,2,3,4"
         """
         url = f"/v1/nfts/tokens"
 
-        if len(token_ids) <= 0:
+        if len(ids) <= 0:
             raise FireblocksApiException("Invalid token_ids. Should contain at least 1 token id")
 
         params = {
-            "ids": ",".join(token_ids),
+            "ids": ",".join(ids),
         }
 
         if page_cursor:
@@ -74,13 +74,13 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    def refresh_nft_metadata(self, token_id: str):
+    def refresh_nft_metadata(self, id: str):
         """
 
-        :param token_id:
+        :param id:
         :return:
         """
-        url = "/v1/nfts/tokens/" + token_id
+        url = "/v1/nfts/tokens/" + id
         return self._put_request(path=url)
 
     def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_account_id: str):
@@ -101,7 +101,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, token_ids: List[str] = None,
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: List[str] = None,
                        page_cursor: str = '', page_size: int = 100):
         """
 
@@ -116,8 +116,8 @@ class FireblocksSDK(object):
         if vault_account_id:
             params['vaultAccountId'] = vault_account_id
 
-        if token_ids:
-            params['ids'] = ",".join(token_ids)
+        if ids:
+            params['ids'] = ",".join(ids)
 
         if page_cursor:
             params['pageCursor'] = page_cursor
