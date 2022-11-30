@@ -1,4 +1,5 @@
 from operator import attrgetter
+from typing import List, Dict
 
 import requests
 import urllib
@@ -46,6 +47,85 @@ class FireblocksSDK(object):
         self.base_url = api_base_url
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
+
+    def get_nft(self, id: str):
+        url = "/v1/nfts/tokens/" + id
+
+        return self._get_request(url)
+
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100):
+        """
+        Example list: "1,2,3,4"
+        """
+        url = f"/v1/nfts/tokens"
+
+        if len(ids) <= 0:
+            raise FireblocksApiException("Invalid token_ids. Should contain at least 1 token id")
+
+        params = {
+            "ids": ",".join(ids),
+        }
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
+
+        return self._get_request(url, query_params=params)
+
+    def refresh_nft_metadata(self, id: str):
+        """
+
+        :param id:
+        :return:
+        """
+        url = "/v1/nfts/tokens/" + id
+        return self._put_request(path=url)
+
+    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_account_id: str):
+        """
+
+        :param blockchain_descriptor:
+        :param vault_account_id:
+        :return:
+        """
+        url = "/v1/nfts/ownership/tokens"
+
+        params = {}
+        if blockchain_descriptor:
+            params['blockchainDescriptor'] = blockchain_descriptor
+
+        if vault_account_id:
+            params['vaultAccountId'] = vault_account_id
+
+        return self._get_request(url, query_params=params)
+
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: List[str] = None,
+                       page_cursor: str = '', page_size: int = 100):
+        """
+
+        """
+        url = f"/v1/nfts/ownership/tokens"
+
+        params = {}
+
+        if blockchain_descriptor:
+            params['blockchainDescriptor'] = blockchain_descriptor
+
+        if vault_account_id:
+            params['vaultAccountId'] = vault_account_id
+
+        if ids:
+            params['ids'] = ",".join(ids)
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
+
+        return self._get_request(url, query_params=params)
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1481,7 +1561,11 @@ class FireblocksSDK(object):
 
         return self._delete_request(url)
 
-    def _get_request(self, path, page_mode=False):
+    def _get_request(self, path, page_mode=False, query_params: Dict = None):
+
+        if query_params:
+            path = path + "?" + urllib.parse.urlencode(query_params)
+
         token = self.token_provider.sign_jwt(path)
         headers = {
             "X-API-Key": self.api_key,
