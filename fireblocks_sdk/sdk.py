@@ -1,15 +1,15 @@
+import json
+import platform
+import urllib
+from importlib.metadata import version
 from operator import attrgetter
 from typing import List, Dict
 
 import requests
-import urllib
-import json
 
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, DestinationTransferPeerPath, \
+    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination
 from .sdk_token_provider import SdkTokenProvider
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, PEER_TYPES, \
-    TransferPeerPath, DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, \
-    UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters
-from fireblocks_sdk.api_types import TransactionDestination
 
 
 def handle_response(response, page_mode=False):
@@ -33,7 +33,7 @@ def handle_response(response, page_mode=False):
 
 class FireblocksSDK(object):
 
-    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None):
+    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None, anonymous_platform=False):
         """Creates a new Fireblocks API Client.
 
         Args:
@@ -47,6 +47,11 @@ class FireblocksSDK(object):
         self.base_url = api_base_url
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
+        self.http_session = requests.Session()
+        self.http_session.headers.update({
+            'X-API-Key': self.api_key,
+            'User-Agent': self._get_user_agent(anonymous_platform)
+        })
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
@@ -642,13 +647,13 @@ class FireblocksSDK(object):
 
 
     def get_contract_wallets(self):
-      """Gets all contract wallets for your tenant      
+      """Gets all contract wallets for your tenant
       """
       return self._get_request(f"/v1/contracts")
 
     def get_contract_wallet(self, wallet_id):
       """Gets a single contract wallet
-      
+
       Args:
       wallet_id (str): The contract wallet ID
       """
@@ -656,7 +661,7 @@ class FireblocksSDK(object):
 
     def get_contract_wallet_asset(self, wallet_id, asset_id):
       """Gets a single contract wallet asset
-      
+
       Args:
       wallet_id (str): The contract wallet ID
       asset_id (str): The asset ID
@@ -889,7 +894,7 @@ class FireblocksSDK(object):
       name (str): A name for the new contract wallet
       """
       return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
-   
+
     def create_contract_wallet_asset(self, wallet_id, assetId, address, tag=None, idempotency_key=None):
       """Creates a new contract wallet asset
 
@@ -1097,7 +1102,7 @@ class FireblocksSDK(object):
         """
 
         return self._delete_request(f"/v1/contracts/{wallet_id}/{asset_id}")
-    
+
     def delete_internal_wallet(self, wallet_id):
         """Deletes a single internal wallet
 
@@ -1339,7 +1344,7 @@ class FireblocksSDK(object):
 
     def get_gas_station_info(self, asset_id=None):
         """Get configuration and status of the Gas Station account"
-        
+
         Args:
             asset_id (string, optional)
         """
@@ -1362,7 +1367,7 @@ class FireblocksSDK(object):
         """
 
         url = f"/v1/gas_station/configuration"
-        
+
         if asset_id:
             url = url + f"/{asset_id}"
 
@@ -1562,63 +1567,55 @@ class FireblocksSDK(object):
         return self._delete_request(url)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
-
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
-
         token = self.token_provider.sign_jwt(path)
         headers = {
-            "X-API-Key": self.api_key,
             "Authorization": f"Bearer {token}"
         }
-
-        response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
+        response = self.http_session.get(self.base_url + path, headers=headers, timeout=self.timeout)
         return handle_response(response, page_mode)
 
     def _delete_request(self, path):
         token = self.token_provider.sign_jwt(path)
         headers = {
-            "X-API-Key": self.api_key,
             "Authorization": f"Bearer {token}"
         }
-
-        response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
+        response = self.http_session.delete(self.base_url + path, headers=headers, timeout=self.timeout)
         return handle_response(response)
 
     def _post_request(self, path, body={}, idempotency_key=None):
         token = self.token_provider.sign_jwt(path, body)
-        if idempotency_key is None:
-            headers = {
-                "X-API-Key": self.api_key,
-                "Authorization": f"Bearer {token}"
-            }
-        else:
-            headers = {
-                "X-API-Key": self.api_key,
-                "Authorization": f"Bearer {token}",
-                "Idempotency-Key": idempotency_key
-            }
-
-        response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        if idempotency_key is not None:
+            headers["Idempotency-Key"]: idempotency_key
+        response = self.http_session.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
 
     def _put_request(self, path, body={}):
         token = self.token_provider.sign_jwt(path, body)
         headers = {
-            "X-API-Key": self.api_key,
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
         }
-
-        response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
+        response = self.http_session.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         return handle_response(response)
 
     def _patch_request(self, path, body={}):
         token = self.token_provider.sign_jwt(path, body)
         headers = {
-            "X-API-Key": self.api_key,
             "Authorization": f"Bearer {token}"
         }
-
-        response = requests.patch(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
+        response = self.http_session.patch(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
+
+    @staticmethod
+    def _get_user_agent(anonymous_platform):
+        user_agent = f"fireblocks-sdk-py/{version('fireblocks_sdk')}"
+        if not anonymous_platform:
+            user_agent += f' ({platform.system()} {platform.release()}; ' \
+                          f'{platform.python_implementation()} {platform.python_version()}; ' \
+                          f'{platform.machine()})'
+        return user_agent
