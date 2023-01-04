@@ -24,5 +24,5 @@ fireblocks = FireblocksSDK(private_key, api_key)
 
 You can also pass additional arguments:
 ```python
-fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=2000, anonymous_platform=True)
+fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=2.0, anonymous_platform=True)
 ```
