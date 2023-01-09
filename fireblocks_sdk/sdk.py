@@ -33,7 +33,7 @@ def handle_response(response, page_mode=False):
 
 class FireblocksSDK(object):
 
-    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None):
+    def __init__(self, private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=None, proxies=None):
         """Creates a new Fireblocks API Client.
 
         Args:
@@ -47,6 +47,7 @@ class FireblocksSDK(object):
         self.base_url = api_base_url
         self.token_provider = SdkTokenProvider(private_key, api_key)
         self.timeout = timeout
+        self.proxies = None
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
@@ -1572,7 +1573,7 @@ class FireblocksSDK(object):
             "Authorization": f"Bearer {token}"
         }
 
-        response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout)
+        response = requests.get(self.base_url + path, headers=headers, timeout=self.timeout, proxies=self.proxies)
         return handle_response(response, page_mode)
 
     def _delete_request(self, path):
@@ -1582,7 +1583,7 @@ class FireblocksSDK(object):
             "Authorization": f"Bearer {token}"
         }
 
-        response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout)
+        response = requests.delete(self.base_url + path, headers=headers, timeout=self.timeout, proxies=self.proxies)
         return handle_response(response)
 
     def _post_request(self, path, body={}, idempotency_key=None):
@@ -1599,7 +1600,7 @@ class FireblocksSDK(object):
                 "Idempotency-Key": idempotency_key
             }
 
-        response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
+        response = requests.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout, proxies=self.proxies)
         return handle_response(response)
 
     def _put_request(self, path, body={}):
@@ -1610,7 +1611,7 @@ class FireblocksSDK(object):
             "Content-Type": "application/json"
         }
 
-        response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
+        response = requests.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout, proxies=self.proxies)
         return handle_response(response)
 
     def _patch_request(self, path, body={}):
