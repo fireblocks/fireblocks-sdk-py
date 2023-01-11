@@ -14,3 +14,15 @@ Python 3.6 or newer.
 
 ### Installation
 `pip3 install fireblocks-sdk`
+
+#### Importing Fireblocks SDK
+```python
+from fireblocks_sdk import FireblocksSDK
+
+fireblocks = FireblocksSDK(private_key, api_key)
+```
+
+You can also pass additional arguments:
+```python
+fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=2.0, anonymous_platform=True)
+```
