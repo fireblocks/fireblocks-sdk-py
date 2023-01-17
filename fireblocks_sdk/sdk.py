@@ -300,7 +300,7 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/network_connections")
 
-    def create_network_connection(self, local_network_id: str, remote_network_id: str, routing_policy={}, idempotency_key=None):
+    def create_network_connection(self, local_network_id: str, remote_network_id: str, routing_policy=None, idempotency_key=None):
         """Creates a network connection
         Args:
             localNetworkId (str): The local netowrk profile's id
@@ -311,7 +311,7 @@ class FireblocksSDK(object):
         body = {
             "localNetworkId": local_network_id,
             "remoteNetworkId": remote_network_id,
-            "routingPolicy": routing_policy
+            "routingPolicy": routing_policy or {},
         }
 
         return self._post_request(f"/v1/network_connections", body, idempotency_key)
@@ -332,7 +332,7 @@ class FireblocksSDK(object):
 
         return self._delete_request(f"/v1/network_connections/{connection_id}")
 
-    def set_network_connection_routing_policy(self, connection_id: str, routing_policy={}):
+    def set_network_connection_routing_policy(self, connection_id: str, routing_policy=None):
         """Sets routing policy for a network connection
         Args:
             connection_id (string): The network connection's id
@@ -340,7 +340,7 @@ class FireblocksSDK(object):
         """
 
         body = {
-            "routingPolicy": routing_policy
+            "routingPolicy": routing_policy or {}
         }
 
         return self._patch_request(f"/v1/network_connections/{connection_id}/set_routing_policy", body)
@@ -351,7 +351,7 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_ids")
 
-    def create_network_id(self, name: str, routing_policy={}):
+    def create_network_id(self, name: str, routing_policy=None):
         """Creates a new network profile
         Args:
             name (str): A name for the new network profile
@@ -360,7 +360,7 @@ class FireblocksSDK(object):
 
         body = {
             "name": name,
-            "routingPolicy": routing_policy
+            "routingPolicy": routing_policy or {}
         }
 
         return self._post_request(f"/v1/network_ids", body)
@@ -1584,17 +1584,22 @@ class FireblocksSDK(object):
         response = self.http_session.delete(self.base_url + path, headers=headers, timeout=self.timeout)
         return handle_response(response)
 
-    def _post_request(self, path, body={}, idempotency_key=None):
+    def _post_request(self, path, body=None, idempotency_key=None):
+        body = body or {}
+
         token = self.token_provider.sign_jwt(path, body)
         headers = {
             "Authorization": f"Bearer {token}"
         }
         if idempotency_key is not None:
             headers["Idempotency-Key"]: idempotency_key
+
         response = self.http_session.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
 
-    def _put_request(self, path, body={}):
+    def _put_request(self, path, body=None):
+        body = body or {}
+
         token = self.token_provider.sign_jwt(path, body)
         headers = {
             "Authorization": f"Bearer {token}",
@@ -1603,7 +1608,9 @@ class FireblocksSDK(object):
         response = self.http_session.put(self.base_url + path, headers=headers, data=json.dumps(body), timeout=self.timeout)
         return handle_response(response)
 
-    def _patch_request(self, path, body={}):
+    def _patch_request(self, path, body=None):
+        body = body or {}
+
         token = self.token_provider.sign_jwt(path, body)
         headers = {
             "Authorization": f"Bearer {token}"
