@@ -4,6 +4,7 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import List, Dict
+from enum import Enum
 
 import requests
 
@@ -58,7 +59,17 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, sort: str = None, order: str = None):
+    class GetNftsSortValues(Enum):
+        pass
+
+    class GetOwnedNftsSortValues(Enum):
+        "ownershipLastUpdateTime" = "ownershipLastUpdateTime"
+
+    class OrderValues(Enum):
+        ASC = "ASC"
+        DESC = "DESC"
+
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, sort: GetNftsSortValues[] = None, order: OrderValues = None):
         """
         Example list: "[1,2,3,4]"
 
@@ -79,7 +90,7 @@ class FireblocksSDK(object):
             params['pageSize'] = page_size
 
         if sort:
-            params['sort'] = sort
+            params['sort'] = ",".join(sort)
 
         if order:
             params['order'] = order
@@ -114,7 +125,7 @@ class FireblocksSDK(object):
         return self._get_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
-                       collectionIds: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: str = None, order: str = None):
+                       collectionIds: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: str = GetOwnedNftsSortValues[], order: OrderValues = None):
         """
 
         """
@@ -141,7 +152,7 @@ class FireblocksSDK(object):
             params['pageSize'] = page_size
 
         if sort:
-            params['sort'] = sort
+            params['sort'] = ",".join(sort)
 
         if order:
             params['order'] = order
