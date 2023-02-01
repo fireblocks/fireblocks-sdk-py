@@ -60,7 +60,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     class GetOwnedNftsSortValues(Enum):
-        "ownershipLastUpdateTime" = "ownershipLastUpdateTime"
+        OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
 
     class OrderValues(Enum):
         ASC = "ASC"
@@ -119,7 +119,7 @@ class FireblocksSDK(object):
         return self._get_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
-                       collectionIds: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: str = GetOwnedNftsSortValues[], order: OrderValues = None):
+                       collectionIds: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None, order: OrderValues = None):
         """
 
         """
