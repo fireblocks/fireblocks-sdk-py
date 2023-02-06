@@ -116,7 +116,7 @@ class FireblocksSDK(object):
         if vault_account_id:
             params['vaultAccountId'] = vault_account_id
 
-        return self._get_request(url, query_params=params)
+        return self._put_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None, order: OrderValues = None):
@@ -1618,8 +1618,10 @@ class FireblocksSDK(object):
         response = self.http_session.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
 
-    def _put_request(self, path, body=None):
+    def _put_request(self, path, body=None, query_params=None):
         body = body or {}
+        if query_params:
+            path = path + "?" + urllib.parse.urlencode(query_params)
 
         token = self.token_provider.sign_jwt(path, body)
         headers = {
