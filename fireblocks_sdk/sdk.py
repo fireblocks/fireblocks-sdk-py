@@ -1618,8 +1618,10 @@ class FireblocksSDK(object):
         response = self.http_session.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
 
-    def _put_request(self, path, body=None):
+    def _put_request(self, path, body=None, query_params=None):
         body = body or {}
+        if query_params:
+            path = path + "?" + urllib.parse.urlencode(query_params)
 
         token = self.token_provider.sign_jwt(path, body)
         headers = {
