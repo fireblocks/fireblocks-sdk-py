@@ -4,6 +4,7 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import List, Dict
+from enum import Enum
 
 import requests
 
@@ -58,9 +59,17 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100):
+    class GetOwnedNftsSortValues(Enum):
+        OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
+
+    class OrderValues(Enum):
+        ASC = "ASC"
+        DESC = "DESC"
+
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, order: OrderValues = None):
         """
-        Example list: "1,2,3,4"
+        Example list: "[1,2,3,4]"
+
         """
         url = f"/v1/nfts/tokens"
 
@@ -76,6 +85,9 @@ class FireblocksSDK(object):
 
         if page_size:
             params['pageSize'] = page_size
+
+        if order:
+            params['order'] = order
 
         return self._get_request(url, query_params=params)
 
@@ -106,8 +118,8 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_id: str, ids: List[str] = None,
-                       page_cursor: str = '', page_size: int = 100):
+    def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
+                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None, order: OrderValues = None):
         """
 
         """
@@ -118,17 +130,26 @@ class FireblocksSDK(object):
         if blockchain_descriptor:
             params['blockchainDescriptor'] = blockchain_descriptor
 
-        if vault_account_id:
-            params['vaultAccountId'] = vault_account_id
+        if vault_account_ids:
+            params['vaultAccountIds'] = ",".join(vault_account_ids)
 
         if ids:
             params['ids'] = ",".join(ids)
+
+        if collection_ids:
+            params['collectionIds'] = ",".join(collection_ids)
 
         if page_cursor:
             params['pageCursor'] = page_cursor
 
         if page_size:
             params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
+
+        if order:
+            params['order'] = order
 
         return self._get_request(url, query_params=params)
 
