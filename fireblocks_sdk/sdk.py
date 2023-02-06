@@ -1613,7 +1613,7 @@ class FireblocksSDK(object):
             "Authorization": f"Bearer {token}"
         }
         if idempotency_key is not None:
-            headers["Idempotency-Key"]: idempotency_key
+            headers["Idempotency-Key"] = idempotency_key
 
         response = self.http_session.post(self.base_url + path, headers=headers, json=body, timeout=self.timeout)
         return handle_response(response)
