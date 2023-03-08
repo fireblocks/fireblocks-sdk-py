@@ -8,7 +8,7 @@ from enum import Enum
 
 import requests
 
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, DestinationTransferPeerPath, \
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, GetVaultWalletsFilters, TransferPeerPath, DestinationTransferPeerPath, \
     TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination
 from .sdk_token_provider import SdkTokenProvider
 
@@ -210,6 +210,50 @@ class FireblocksSDK(object):
 
         if min_amount_threshold is not None:
             params['minAmountThreshold'] = min_amount_threshold
+
+        if asset_id is not None:
+            params['assetId'] = asset_id
+
+        if order_by is not None:
+            params['orderBy'] = order_by
+
+        if limit is not None:
+            params['limit'] = limit
+
+        if before is not None:
+            params['before'] = before
+
+        if after is not None:
+            params['after'] = after
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+    
+    def get_vault_wallets(self, get_vault_wallets_filters: GetVaultWalletsFilters):
+        """ Optional filters to apply for request
+
+        Args
+            total_amount_larger_than (number, optional):  The minimum amount for asset to have in order to be included in the results
+            asset_id (string, optional): The asset symbol
+            order_by (ASC/DESC, optional): Order of results by vault creation time (default: DESC)
+            limit (number, optional): Results page size
+            before (string, optional): cursor string received from previous request
+            after (string, optional): cursor string received from previous request
+
+        Constraints
+            - You should only insert 'before' or 'after' (or none of them), but not both
+        """
+        url = f"/v1/vault/asset_wallet"
+        
+        total_amount_larger_than, asset_id, order_by, limit, before, after = \
+            attrgetter('total_amount_larger_than', 'asset_id', 'order_by', 'limit', 'before', 'after')(get_vault_wallets_filters)
+
+        params = {}
+
+        if total_amount_larger_than is not None:
+            params['totalAmountLargerThan'] = total_amount_larger_than
 
         if asset_id is not None:
             params['assetId'] = asset_id
