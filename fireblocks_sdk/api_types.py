@@ -218,7 +218,7 @@ class PagedVaultAccountsRequestFilters(object):
         self.before = before
         self.after = after
 
-class GetVaultWalletsFilters(object):
+class GetAssetWalletsFilters(object):
     """ Optional filters to apply for request
 
     Args

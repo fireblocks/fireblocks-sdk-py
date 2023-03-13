@@ -231,7 +231,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
     
-    def get_vault_wallets(self, get_vault_wallets_filters: GetVaultWalletsFilters):
+    def get_asset_wallets(self, get_vault_wallets_filters: GetVaultWalletsFilters):
         """ Optional filters to apply for request
 
         Args
