@@ -542,11 +542,11 @@ class FireblocksSDK(object):
             assets (str, optional): Filter results for specified assets
             source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
-                NETWORK_CONNECTION, COMPOUND
+                NETWORK_CONNECTION, COMPOUND, END_USER_WALLET
             source_id (str, optional): Only gets transactions with given source_id
             dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
-                NETWORK_CONNECTION, COMPOUND
+                NETWORK_CONNECTION, COMPOUND, END_USER_WALLET
             dest_id (str, optional): Only gets transactions with given dest_id
             next_or_previous_path (str, optional): get transactions matching the path, provided from pageDetails
         """
@@ -578,11 +578,11 @@ class FireblocksSDK(object):
             assets (str, optional): Filter results for specified assets
             source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
-                NETWORK_CONNECTION, COMPOUND
+                NETWORK_CONNECTION, COMPOUND, END_USER_WALLET
             source_id (str, optional): Only gets transactions with given source_id
             dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
                 VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
-                NETWORK_CONNECTION, COMPOUND
+                NETWORK_CONNECTION, COMPOUND, END_USER_WALLET
             dest_id (str, optional): Only gets transactions with given dest_id
         """
         return self._get_transactions(before, after, status, limit, order_by, txhash, assets, source_type, source_id,

@@ -1,10 +1,10 @@
 
 class TransferPeerPath(object):
-    def __init__(self, peer_type, peer_id):
+    def __init__(self, peer_type, peer_id, wallet_id=None):
         """Defines a source or a destination for a transfer
 
         Args:
-            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS or UNKNOWN_PEER
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS, END_USER_WALLET or UNKNOWN_PEER
             peer_id (str): the account/wallet id
         """
 
@@ -13,17 +13,19 @@ class TransferPeerPath(object):
         self.type = peer_type
         if peer_id is not None:
             self.id = str(peer_id)
+        if wallet_id is not None:
+            self.walletId = wallet_id
 
 class DestinationTransferPeerPath(TransferPeerPath):
-    def __init__(self, peer_type, peer_id=None, one_time_address=None):
+    def __init__(self, peer_type, peer_id=None, one_time_address=None, wallet_id=None):
         """Defines a destination for a transfer
 
         Args:
-            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS or UNKNOWN_PEER
+            peer_type (str): either VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, FIAT_ACCOUNT, NETWORK_CONNECTION, ONE_TIME_ADDRESS, END_USER_WALLET or UNKNOWN_PEER
             peer_id (str): the account/wallet id
             one_time_address (JSON object): The destination address (and tag) for a non whitelisted address.
         """
-        TransferPeerPath.__init__(self, peer_type, peer_id)
+        TransferPeerPath.__init__(self, peer_type, peer_id, wallet_id)
 
         if one_time_address != None:
             self.oneTimeAddress = one_time_address
@@ -90,8 +92,9 @@ UNKNOWN_PEER = "UNKNOWN"
 FIAT_ACCOUNT = "FIAT_ACCOUNT"
 NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
+END_USER_WALLET = "END_USER_WALLET"
 
-PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
+PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS, END_USER_WALLET)
 
 MPC_ECDSA_SECP256K1 = "MPC_ECDSA_SECP256K1"
 MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
