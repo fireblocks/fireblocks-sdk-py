@@ -153,6 +153,21 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
+    class NFTOwnershipStatusValues(Enum):
+        LISTED = "LISTED"
+        ARCHIVED = "ARCHIVED"
+
+    def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
+        """
+
+        :param id:
+        :param status:
+        :return:
+        """
+        url = "/v1/nfts/ownership/tokens/" + id + "/status"
+
+        return self._put_request(url, { "status": status })
+
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
 
