@@ -9,7 +9,7 @@ from enum import Enum
 import requests
 
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, DestinationTransferPeerPath, \
-    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination
+    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -153,16 +153,12 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    class NFTOwnershipStatusValues(Enum):
-        LISTED = "LISTED"
-        ARCHIVED = "ARCHIVED"
-
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
-        """
+        """Update NFT ownership status
 
-        :param id:
-        :param status:
-        :return:
+        Args:
+            id (string): NFT asset id
+            status (string): Status for update
         """
         url = "/v1/nfts/ownership/tokens/" + id + "/status"
 
