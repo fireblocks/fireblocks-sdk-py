@@ -154,7 +154,7 @@ class FireblocksSDK(object):
         return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
-        """Update NFT ownership status
+        """Update NFT ownership status for specific token
 
         Args:
             id (string): NFT asset id
