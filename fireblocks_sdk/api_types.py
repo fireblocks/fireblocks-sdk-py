@@ -1,4 +1,5 @@
 from enum import Enum
+
 class TransferPeerPath(object):
     def __init__(self, peer_type, peer_id):
         """Defines a source or a destination for a transfer
