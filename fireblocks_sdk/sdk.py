@@ -1469,6 +1469,17 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def get_max_bip44_index_used(self, vault_account_id, asset_id):
+        """Get maximum BIP44 index used in deriving addresses or in change addresses.
+
+        Args:
+            vault_account_id (str): The vault account Id.
+            asset_id (str): Asset id.
+        """
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_bip44_index_used"
+
+        return self._get_request(url)
+
     def set_auto_fuel(self, vault_account_id, auto_fuel, idempotency_key=None):
         """Sets autoFuel to true/false for a vault account
 
