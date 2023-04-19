@@ -59,14 +59,21 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    class GetNftsSortValues(Enum):
+        TOKEN_NAME = "name"
+        COLLECTION_NAME = "collection.name"
+
     class GetOwnedNftsSortValues(Enum):
         OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
+        TOKEN_NAME = "name"
+        COLLECTION_NAME = "collection.name"
 
     class OrderValues(Enum):
         ASC = "ASC"
         DESC = "DESC"
 
-    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, order: OrderValues = None):
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100,
+                 sort: List[GetNftsSortValues] = None, order: OrderValues = None):
         """
         Example list: "[1,2,3,4]"
 
@@ -85,6 +92,9 @@ class FireblocksSDK(object):
 
         if page_size:
             params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
 
         if order:
             params['order'] = order
