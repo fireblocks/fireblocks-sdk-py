@@ -66,10 +66,6 @@ class FireblocksSDK(object):
         ASC = "ASC"
         DESC = "DESC"
 
-    class NFTOwnershipStatus(Enum):
-        LISTED = "LISTED"
-        ARCHIVED = "ARCHIVED"
-
     def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, order: OrderValues = None):
         """
         Example list: "[1,2,3,4]"
@@ -124,7 +120,7 @@ class FireblocksSDK(object):
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
-                       order: OrderValues = None, status: NFTOwnershipStatus = None):
+                       order: OrderValues = None, status: NFTOwnershipStatusValues = None):
         """
 
         """
