@@ -9,7 +9,7 @@ from enum import Enum
 import requests
 
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, DestinationTransferPeerPath, \
-    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination
+    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -160,6 +160,17 @@ class FireblocksSDK(object):
             params['status'] = status
 
         return self._get_request(url, query_params=params)
+
+    def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
+        """Update NFT ownership status for specific token
+
+        Args:
+            id (string): NFT asset id
+            status (string): Status for update
+        """
+        url = "/v1/nfts/ownership/tokens/" + id + "/status"
+
+        return self._put_request(url, { "status": status })
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1474,6 +1485,17 @@ class FireblocksSDK(object):
             manual_signing (boolean, optional): False by default.
         """
         url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}"
+
+        return self._get_request(url)
+
+    def get_max_bip44_index_used(self, vault_account_id, asset_id):
+        """Get maximum BIP44 index used in deriving addresses or in change addresses.
+
+        Args:
+            vault_account_id (str): The vault account Id.
+            asset_id (str): Asset id.
+        """
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_bip44_index_used"
 
         return self._get_request(url)
 
