@@ -8,8 +8,11 @@ from enum import Enum
 
 import requests
 
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, DestinationTransferPeerPath, \
-    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
+    DestinationTransferPeerPath, \
+    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, \
+    PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
+    TokenLinkPermissionEntry
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -53,6 +56,34 @@ class FireblocksSDK(object):
             'X-API-Key': self.api_key,
             'User-Agent': self._get_user_agent(anonymous_platform)
         })
+
+    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
+        request_filter = {
+            "limit": limit,
+            "offset": offset
+        }
+        url = f"/v1/tokenization/tokens"
+        return self._get_request(url, query_params=request_filter)
+
+    def issue_new_token(self, request: IssueTokenRequest):
+        return self._post_request("/v1/tokenization/tokens", request.serialize())
+
+    def get_linked_token(self, asset_id: str):
+        return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
+
+    def link_token(self, asset_id: str):
+        return self._put_request(f"/v1/tokenization/tokens/{asset_id}", {})
+
+    def unlink_token(self, asset_id: str):
+        return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
+
+    def add_linked_token_permissions(self, asset_id: str, permissions: List[TokenLinkPermissionEntry]):
+        return self._put_request(f"/v1/tokenization/tokens/{asset_id}/permissions",
+                                 {"permissions": [permission.serialize() for permission in permissions]})
+
+    def remove_linked_token_permissions(self, asset_id: str, permission: TokenLinkPermissionEntry):
+        return self._delete_request(
+            f"/v1/tokenization/tokens/{asset_id}/permissions?permission={permission.permission}&vaultAccountId={permission.vault_account_id}")
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
