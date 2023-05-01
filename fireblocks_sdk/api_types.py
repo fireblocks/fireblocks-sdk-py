@@ -226,21 +226,6 @@ class NFTOwnershipStatusValues(Enum):
     LISTED = "LISTED"
     ARCHIVED = "ARCHIVED"
 
-
-class TokenLinkPermission(str, Enum):
-    MINT = "MINT"
-    BURN = "BURN"
-
-class TokenLinkPermissionEntry:
-    permission: TokenLinkPermission
-    vault_account_id: str
-
-    def serialize(self):
-        return {
-            'permission': self.permission,
-            'vaultAccountId': self.vault_account_id
-        }
-
 class IssueTokenRequest:
     symbol: str
     name: str
