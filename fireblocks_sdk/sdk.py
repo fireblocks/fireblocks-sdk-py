@@ -77,14 +77,6 @@ class FireblocksSDK(object):
     def unlink_token(self, asset_id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
 
-    def add_linked_token_permissions(self, asset_id: str, permissions: List[TokenLinkPermissionEntry]):
-        return self._put_request(f"/v1/tokenization/tokens/{asset_id}/permissions",
-                                 {"permissions": [permission.serialize() for permission in permissions]})
-
-    def remove_linked_token_permissions(self, asset_id: str, permission: TokenLinkPermissionEntry):
-        return self._delete_request(
-            f"/v1/tokenization/tokens/{asset_id}/permissions?permission={permission.permission}&vaultAccountId={permission.vault_account_id}")
-
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
 
