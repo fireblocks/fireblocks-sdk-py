@@ -9,9 +9,8 @@ from enum import Enum
 import requests
 
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
-    DestinationTransferPeerPath, \
-    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, \
-    PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest
+    DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
+    FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest
 from .sdk_token_provider import SdkTokenProvider
 
 
