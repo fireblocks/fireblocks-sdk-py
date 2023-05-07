@@ -8,8 +8,10 @@ from enum import Enum
 
 import requests
 
-from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, GetVaultWalletsFilters, TransferPeerPath, DestinationTransferPeerPath, \
-    TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination
+from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
+    DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
+    FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
+    GetAssetWalletsFilters
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -40,7 +42,7 @@ class FireblocksSDK(object):
         Args:
             private_key (str): A string representation of your private key (in PEM format)
             api_key (str): Your api key. This is a uuid you received from Fireblocks
-            base_url (str): The fireblocks server URL. Leave empty to use the default server
+            api_base_url (str): The fireblocks server URL. Leave empty to use the default server
             timeout (number): Timeout for http requests in seconds
         """
         self.private_key = private_key
@@ -54,19 +56,46 @@ class FireblocksSDK(object):
             'User-Agent': self._get_user_agent(anonymous_platform)
         })
 
+    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
+        request_filter = {
+            "limit": limit,
+            "offset": offset
+        }
+        url = f"/v1/tokenization/tokens"
+        return self._get_request(url, query_params=request_filter)
+
+    def issue_new_token(self, request: IssueTokenRequest):
+        return self._post_request("/v1/tokenization/tokens", request.serialize())
+
+    def get_linked_token(self, asset_id: str):
+        return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
+
+    def link_token(self, asset_id: str):
+        return self._put_request(f"/v1/tokenization/tokens/{asset_id}", {})
+
+    def unlink_token(self, asset_id: str):
+        return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
+
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
 
         return self._get_request(url)
 
+    class GetNftsSortValues(Enum):
+        TOKEN_NAME = "name"
+        COLLECTION_NAME = "collection.name"
+
     class GetOwnedNftsSortValues(Enum):
         OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
+        TOKEN_NAME = "name"
+        COLLECTION_NAME = "collection.name"
 
     class OrderValues(Enum):
         ASC = "ASC"
         DESC = "DESC"
 
-    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100, order: OrderValues = None):
+    def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100,
+                 sort: List[GetNftsSortValues] = None, order: OrderValues = None):
         """
         Example list: "[1,2,3,4]"
 
@@ -85,6 +114,9 @@ class FireblocksSDK(object):
 
         if page_size:
             params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
 
         if order:
             params['order'] = order
@@ -119,7 +151,8 @@ class FireblocksSDK(object):
         return self._put_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
-                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None, order: OrderValues = None):
+                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
+                       order: OrderValues = None, status: NFTOwnershipStatusValues = None):
         """
 
         """
@@ -151,7 +184,21 @@ class FireblocksSDK(object):
         if order:
             params['order'] = order
 
+        if status:
+            params['status'] = status
+
         return self._get_request(url, query_params=params)
+
+    def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
+        """Update NFT ownership status for specific token
+
+        Args:
+            id (string): NFT asset id
+            status (string): Status for update
+        """
+        url = "/v1/nfts/ownership/tokens/" + id + "/status"
+
+        return self._put_request(url, { "status": status })
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -231,7 +278,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
     
-    def get_asset_wallets(self, get_vault_wallets_filters: GetVaultWalletsFilters):
+    def get_asset_wallets(self, get_vault_wallets_filters: GetAssetWalletsFilters):
         """ Optional filters to apply for request
 
         Args
@@ -1510,6 +1557,17 @@ class FireblocksSDK(object):
             manual_signing (boolean, optional): False by default.
         """
         url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_spendable_amount?manual_signing={manual_signing}"
+
+        return self._get_request(url)
+
+    def get_max_bip44_index_used(self, vault_account_id, asset_id):
+        """Get maximum BIP44 index used in deriving addresses or in change addresses.
+
+        Args:
+            vault_account_id (str): The vault account Id.
+            asset_id (str): Asset id.
+        """
+        url = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/max_bip44_index_used"
 
         return self._get_request(url)
 

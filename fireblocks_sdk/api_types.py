@@ -1,3 +1,6 @@
+from enum import Enum
+from typing import Optional, List
+
 
 class TransferPeerPath(object):
     def __init__(self, peer_type, peer_id):
@@ -239,3 +242,31 @@ class GetAssetWalletsFilters(object):
         self.limit = limit
         self.before = before
         self.after = after
+
+class NFTOwnershipStatusValues(Enum):
+    LISTED = "LISTED"
+    ARCHIVED = "ARCHIVED"
+
+class IssueTokenRequest:
+    symbol: str
+    name: str
+    blockchain_id: str
+    eth_contract_address: Optional[str]
+    issuer_address: Optional[str]
+    decimals: int
+
+    def serialize(self) -> dict:
+        obj =  {
+            'symbol': self.symbol,
+            'name': self.name,
+            'blockchainId': self.blockchain_id,
+            'decimals': self.decimals,
+        }
+
+        if self.eth_contract_address:
+            obj.update({'ethContractAddress': self.eth_contract_address})
+
+        if self.issuer_address:
+            obj.update({'issuerAddress': self.issuer_address})
+
+        return obj
