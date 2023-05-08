@@ -221,6 +221,27 @@ class PagedVaultAccountsRequestFilters(object):
         self.before = before
         self.after = after
 
+class GetAssetWalletsFilters(object):
+    """ Optional filters to apply for request
+
+    Args
+        total_amount_larger_than (number, optional):  The minimum amount for asset to have in order to be included in the results
+        asset_id (string, optional): The asset symbol
+        order_by (ASC/DESC, optional): Order of results by vault creation time (default: DESC)
+        limit (number, optional): Results page size
+        before (string, optional): cursor string received from previous request
+        after (string, optional): cursor string received from previous request
+
+    Constraints
+        - You should only insert 'before' or 'after' (or none of them), but not both
+    """
+    def __init__(self, total_amount_larger_than=None, asset_id=None, order_by=None, limit=None, before=None, after=None):
+        self.total_amount_larger_than = total_amount_larger_than
+        self.asset_id = asset_id
+        self.order_by = order_by
+        self.limit = limit
+        self.before = before
+        self.after = after
 
 class NFTOwnershipStatusValues(Enum):
     LISTED = "LISTED"
