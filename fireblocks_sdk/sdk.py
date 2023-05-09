@@ -292,7 +292,7 @@ class FireblocksSDK(object):
         Constraints
             - You should only insert 'before' or 'after' (or none of them), but not both
         """
-        url = f"/v1/vault/asset_wallet"
+        url = f"/v1/vault/asset_wallets"
         
         total_amount_larger_than, asset_id, order_by, limit, before, after = \
             attrgetter('total_amount_larger_than', 'asset_id', 'order_by', 'limit', 'before', 'after')(get_vault_wallets_filters)
