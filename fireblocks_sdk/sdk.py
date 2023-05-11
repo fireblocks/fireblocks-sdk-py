@@ -84,11 +84,13 @@ class FireblocksSDK(object):
     class GetNftsSortValues(Enum):
         TOKEN_NAME = "name"
         COLLECTION_NAME = "collection.name"
+        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
 
     class GetOwnedNftsSortValues(Enum):
         OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
         TOKEN_NAME = "name"
         COLLECTION_NAME = "collection.name"
+        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
 
     class OrderValues(Enum):
         ASC = "ASC"
