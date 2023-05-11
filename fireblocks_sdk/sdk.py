@@ -92,6 +92,9 @@ class FireblocksSDK(object):
         COLLECTION_NAME = "collection.name"
         BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
 
+    class GetOwnedCollectionsSortValue(Enum):
+        COLLECTION_NAME = "name"
+
     class OrderValues(Enum):
         ASC = "ASC"
         DESC = "DESC"
@@ -193,6 +196,32 @@ class FireblocksSDK(object):
             params['search'] = search
 
         return self._get_request(url, query_params=params)
+
+    def list_owned_collections(self, search: str = None, sort: List[GetOwnedCollectionsSortValue] = None,
+                               order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+            """
+
+            """
+            url = f"/v1/nfts/ownership/collections"
+
+            params = {}
+
+            if search:
+                params['search'] = search
+
+            if page_cursor:
+                params['pageCursor'] = page_cursor
+
+            if page_size:
+                params['pageSize'] = page_size
+
+            if sort:
+                params['sort'] = ",".join(sort)
+
+            if order:
+                params['order'] = order
+
+            return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
         """Update NFT ownership status for specific token
