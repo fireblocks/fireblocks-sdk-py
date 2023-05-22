@@ -71,7 +71,7 @@ class FireblocksSDK(object):
         return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
 
     def link_token(self, asset_id: str):
-        return self._put_request(f"/v1/tokenization/tokens/{asset_id}", {})
+        return self._put_request(f"/v1/tokenization/tokens/{asset_id}/link", {})
 
     def unlink_token(self, asset_id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
