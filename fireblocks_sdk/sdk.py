@@ -431,7 +431,7 @@ class FireblocksSDK(object):
             "name": name
         }
 
-        return self._patch_request(f"/v1/network_ids/{network_id}/set_name  ", body)
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_name", body)
 
     def get_exchange_accounts(self):
         """Gets all exchange accounts for your tenant"""
