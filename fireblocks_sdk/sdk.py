@@ -485,6 +485,14 @@ class FireblocksSDK(object):
 
         return self._get_request(f"/v1/network_ids/{network_id}")
 
+    def delete_network_id(self, network_id: str):
+        """Deletes a single network profile
+        Args:
+            network_id (str): The network profile's id
+        """
+
+        return self._delete_request(f"/v1/network_ids/{network_id}")
+
     def set_network_id_discoverability(self, network_id: str, is_discoverable: bool):
         """Sets discoverability for network profile
         Args:
