@@ -519,6 +519,19 @@ class FireblocksSDK(object):
 
         return self._patch_request(f"/v1/network_ids/{network_id}/set_routing_policy", body)
 
+    def set_network_id_name(self, network_id: str, name: str):
+        """Sets network profile name
+        Args:
+            network_id (str): The network profile's id
+            name: (str) The desired network profile's name
+        """
+
+        body = {
+            "name": name
+        }
+
+        return self._patch_request(f"/v1/network_ids/{network_id}/set_name", body)
+
     def get_exchange_accounts(self):
         """Gets all exchange accounts for your tenant"""
 
