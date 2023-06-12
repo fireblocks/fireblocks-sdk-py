@@ -1709,6 +1709,74 @@ class FireblocksSDK(object):
         url = f"/v1/fee_payer/{base_asset}"
 
         return self._delete_request(url)
+    
+    def get_web3_connections(self, pageCursor=None, pageSize=None, sort=None, 
+                            filter=None, order=None):
+        """
+        Get all signer connections of the current user
+        :return: Array of sessions
+        """
+
+        method_param = locals()
+        url = "/v1/connections"
+        optional_params = ["pageCursor", "pageSize", "sort", "filter", "order"]
+
+        query_params = {param: method_param.get(param) for param in optional_params 
+                        if method_param.get(param)}
+        
+        if query_params:
+            url = url + "?" + urllib.parse.urlencode(query_params)
+        
+        return self._get_request(url)
+    
+    def create_web3_connection(self, vault_account_id: str, uri: str, 
+                               chain_ids: List[str], fee_level: str = "MEDIUM",
+                               idempotency_key: str = None):
+        """
+        Initiate a new signer connection
+        :param vault_account_id: The id of the requested account
+        :param uri: Wallet Connect uri provided by the dApp
+        :param chain_ids: A list of chain ids to be used by the connection
+        :param fee_level: The fee level of the dropping transaction (HIGH, MEDIUM, LOW)
+        :param idempotency_key: Idempotency key
+        :return: The created session's ID and its metadata
+        """
+
+        url = "/v1/connections/wc"
+
+        payload = {
+            "vaultAccountId": int(vault_account_id),
+            "feeLevel": fee_level,
+            "uri": uri,
+            "chainIds": chain_ids
+        }
+
+        return self._post_request(url, payload, idempotency_key)
+
+    def submit_web3_connection(self, session_id: str, approve: bool):
+        """
+        Approve or Reject the initiated connection
+        :param session_id: The ID of the session
+        :param approve: Whether you approve the connection or not
+        """
+
+        url = f"/v1/connections/wc/{session_id}"
+
+        body = {
+            "approve": approve
+        }
+
+        return self._put_request(url, body)
+    
+    def remove_web3_connection(self, session_id: str):
+        """
+        Remove an existing connection
+        :param session_id: The ID of the session
+        """
+
+        url = f"/v1/connections/wc/{session_id}"
+
+        return self._delete_request(url)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
