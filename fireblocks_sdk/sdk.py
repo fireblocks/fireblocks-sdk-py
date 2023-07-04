@@ -84,11 +84,16 @@ class FireblocksSDK(object):
     class GetNftsSortValues(Enum):
         TOKEN_NAME = "name"
         COLLECTION_NAME = "collection.name"
+        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
 
     class GetOwnedNftsSortValues(Enum):
         OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
         TOKEN_NAME = "name"
         COLLECTION_NAME = "collection.name"
+        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
+
+    class GetOwnedCollectionsSortValue(Enum):
+        COLLECTION_NAME = "name"
 
     class OrderValues(Enum):
         ASC = "ASC"
@@ -152,7 +157,7 @@ class FireblocksSDK(object):
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
-                       order: OrderValues = None, status: NFTOwnershipStatusValues = None):
+                       order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None):
         """
 
         """
@@ -187,7 +192,36 @@ class FireblocksSDK(object):
         if status:
             params['status'] = status
 
+        if search:
+            params['search'] = search
+
         return self._get_request(url, query_params=params)
+
+    def list_owned_collections(self, search: str = None, sort: List[GetOwnedCollectionsSortValue] = None,
+                               order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+            """
+
+            """
+            url = f"/v1/nfts/ownership/collections"
+
+            params = {}
+
+            if search:
+                params['search'] = search
+
+            if page_cursor:
+                params['pageCursor'] = page_cursor
+
+            if page_size:
+                params['pageSize'] = page_size
+
+            if sort:
+                params['sort'] = ",".join(sort)
+
+            if order:
+                params['order'] = order
+
+            return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
         """Update NFT ownership status for specific token
