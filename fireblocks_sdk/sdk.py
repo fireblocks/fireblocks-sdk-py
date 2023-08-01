@@ -199,29 +199,29 @@ class FireblocksSDK(object):
 
     def list_owned_collections(self, search: str = None, sort: List[GetOwnedCollectionsSortValue] = None,
                                order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
-            """
+        """
 
-            """
-            url = f"/v1/nfts/ownership/collections"
+        """
+        url = f"/v1/nfts/ownership/collections"
 
-            params = {}
+        params = {}
 
-            if search:
-                params['search'] = search
+        if search:
+            params['search'] = search
 
-            if page_cursor:
-                params['pageCursor'] = page_cursor
+        if page_cursor:
+            params['pageCursor'] = page_cursor
 
-            if page_size:
-                params['pageSize'] = page_size
+        if page_size:
+            params['pageSize'] = page_size
 
-            if sort:
-                params['sort'] = ",".join(sort)
+        if sort:
+            params['sort'] = ",".join(sort)
 
-            if order:
-                params['order'] = order
+        if order:
+            params['order'] = order
 
-            return self._get_request(url, query_params=params)
+        return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
         """Update NFT ownership status for specific token
@@ -232,7 +232,7 @@ class FireblocksSDK(object):
         """
         url = "/v1/nfts/ownership/tokens/" + id + "/status"
 
-        return self._put_request(url, { "status": status })
+        return self._put_request(url, {"status": status})
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -279,7 +279,8 @@ class FireblocksSDK(object):
 
         url = f"/v1/vault/accounts_paged"
         name_prefix, name_suffix, min_amount_threshold, asset_id, order_by, limit, before, after = \
-            attrgetter('name_prefix', 'name_suffix', 'min_amount_threshold', 'asset_id', 'order_by', 'limit', 'before', 'after')(paged_vault_accounts_request_filters)
+            attrgetter('name_prefix', 'name_suffix', 'min_amount_threshold', 'asset_id', 'order_by', 'limit', 'before', 'after')(
+                paged_vault_accounts_request_filters)
 
         params = {}
 
@@ -311,7 +312,7 @@ class FireblocksSDK(object):
             url = url + "?" + urllib.parse.urlencode(params)
 
         return self._get_request(url)
-    
+
     def get_asset_wallets(self, get_vault_wallets_filters: GetAssetWalletsFilters):
         """ Optional filters to apply for request
 
@@ -327,7 +328,7 @@ class FireblocksSDK(object):
             - You should only insert 'before' or 'after' (or none of them), but not both
         """
         url = f"/v1/vault/asset_wallets"
-        
+
         total_amount_larger_than, asset_id, order_by, limit, before, after = \
             attrgetter('total_amount_larger_than', 'asset_id', 'order_by', 'limit', 'before', 'after')(get_vault_wallets_filters)
 
@@ -811,30 +812,27 @@ class FireblocksSDK(object):
         """
         return self._get_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
 
-
-
     def get_contract_wallets(self):
-      """Gets all contract wallets for your tenant
-      """
-      return self._get_request(f"/v1/contracts")
+        """Gets all contract wallets for your tenant
+        """
+        return self._get_request(f"/v1/contracts")
 
     def get_contract_wallet(self, wallet_id):
-      """Gets a single contract wallet
-
-      Args:
-      wallet_id (str): The contract wallet ID
-      """
-      return self._get_request(f"/v1/contracts/{wallet_id}")
+        """Gets a single contract wallet
+  
+        Args:
+        wallet_id (str): The contract wallet ID
+        """
+        return self._get_request(f"/v1/contracts/{wallet_id}")
 
     def get_contract_wallet_asset(self, wallet_id, asset_id):
-      """Gets a single contract wallet asset
-
-      Args:
-      wallet_id (str): The contract wallet ID
-      asset_id (str): The asset ID
-      """
-      return self._get_request(f"/v1/contracts/{wallet_id}/{asset_id}")
-
+        """Gets a single contract wallet asset
+  
+        Args:
+        wallet_id (str): The contract wallet ID
+        asset_id (str): The asset ID
+        """
+        return self._get_request(f"/v1/contracts/{wallet_id}/{asset_id}")
 
     def get_transaction_by_id(self, txid):
         """Gets detailed information for a single transaction
@@ -1055,24 +1053,23 @@ class FireblocksSDK(object):
             {"customerRefId": customer_ref_id or ''}, idempotency_key)
 
     def create_contract_wallet(self, name, idempotency_key=None):
-      """Creates a new contract wallet
-
-      Args:
-      name (str): A name for the new contract wallet
-      """
-      return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
+        """Creates a new contract wallet
+  
+        Args:
+        name (str): A name for the new contract wallet
+        """
+        return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
 
     def create_contract_wallet_asset(self, wallet_id, assetId, address, tag=None, idempotency_key=None):
-      """Creates a new contract wallet asset
-
-      Args:
-      wallet_id (str): The wallet id
-      assetId (str): The asset to add
-      address (str): The wallet address
-      tag (str): (for ripple only) The ripple account tag
-      """
-      return self._post_request(f"/v1/contracts/{wallet_id}/{assetId}", {"address": address, "tag": tag}, idempotency_key)
-
+        """Creates a new contract wallet asset
+  
+        Args:
+        wallet_id (str): The wallet id
+        assetId (str): The asset to add
+        address (str): The wallet address
+        tag (str): (for ripple only) The ripple account tag
+        """
+        return self._post_request(f"/v1/contracts/{wallet_id}/{assetId}", {"address": address, "tag": tag}, idempotency_key)
 
     def create_external_wallet(self, name, customer_ref_id=None, idempotency_key=None):
         """Creates a new external wallet
@@ -1753,9 +1750,9 @@ class FireblocksSDK(object):
         url = f"/v1/fee_payer/{base_asset}"
 
         return self._delete_request(url)
-    
-    def get_web3_connections(self, pageCursor=None, pageSize=None, sort=None, 
-                            filter=None, order=None):
+
+    def get_web3_connections(self, pageCursor=None, pageSize=None, sort=None,
+                             filter=None, order=None):
         """
         Get all signer connections of the current user
         :return: Array of sessions
@@ -1765,15 +1762,15 @@ class FireblocksSDK(object):
         url = "/v1/connections"
         optional_params = ["pageCursor", "pageSize", "sort", "filter", "order"]
 
-        query_params = {param: method_param.get(param) for param in optional_params 
+        query_params = {param: method_param.get(param) for param in optional_params
                         if method_param.get(param)}
-        
+
         if query_params:
             url = url + "?" + urllib.parse.urlencode(query_params)
-        
+
         return self._get_request(url)
-    
-    def create_web3_connection(self, vault_account_id: str, uri: str, 
+
+    def create_web3_connection(self, vault_account_id: str, uri: str,
                                chain_ids: List[str], fee_level: str = "MEDIUM",
                                idempotency_key: str = None):
         """
@@ -1811,7 +1808,7 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(url, body)
-    
+
     def remove_web3_connection(self, session_id: str):
         """
         Remove an existing connection

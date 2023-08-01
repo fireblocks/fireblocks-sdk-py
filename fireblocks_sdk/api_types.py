@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 
 
 class TransferPeerPath(object):
@@ -17,6 +17,7 @@ class TransferPeerPath(object):
         if peer_id is not None:
             self.id = str(peer_id)
 
+
 class DestinationTransferPeerPath(TransferPeerPath):
     def __init__(self, peer_type, peer_id=None, one_time_address=None):
         """Defines a destination for a transfer
@@ -28,7 +29,7 @@ class DestinationTransferPeerPath(TransferPeerPath):
         """
         TransferPeerPath.__init__(self, peer_type, peer_id)
 
-        if one_time_address != None:
+        if one_time_address is not None:
             self.oneTimeAddress = one_time_address
 
 
@@ -42,18 +43,28 @@ CONTRACT_CALL = "CONTRACT_CALL"
 ONE_TIME_ADDRESS = "ONE_TIME_ADDRESS"
 TYPED_MESSAGE = "TYPED_MESSAGE"
 
-TRANSACTION_TYPES = (TRANSACTION_TRANSFER, TRANSACTION_MINT, TRANSACTION_BURN, TRANSACTION_SUPPLY_TO_COMPOUND, TRANSACTION_REDEEM_FROM_COMPOUND, RAW, CONTRACT_CALL, ONE_TIME_ADDRESS, TYPED_MESSAGE)
+TRANSACTION_TYPES = (
+    TRANSACTION_TRANSFER,
+    TRANSACTION_MINT,
+    TRANSACTION_BURN,
+    TRANSACTION_SUPPLY_TO_COMPOUND,
+    TRANSACTION_REDEEM_FROM_COMPOUND,
+    RAW,
+    CONTRACT_CALL,
+    ONE_TIME_ADDRESS,
+    TYPED_MESSAGE
+)
 
 TRANSACTION_STATUS_SUBMITTED = "SUBMITTED"
 TRANSACTION_STATUS_QUEUED = "QUEUED"
-TRANSACTION_STATUS_PENDING_SIGNATURE= "PENDING_SIGNATURE"
+TRANSACTION_STATUS_PENDING_SIGNATURE = "PENDING_SIGNATURE"
 TRANSACTION_STATUS_PENDING_AUTHORIZATION = "PENDING_AUTHORIZATION"
 TRANSACTION_STATUS_PENDING_3RD_PARTY_MANUAL_APPROVAL = "PENDING_3RD_PARTY_MANUAL_APPROVAL"
 TRANSACTION_STATUS_PENDING_3RD_PARTY = "PENDING_3RD_PARTY"
-TRANSACTION_STATUS_PENDING = "PENDING" # Deprecated
+TRANSACTION_STATUS_PENDING = "PENDING"  # Deprecated
 TRANSACTION_STATUS_BROADCASTING = "BROADCASTING"
 TRANSACTION_STATUS_CONFIRMING = "CONFIRMING"
-TRANSACTION_STATUS_CONFIRMED = "CONFIRMED" # Deprecated
+TRANSACTION_STATUS_CONFIRMED = "CONFIRMED"  # Deprecated
 TRANSACTION_STATUS_COMPLETED = "COMPLETED"
 TRANSACTION_STATUS_PENDING_AML_SCREENING = "PENDING_AML_SCREENING"
 TRANSACTION_STATUS_PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED"
@@ -64,25 +75,26 @@ TRANSACTION_STATUS_FAILED = "FAILED"
 TRANSACTION_STATUS_TIMEOUT = "TIMEOUT"
 TRANSACTION_STATUS_BLOCKED = "BLOCKED"
 
-TRANSACTION_STATUS_TYPES = (TRANSACTION_STATUS_SUBMITTED,
-TRANSACTION_STATUS_QUEUED,
-TRANSACTION_STATUS_PENDING_SIGNATURE,
-TRANSACTION_STATUS_PENDING_AUTHORIZATION,
-TRANSACTION_STATUS_PENDING_3RD_PARTY_MANUAL_APPROVAL,
-TRANSACTION_STATUS_PENDING_3RD_PARTY,
-TRANSACTION_STATUS_PENDING,
-TRANSACTION_STATUS_BROADCASTING,
-TRANSACTION_STATUS_CONFIRMING,
-TRANSACTION_STATUS_CONFIRMED,
-TRANSACTION_STATUS_COMPLETED,
-TRANSACTION_STATUS_PENDING_AML_SCREENING,
-TRANSACTION_STATUS_PARTIALLY_COMPLETED,
-TRANSACTION_STATUS_CANCELLING,
-TRANSACTION_STATUS_CANCELLED,
-TRANSACTION_STATUS_REJECTED,
-TRANSACTION_STATUS_FAILED,
-TRANSACTION_STATUS_TIMEOUT,
-TRANSACTION_STATUS_BLOCKED
+TRANSACTION_STATUS_TYPES = (
+    TRANSACTION_STATUS_SUBMITTED,
+    TRANSACTION_STATUS_QUEUED,
+    TRANSACTION_STATUS_PENDING_SIGNATURE,
+    TRANSACTION_STATUS_PENDING_AUTHORIZATION,
+    TRANSACTION_STATUS_PENDING_3RD_PARTY_MANUAL_APPROVAL,
+    TRANSACTION_STATUS_PENDING_3RD_PARTY,
+    TRANSACTION_STATUS_PENDING,
+    TRANSACTION_STATUS_BROADCASTING,
+    TRANSACTION_STATUS_CONFIRMING,
+    TRANSACTION_STATUS_CONFIRMED,
+    TRANSACTION_STATUS_COMPLETED,
+    TRANSACTION_STATUS_PENDING_AML_SCREENING,
+    TRANSACTION_STATUS_PARTIALLY_COMPLETED,
+    TRANSACTION_STATUS_CANCELLING,
+    TRANSACTION_STATUS_CANCELLED,
+    TRANSACTION_STATUS_REJECTED,
+    TRANSACTION_STATUS_FAILED,
+    TRANSACTION_STATUS_TIMEOUT,
+    TRANSACTION_STATUS_BLOCKED
 )
 
 VAULT_ACCOUNT = "VAULT_ACCOUNT"
@@ -94,7 +106,8 @@ FIAT_ACCOUNT = "FIAT_ACCOUNT"
 NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
 
-PEER_TYPES = (VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
+PEER_TYPES = (
+VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
 
 MPC_ECDSA_SECP256K1 = "MPC_ECDSA_SECP256K1"
 MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
@@ -187,6 +200,7 @@ class FireblocksApiException(Exception):
         message: explanation of the error
         error_code: error code of the error
     """
+
     def __init__(self, message="Fireblocks SDK error", error_code=None):
         self.message = message
         self.error_code = error_code
@@ -211,7 +225,9 @@ class PagedVaultAccountsRequestFilters(object):
         - You should only insert 'before' or 'after' (or none of them), but not both
         - For default and max 'limit' values please see: https://docs.fireblocks.com/api/swagger-ui/#/
     """
-    def __init__(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, before=None, after=None):
+
+    def __init__(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, before=None,
+                 after=None):
         self.name_prefix = name_prefix
         self.name_suffix = name_suffix
         self.min_amount_threshold = min_amount_threshold
@@ -220,6 +236,7 @@ class PagedVaultAccountsRequestFilters(object):
         self.limit = limit
         self.before = before
         self.after = after
+
 
 class GetAssetWalletsFilters(object):
     """ Optional filters to apply for request
@@ -235,6 +252,7 @@ class GetAssetWalletsFilters(object):
     Constraints
         - You should only insert 'before' or 'after' (or none of them), but not both
     """
+
     def __init__(self, total_amount_larger_than=None, asset_id=None, order_by=None, limit=None, before=None, after=None):
         self.total_amount_larger_than = total_amount_larger_than
         self.asset_id = asset_id
@@ -243,9 +261,11 @@ class GetAssetWalletsFilters(object):
         self.before = before
         self.after = after
 
+
 class NFTOwnershipStatusValues(Enum):
     LISTED = "LISTED"
     ARCHIVED = "ARCHIVED"
+
 
 class IssueTokenRequest:
     symbol: str
@@ -256,7 +276,7 @@ class IssueTokenRequest:
     decimals: int
 
     def serialize(self) -> dict:
-        obj =  {
+        obj = {
             'symbol': self.symbol,
             'name': self.name,
             'blockchainId': self.blockchain_id,
