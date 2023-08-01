@@ -1689,7 +1689,7 @@ class FireblocksSDK(object):
         :param time_period: The last time period to fetch audit logs
         """
 
-        url = f"/v1/audits"
+        url = "/v1/audits"
 
         return self._get_request(url, query_params={'timePeriod': time_period})
 
