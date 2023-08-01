@@ -270,3 +270,8 @@ class IssueTokenRequest:
             obj.update({'issuerAddress': self.issuer_address})
 
         return obj
+
+
+class TimePeriod(Enum):
+    DAY = "DAY"
+    WEEK = "WEEK"

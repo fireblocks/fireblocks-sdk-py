@@ -11,7 +11,7 @@ import requests
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
-    GetAssetWalletsFilters
+    GetAssetWalletsFilters, TimePeriod
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -1685,6 +1685,16 @@ class FireblocksSDK(object):
         url = f"/v1/off_exchange_accounts"
 
         return self._get_request(url)
+
+    def get_audit_logs(self, time_period: TimePeriod):
+        """
+        Get audit logs
+        :param time_period: The last time period to fetch audit logs
+        """
+
+        url = f"/v1/audits"
+
+        return self._get_request(url, query_params={'timePeriod': time_period})
 
     def get_off_exchange_by_id(self, off_exchange_id):
         """
