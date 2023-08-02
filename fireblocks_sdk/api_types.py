@@ -107,7 +107,7 @@ NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
 
 PEER_TYPES = (
-VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
+    VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
 
 MPC_ECDSA_SECP256K1 = "MPC_ECDSA_SECP256K1"
 MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
@@ -262,9 +262,31 @@ class GetAssetWalletsFilters(object):
         self.after = after
 
 
-class NFTOwnershipStatusValues(Enum):
+class GetOwnedNftsSortValues(str, Enum):
+    OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
+    TOKEN_NAME = "name"
+    COLLECTION_NAME = "collection.name"
+    BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
+
+
+class GetNftsSortValues(str, Enum):
+    TOKEN_NAME = "name"
+    COLLECTION_NAME = "collection.name"
+    BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
+
+
+class NFTOwnershipStatusValues(str, Enum):
     LISTED = "LISTED"
     ARCHIVED = "ARCHIVED"
+
+
+class GetOwnedCollectionsSortValue(str, Enum):
+    COLLECTION_NAME = "name"
+
+
+class OrderValues(str, Enum):
+    ASC = "ASC"
+    DESC = "DESC"
 
 
 class IssueTokenRequest:
@@ -292,6 +314,6 @@ class IssueTokenRequest:
         return obj
 
 
-class TimePeriod(Enum):
+class TimePeriod(str, Enum):
     DAY = "DAY"
     WEEK = "WEEK"

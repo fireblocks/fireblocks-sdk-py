@@ -4,14 +4,13 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import List, Dict
-from enum import Enum
 
 import requests
 
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
-    GetAssetWalletsFilters, TimePeriod
+    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -81,24 +80,6 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    class GetNftsSortValues(Enum):
-        TOKEN_NAME = "name"
-        COLLECTION_NAME = "collection.name"
-        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
-
-    class GetOwnedNftsSortValues(Enum):
-        OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
-        TOKEN_NAME = "name"
-        COLLECTION_NAME = "collection.name"
-        BLOCKCHAIN_DESCRIPTOR = "blockchainDescriptor"
-
-    class GetOwnedCollectionsSortValue(Enum):
-        COLLECTION_NAME = "name"
-
-    class OrderValues(Enum):
-        ASC = "ASC"
-        DESC = "DESC"
-
     def get_nfts(self, ids: List[str], page_cursor: str = '', page_size: int = 100,
                  sort: List[GetNftsSortValues] = None, order: OrderValues = None):
         """
@@ -124,7 +105,7 @@ class FireblocksSDK(object):
             params['sort'] = ",".join(sort)
 
         if order:
-            params['order'] = order
+            params['order'] = order.value
 
         return self._get_request(url, query_params=params)
 
@@ -187,10 +168,10 @@ class FireblocksSDK(object):
             params['sort'] = ",".join(sort)
 
         if order:
-            params['order'] = order
+            params['order'] = order.value
 
         if status:
-            params['status'] = status
+            params['status'] = status.value
 
         if search:
             params['search'] = search
@@ -219,7 +200,7 @@ class FireblocksSDK(object):
             params['sort'] = ",".join(sort)
 
         if order:
-            params['order'] = order
+            params['order'] = order.value
 
         return self._get_request(url, query_params=params)
 
@@ -232,7 +213,7 @@ class FireblocksSDK(object):
         """
         url = "/v1/nfts/ownership/tokens/" + id + "/status"
 
-        return self._put_request(url, {"status": status})
+        return self._put_request(url, {"status": status.value})
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1691,7 +1672,7 @@ class FireblocksSDK(object):
 
         url = "/v1/audits"
 
-        return self._get_request(url, query_params={'timePeriod': time_period})
+        return self._get_request(url, query_params={'timePeriod': time_period.value})
 
     def get_off_exchange_by_id(self, off_exchange_id):
         """
