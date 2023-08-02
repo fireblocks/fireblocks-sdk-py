@@ -289,6 +289,11 @@ class OrderValues(str, Enum):
     DESC = "DESC"
 
 
+class TimePeriod(str, Enum):
+    DAY = "DAY"
+    WEEK = "WEEK"
+
+
 class IssueTokenRequest:
     symbol: str
     name: str
@@ -312,8 +317,3 @@ class IssueTokenRequest:
             obj.update({'issuerAddress': self.issuer_address})
 
         return obj
-
-
-class TimePeriod(str, Enum):
-    DAY = "DAY"
-    WEEK = "WEEK"
