@@ -282,6 +282,36 @@ class GetAssetWalletsFilters(object):
         self.before = before
         self.after = after
 
+class GetSmartTransferFilters(object):
+    """ Optional filters to apply for request
+    Args
+        q (string, optional):  Search query string - either ticketId, asset or network name
+        statuses (DRAFT/PENDING_APPROVAL/OPEN/IN_SETTLEMENT/FULFILLED/EXPIRED/CANCELED, optional): array of ticket statuses
+        network_id (string, optional): networkId used in ticket
+        created_by_me (bool, optional): created by me flag
+        expires_after (string, optional): Lower bound of search range
+        expires_before (string, optional): Upper bound of search range
+        ticket_type (ASYNC/ATOMIC, optional): type of ticket
+        external_ref_id (string, optional): external ref id
+        after (string, optional): cursor string received from previous request
+        limit (number, optional): Results page size
+
+    Constraints
+        - You should only insert 'before' or 'after' (or none of them), but not both
+    """
+
+    def __init__(self, q=None, statuses=None, network_id=None, created_by_me=None, expires_after=None,
+                 expires_before=None, ticket_type=None, external_ref_id=None, after=None, limit=None):
+        self.q = q
+        self.statuses = statuses
+        self.network_id = network_id
+        self.created_by_me = created_by_me
+        self.expires_after = expires_after
+        self.expires_before = expires_before
+        self.ticket_type = ticket_type
+        self.external_ref_id = external_ref_id
+        self.limit = limit
+        self.after = after
 
 class GetOwnedNftsSortValues(str, Enum):
     OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
