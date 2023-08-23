@@ -6,9 +6,10 @@ import secrets
 from hashlib import sha256
 
 class SdkTokenProvider(object):
-    def __init__(self, private_key, api_key):
+    def __init__(self, private_key, api_key, seconds_jwt_exp):
         self.private_key = private_key
         self.api_key = api_key
+        self.seconds_jwt_exp = seconds_jwt_exp
 
     def sign_jwt(self, path, body_json=""):
         timestamp = time.time()
@@ -20,7 +21,7 @@ class SdkTokenProvider(object):
             "uri": path,
             "nonce": nonce,
             "iat": timestamp_secs,
-            "exp": timestamp_secs + 55, 
+            "exp": timestamp_secs + self.seconds_jwt_exp, 
             "sub": self.api_key,
             "bodyHash": sha256(json.dumps(body_json).encode("utf-8")).hexdigest()
         }
