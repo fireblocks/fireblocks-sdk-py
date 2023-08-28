@@ -2243,6 +2243,28 @@ class FireblocksSDK(object):
 
         return self._put_request(url, payload)
 
+    def set_smart_transfer_user_group_ids(self, user_group_ids):
+        """Set Smart Transfer user group ids
+        Args:
+            user_group_ids (list): List of user groups ids to receive Smart Transfer notifications
+        """
+
+        url = f"/v1/smart-transfers/settings/user-groups"
+
+        payload = {
+            "userGroupIds": user_group_ids,
+        }
+
+        return self._post_request(url, payload)
+
+    def get_smart_transfer_user_group_ids(self):
+        """Fetch Smart Transfer user group ids that will receive Smart Transfer notifications
+        """
+
+        url = f"/v1/smart-transfers/settings/user-groups"
+
+        return self._get_request(url)
+
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
