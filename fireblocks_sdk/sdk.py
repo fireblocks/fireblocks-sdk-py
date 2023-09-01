@@ -208,7 +208,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    def list_owned_assets(self, search: str = None, sort: List[GetOwnedAssetsSortValue] = None,
+    def list_owned_assets(self, search: str = None, sort: List[GetOwnedAssetsSortValues] = None,
                           order: OrderValues = None, page_cursor: str = '', page_size: int = 100, status: NFTOwnershipStatusValues = None):
         """
 
