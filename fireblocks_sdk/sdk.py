@@ -10,7 +10,7 @@ import requests
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
-    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues
+    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, GetOwnedAssetsSortValues, NFTsWalletTypeValues, OrderValues
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -138,7 +138,8 @@ class FireblocksSDK(object):
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
-                       order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None):
+                       order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
+                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None):
         """
 
         """
@@ -157,6 +158,15 @@ class FireblocksSDK(object):
 
         if collection_ids:
             params['collectionIds'] = ",".join(collection_ids)
+
+        if ncw_account_ids:
+            params['ncwAccountIds'] = ",".join(ncw_account_ids)
+
+        if ncw_id:
+            params['ncwId'] = ncw_id.value
+
+        if wallet_type:
+            params['walletType'] = wallet_type.value
 
         if page_cursor:
             params['pageCursor'] = page_cursor
@@ -178,7 +188,9 @@ class FireblocksSDK(object):
 
         return self._get_request(url, query_params=params)
 
-    def list_owned_collections(self, search: str = None, sort: List[GetOwnedCollectionsSortValue] = None,
+    def list_owned_collections(self, search: str = None, status: NFTOwnershipStatusValues = None,
+                               ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None,
+                               sort: List[GetOwnedCollectionsSortValue] = None,
                                order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
         """
 
@@ -189,6 +201,15 @@ class FireblocksSDK(object):
 
         if search:
             params['search'] = search
+
+        if status:
+            params['status'] = status
+
+        if ncw_id:
+            params['ncwId'] = ncw_id.value
+
+        if wallet_type:
+            params['walletType'] = wallet_type.value
 
         if page_cursor:
             params['pageCursor'] = page_cursor
@@ -201,6 +222,42 @@ class FireblocksSDK(object):
 
         if order:
             params['order'] = order.value
+
+        return self._get_request(url, query_params=params)
+
+    def list_owned_assets(self, search: str = None, status: NFTOwnershipStatusValues = None,
+                          ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None,
+                          sort: List[GetOwnedAssetsSortValues] = None,
+                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+        """
+        """
+        url = f"/v1/nfts/ownership/assets"
+
+        params = {}
+
+        if search:
+            params['search'] = search
+
+        if status:
+            params['status'] = status
+
+        if ncw_id:
+            params['ncwId'] = ncw_id.value
+
+        if wallet_type:
+            params['walletType'] = wallet_type.value
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
+
+        if order:
+            params['order'] = order
 
         return self._get_request(url, query_params=params)
 
