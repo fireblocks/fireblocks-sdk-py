@@ -1688,7 +1688,7 @@ class FireblocksSDK(object):
         """
         Creates a new Users Group
         @param group_name: The name of the Users Group
-        @param member_ids: The members of the Users Group
+        @param member_ids: The ids of the Users Group members
         """
 
         url = "/v1/users_groups"
@@ -1705,7 +1705,7 @@ class FireblocksSDK(object):
         Updates a Users Group
         @param id: The ID of the Users Group
         @param group_name: The name of the Users Group
-        @param member_ids: The members of the Users Group
+        @param member_ids: The ids of the Users Group members
         """
 
         url = f"/v1/users_groups/{id}"
