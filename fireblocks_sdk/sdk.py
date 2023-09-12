@@ -10,7 +10,7 @@ import requests
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
-    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues
+    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, PolicyRule
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -1818,17 +1818,19 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def update_draft(self, rules: List[Dict[str, Any]]):
+    def update_draft(self, rules: List[PolicyRule]):
         """
         Update draft policy (TAP) [BETA]
         @param rules: list of policy rules
         """
 
         url = "/v1/tap/draft"
+        body = {}
 
-        body = {
-            "rules": rules
-        }
+        if rules is not None and isinstance(rules, list):
+            if any([not isinstance(x, PolicyRule) for x in rules]):
+                raise FireblocksApiException("Expected rules of type List[PolicyRule]")
+            body['rules'] = [rule.to_dict() for rule in rules]
 
         return self._put_request(url, body)
 
@@ -1845,17 +1847,19 @@ class FireblocksSDK(object):
 
         return self._post_request(url, body)
 
-    def publish_policy_rules(self, rules: List[Dict[str, Any]]):
+    def publish_policy_rules(self, rules: List[PolicyRule]):
         """
         Publish policy rules (TAP) [BETA]
         @param rules: list of rules
         """
 
         url = "/v1/tap/publish"
+        body = {}
 
-        body = {
-            "rules": rules
-        }
+        if rules is not None and isinstance(rules, list):
+            if any([not isinstance(x, PolicyRule) for x in rules]):
+                raise FireblocksApiException("Expected rules of type List[PolicyRule]")
+            body['rules'] = [rule.to_dict() for rule in rules]
 
         return self._post_request(url, body)
 
