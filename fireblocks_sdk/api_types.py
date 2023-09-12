@@ -283,6 +283,9 @@ class NFTOwnershipStatusValues(str, Enum):
 class GetOwnedCollectionsSortValue(str, Enum):
     COLLECTION_NAME = "name"
 
+class GetOwnedAssetsSortValues(str, Enum):
+    ASSET_NAME = "name"
+
 
 class GetOwnedAssetsSortValues(str, Enum):
     ASSET_NAME = "name"
