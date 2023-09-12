@@ -10,7 +10,8 @@ import requests
 from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_STATUS_TYPES, TransferPeerPath, \
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
-    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues
+    GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
+    GetOwnedAssetsSortValues
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -179,7 +180,7 @@ class FireblocksSDK(object):
         return self._get_request(url, query_params=params)
 
     def list_owned_collections(self, search: str = None, sort: List[GetOwnedCollectionsSortValue] = None,
-                               order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+                               order: OrderValues = None, page_cursor: str = '', page_size: int = 100, status: NFTOwnershipStatusValues = None):
         """
 
         """
@@ -201,6 +202,38 @@ class FireblocksSDK(object):
 
         if order:
             params['order'] = order.value
+
+        if status:
+            params['status'] = status
+
+        return self._get_request(url, query_params=params)
+
+    def list_owned_assets(self, search: str = None, sort: List[GetOwnedAssetsSortValues] = None,
+                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100, status: NFTOwnershipStatusValues = None):
+        """
+
+        """
+        url = f"/v1/nfts/ownership/assets"
+
+        params = {}
+
+        if search:
+            params['search'] = search
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
+
+        if order:
+            params['order'] = order
+
+        if status:
+            params['status'] = status
 
         return self._get_request(url, query_params=params)
 
