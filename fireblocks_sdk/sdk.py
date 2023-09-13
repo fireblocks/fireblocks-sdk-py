@@ -3,7 +3,7 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import List, Dict
+from typing import List, Dict, Any, Optional
 
 import requests
 
@@ -419,6 +419,38 @@ class FireblocksSDK(object):
 
         if order:
             params["order"] = order.value
+
+        if status:
+            params['status'] = status
+
+        if status:
+            params['status'] = status
+
+        return self._get_request(url, query_params=params)
+
+    def list_owned_assets(self, search: str = None, sort: List[GetOwnedAssetsSortValues] = None,
+                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100, status: NFTOwnershipStatusValues = None):
+        """
+
+        """
+        url = f"/v1/nfts/ownership/assets"
+
+        params = {}
+
+        if search:
+            params['search'] = search
+
+        if page_cursor:
+            params['pageCursor'] = page_cursor
+
+        if page_size:
+            params['pageSize'] = page_size
+
+        if sort:
+            params['sort'] = ",".join(sort)
+
+        if order:
+            params['order'] = order
 
         if status:
             params['status'] = status
@@ -2173,6 +2205,77 @@ class FireblocksSDK(object):
         url = "/v1/users"
 
         return self._get_request(url)
+
+    def get_users(self) -> List[Dict[str, Any]]:
+        """
+        Gets all Users for your tenant
+        """
+
+        url = "/v1/users"
+
+        return self._get_request(url)
+
+    def get_users_groups(self) -> List[Dict[str, Any]]:
+        """
+        Gets all Users Groups for your tenant
+        """
+
+        url = "/v1/users_groups"
+
+        return self._get_request(url)
+
+    def get_users_group(self, id: str) -> Dict[str, Any]:
+        """
+        Gets a Users Group by ID
+        @param id: The ID of the User
+        """
+
+        url = f"/v1/users_groups/{id}"
+
+        return self._get_request(url)
+
+    def create_user_group(self, group_name: str, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        Creates a new Users Group
+        @param group_name: The name of the Users Group
+        @param member_ids: The ids of the Users Group members
+        """
+
+        url = "/v1/users_groups"
+
+        body = {
+            "groupName": group_name,
+            "memberIds": member_ids
+        }
+
+        return self._post_request(url, body)
+
+    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        Updates a Users Group
+        @param id: The ID of the Users Group
+        @param group_name: The name of the Users Group
+        @param member_ids: The ids of the Users Group members
+        """
+
+        url = f"/v1/users_groups/{id}"
+
+        body = {
+            "groupName": group_name,
+            "memberIds": member_ids
+        }
+
+        return self._put_request(url, body)
+
+    def delete_user_group(self, id: str) -> None:
+        """
+        Deletes a Users Group
+        @param id: The ID of the Users Group
+        """
+
+        url = f"/v1/users_groups/{id}"
+
+        return self._delete_request(url)
 
     def get_off_exchanges(self):
         """
