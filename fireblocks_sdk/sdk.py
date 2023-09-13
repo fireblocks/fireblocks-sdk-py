@@ -89,6 +89,168 @@ class FireblocksSDK(object):
                 "User-Agent": self._get_user_agent(anonymous_platform),
             }
         )
+        self.NCW = self._create_ncw()
+
+    def _create_ncw(self):
+        return self.NCW(self)
+
+    class NCW:
+        def __init__(self, sdk):
+            self.sdk = sdk
+            self._wallet_url = "/v1/wallets"
+
+        def create_wallet(self):
+            url = "/v1/wallets"
+            return self.sdk._post_request(url)
+
+        def get_wallets(self):
+            return self.sdk._get_request(self._wallet_url)
+
+        def get_wallet(self, wallet_id: str):
+            url = f"{self._wallet_url}/{wallet_id}"
+            return self.sdk._get_request(url)
+
+        def enable_wallet(self, wallet_id: str, enabled: bool):
+            url = f"{self._wallet_url}/{wallet_id}/enable"
+            body = {"enabled": enabled}
+            return self.sdk._put_request(url, body)
+
+        def create_wallet_account(self, wallet_id: str):
+            url = f"{self._wallet_url}/{wallet_id}/accounts"
+            return self.sdk._post_request(url)
+
+        def get_wallet_accounts(
+            self,
+            wallet_id: str,
+            page_cursor: str = None,
+            page_size: int = None,
+            sort: str = None,
+            order: str = None,
+            enabled: bool = None,
+        ):
+            url = f"{self._wallet_url}/{wallet_id}/accounts"
+            query_params = {}
+
+            if page_cursor:
+                query_params["pageCursor"] = page_cursor
+
+            if page_size:
+                query_params["pageSize"] = page_size
+
+            if sort:
+                query_params["sort"] = sort
+
+            if order:
+                query_params["order"] = order
+
+            if enabled:
+                query_params["enabled"] = enabled
+
+            return self.sdk._get_request(url, query_params=query_params)
+
+        def get_wallet_account(self, wallet_id: str, account_id: str):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}"
+            return self.sdk._get_request(url)
+
+        def get_wallet_assets(
+            self,
+            wallet_id: str,
+            account_id: str,
+            page_cursor: str = None,
+            page_size: int = None,
+            sort: str = None,
+            order: str = None,
+            enabled: bool = None,
+        ):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets"
+            query_params = {}
+
+            if page_cursor:
+                query_params["pageCursor"] = page_cursor
+
+            if page_size:
+                query_params["pageSize"] = page_size
+
+            if sort:
+                query_params["sort"] = sort
+
+            if order:
+                query_params["order"] = order
+
+            if enabled:
+                query_params["enabled"] = enabled
+
+            return self.sdk._get_request(url, query_params=query_params)
+
+        def get_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
+            return self.sdk._get_request(url)
+
+        def activate_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
+            return self.sdk._post_request(url)
+
+        def refresh_wallet_asset_balance(
+            self, wallet_id: str, account_id: str, asset_id: str
+        ):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
+            return self.sdk._put_request(url)
+
+        def get_wallet_asset_balance(
+            self, wallet_id: str, account_id: str, asset_id: str
+        ):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
+            return self.sdk._get_request(url)
+
+        def get_wallet_asset_addresses(
+            self,
+            wallet_id: str,
+            account_id: str,
+            asset_id: str,
+            page_cursor: str = None,
+            page_size: int = None,
+            sort: str = None,
+            order: str = None,
+            enabled: bool = None,
+        ):
+            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
+            query_params = {}
+
+            if page_cursor:
+                query_params["pageCursor"] = page_cursor
+
+            if page_size:
+                query_params["pageSize"] = page_size
+
+            if sort:
+                query_params["sort"] = sort
+
+            if order:
+                query_params["order"] = order
+
+            if enabled:
+                query_params["enabled"] = enabled
+
+            return self.sdk._get_request(url, query_params=query_params)
+
+        def get_devices(self, wallet_id: str):
+            url = f"{self._wallet_url}/{wallet_id}/devices"
+            return self.sdk._get_request(url)
+
+        def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
+            url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
+            body = {"enabled": enabled}
+
+            return self.sdk._put_request(url, body)
+
+        def invoke_wallet_rpc(self, wallet_id: str, device_id: str, payload: str):
+            """
+            payload: stringified JSON, message originated in the NCW SDK
+            """
+            url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/rpc"
+            body = {"payload": payload}
+
+            return self.sdk._post_request(url, body)
 
     def get_linked_tokens(self, limit: int = 100, offset: int = 0):
         request_filter = {"limit": limit, "offset": offset}
@@ -2227,182 +2389,3 @@ class FireblocksSDK(object):
                 f"{platform.machine()})"
             )
         return user_agent
-
-
-class FireblocksNCW(FireblocksSDK):
-    def __init__(
-        self,
-        private_key,
-        api_key,
-        api_base_url="https://api.fireblocks.io",
-        timeout=None,
-        anonymous_platform=False,
-        seconds_jwt_exp=55,
-    ):
-        """Creates a new Fireblocks API Client.
-
-        Args:
-            private_key (str): A string representation of your private key (in PEM format)
-            api_key (str): Your api key. This is a uuid you received from Fireblocks
-            api_base_url (str): The fireblocks server URL. Leave empty to use the default server
-            timeout (number): Timeout for http requests in seconds
-        """
-        super().__init__(
-            private_key,
-            api_key,
-            api_base_url,
-            timeout,
-            anonymous_platform,
-            seconds_jwt_exp,
-        )
-        self._wallet_url = "/v1/wallets"
-
-    def create_wallet(self):
-        return self._post_request(self._wallet_url)
-
-    def get_wallets(self):
-        return self._get_request(self._wallet_url)
-
-    def get_wallet(self, wallet_id: str):
-        url = f"{self._wallet_url}/{wallet_id}"
-        return self._get_request(url)
-
-    def enable_wallet(self, wallet_id: str, enabled: bool):
-        url = f"{self._wallet_url}/{wallet_id}/enable"
-        body = {"enabled": enabled}
-        return self._put_request(url, body)
-
-    def create_wallet_account(self, wallet_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/accounts"
-        return self._post_request(url)
-
-    def get_wallet_accounts(
-        self,
-        wallet_id: str,
-        page_cursor: str = None,
-        page_size: int = None,
-        sort: str = None,
-        order: str = None,
-        enabled: bool = None,
-    ):
-        url = f"{self._wallet_url}/{wallet_id}/accounts"
-        query_params = {}
-
-        if page_cursor:
-            query_params["pageCursor"] = page_cursor
-
-        if page_size:
-            query_params["pageSize"] = page_size
-
-        if sort:
-            query_params["sort"] = sort
-
-        if order:
-            query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
-
-        return self._get_request(url, query_params=query_params)
-
-    def get_wallet_account(self, wallet_id: str, account_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}"
-        return self._get_request(url)
-
-    def get_wallet_assets(
-        self,
-        wallet_id: str,
-        account_id: str,
-        page_cursor: str = None,
-        page_size: int = None,
-        sort: str = None,
-        order: str = None,
-        enabled: bool = None,
-    ):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets"
-        query_params = {}
-
-        if page_cursor:
-            query_params["pageCursor"] = page_cursor
-
-        if page_size:
-            query_params["pageSize"] = page_size
-
-        if sort:
-            query_params["sort"] = sort
-
-        if order:
-            query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
-
-        return self._get_request(url, query_params=query_params)
-
-    def get_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
-        return self._get_request(url)
-
-    def activate_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
-        return self._post_request(url)
-
-    def refresh_wallet_asset_balance(
-        self, wallet_id: str, account_id: str, asset_id: str
-    ):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
-        return self._put_request(url)
-
-    def get_wallet_asset_balance(self, wallet_id: str, account_id: str, asset_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
-        return self._get_request(url)
-
-    def get_wallet_asset_addresses(
-        self,
-        wallet_id: str,
-        account_id: str,
-        asset_id: str,
-        page_cursor: str = None,
-        page_size: int = None,
-        sort: str = None,
-        order: str = None,
-        enabled: bool = None,
-    ):
-        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
-        query_params = {}
-
-        if page_cursor:
-            query_params["pageCursor"] = page_cursor
-
-        if page_size:
-            query_params["pageSize"] = page_size
-
-        if sort:
-            query_params["sort"] = sort
-
-        if order:
-            query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
-
-        return self._get_request(url, query_params=query_params)
-
-    def get_devices(self, wallet_id: str):
-        url = f"{self._wallet_url}/{wallet_id}/devices"
-        return self._get_request(url)
-
-    def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
-        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
-        body = {"enabled": enabled}
-
-        return self._put_request(url, body)
-
-    def invoke_wallet_rpc(self, wallet_id: str, device_id: str, payload: str):
-        """
-        payload: stringified JSON, message originated in the NCW SDK
-        """
-        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/rpc"
-        body = {"payload": payload}
-
-        return self._post_request(url, body)
