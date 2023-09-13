@@ -28,6 +28,7 @@ from .api_types import (
     GetOwnedNftsSortValues,
     GetNftsSortValues,
     OrderValues,
+    GetOwnedAssetsSortValues
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -397,6 +398,7 @@ class FireblocksSDK(object):
         order: OrderValues = None,
         page_cursor: str = "",
         page_size: int = 100,
+        status: NFTOwnershipStatusValues = None
     ):
         """ """
         url = f"/v1/nfts/ownership/collections"
@@ -417,6 +419,9 @@ class FireblocksSDK(object):
 
         if order:
             params["order"] = order.value
+
+        if status:
+            params['status'] = status
 
         return self._get_request(url, query_params=params)
 
