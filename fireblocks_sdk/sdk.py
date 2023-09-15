@@ -3,7 +3,7 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 
 import requests
 
@@ -28,7 +28,6 @@ from .api_types import (
     GetOwnedNftsSortValues,
     GetNftsSortValues,
     OrderValues,
-    GetOwnedAssetsSortValues
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -90,168 +89,6 @@ class FireblocksSDK(object):
                 "User-Agent": self._get_user_agent(anonymous_platform),
             }
         )
-        self.NCW = self._create_ncw()
-
-    def _create_ncw(self):
-        return self.NCW(self)
-
-    class NCW:
-        def __init__(self, sdk):
-            self.sdk = sdk
-            self._wallet_url = "/v1/wallets"
-
-        def create_wallet(self):
-            url = "/v1/wallets"
-            return self.sdk._post_request(url)
-
-        def get_wallets(self):
-            return self.sdk._get_request(self._wallet_url)
-
-        def get_wallet(self, wallet_id: str):
-            url = f"{self._wallet_url}/{wallet_id}"
-            return self.sdk._get_request(url)
-
-        def enable_wallet(self, wallet_id: str, enabled: bool):
-            url = f"{self._wallet_url}/{wallet_id}/enable"
-            body = {"enabled": enabled}
-            return self.sdk._put_request(url, body)
-
-        def create_wallet_account(self, wallet_id: str):
-            url = f"{self._wallet_url}/{wallet_id}/accounts"
-            return self.sdk._post_request(url)
-
-        def get_wallet_accounts(
-            self,
-            wallet_id: str,
-            page_cursor: str = None,
-            page_size: int = None,
-            sort: str = None,
-            order: str = None,
-            enabled: bool = None,
-        ):
-            url = f"{self._wallet_url}/{wallet_id}/accounts"
-            query_params = {}
-
-            if page_cursor:
-                query_params["pageCursor"] = page_cursor
-
-            if page_size:
-                query_params["pageSize"] = page_size
-
-            if sort:
-                query_params["sort"] = sort
-
-            if order:
-                query_params["order"] = order
-
-            if enabled:
-                query_params["enabled"] = enabled
-
-            return self.sdk._get_request(url, query_params=query_params)
-
-        def get_wallet_account(self, wallet_id: str, account_id: str):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}"
-            return self.sdk._get_request(url)
-
-        def get_wallet_assets(
-            self,
-            wallet_id: str,
-            account_id: str,
-            page_cursor: str = None,
-            page_size: int = None,
-            sort: str = None,
-            order: str = None,
-            enabled: bool = None,
-        ):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets"
-            query_params = {}
-
-            if page_cursor:
-                query_params["pageCursor"] = page_cursor
-
-            if page_size:
-                query_params["pageSize"] = page_size
-
-            if sort:
-                query_params["sort"] = sort
-
-            if order:
-                query_params["order"] = order
-
-            if enabled:
-                query_params["enabled"] = enabled
-
-            return self.sdk._get_request(url, query_params=query_params)
-
-        def get_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
-            return self.sdk._get_request(url)
-
-        def activate_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
-            return self.sdk._post_request(url)
-
-        def refresh_wallet_asset_balance(
-            self, wallet_id: str, account_id: str, asset_id: str
-        ):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
-            return self.sdk._put_request(url)
-
-        def get_wallet_asset_balance(
-            self, wallet_id: str, account_id: str, asset_id: str
-        ):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
-            return self.sdk._get_request(url)
-
-        def get_wallet_asset_addresses(
-            self,
-            wallet_id: str,
-            account_id: str,
-            asset_id: str,
-            page_cursor: str = None,
-            page_size: int = None,
-            sort: str = None,
-            order: str = None,
-            enabled: bool = None,
-        ):
-            url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
-            query_params = {}
-
-            if page_cursor:
-                query_params["pageCursor"] = page_cursor
-
-            if page_size:
-                query_params["pageSize"] = page_size
-
-            if sort:
-                query_params["sort"] = sort
-
-            if order:
-                query_params["order"] = order
-
-            if enabled:
-                query_params["enabled"] = enabled
-
-            return self.sdk._get_request(url, query_params=query_params)
-
-        def get_devices(self, wallet_id: str):
-            url = f"{self._wallet_url}/{wallet_id}/devices"
-            return self.sdk._get_request(url)
-
-        def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
-            url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
-            body = {"enabled": enabled}
-
-            return self.sdk._put_request(url, body)
-
-        def invoke_wallet_rpc(self, wallet_id: str, device_id: str, payload: str):
-            """
-            payload: stringified JSON, message originated in the NCW SDK
-            """
-            url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/rpc"
-            body = {"payload": payload}
-
-            return self.sdk._post_request(url, body)
 
     def get_linked_tokens(self, limit: int = 100, offset: int = 0):
         request_filter = {"limit": limit, "offset": offset}
@@ -398,7 +235,6 @@ class FireblocksSDK(object):
         order: OrderValues = None,
         page_cursor: str = "",
         page_size: int = 100,
-        status: NFTOwnershipStatusValues = None
     ):
         """ """
         url = f"/v1/nfts/ownership/collections"
@@ -419,41 +255,6 @@ class FireblocksSDK(object):
 
         if order:
             params["order"] = order.value
-
-        if status:
-            params['status'] = status
-
-        if status:
-            params['status'] = status
-
-        return self._get_request(url, query_params=params)
-
-    def list_owned_assets(self, search: str = None, sort: List[GetOwnedAssetsSortValues] = None,
-                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100, status: NFTOwnershipStatusValues = None):
-        """
-
-        """
-        url = f"/v1/nfts/ownership/assets"
-
-        params = {}
-
-        if search:
-            params['search'] = search
-
-        if page_cursor:
-            params['pageCursor'] = page_cursor
-
-        if page_size:
-            params['pageSize'] = page_size
-
-        if sort:
-            params['sort'] = ",".join(sort)
-
-        if order:
-            params['order'] = order
-
-        if status:
-            params['status'] = status
 
         return self._get_request(url, query_params=params)
 
@@ -2206,77 +2007,6 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_users(self) -> List[Dict[str, Any]]:
-        """
-        Gets all Users for your tenant
-        """
-
-        url = "/v1/users"
-
-        return self._get_request(url)
-
-    def get_users_groups(self) -> List[Dict[str, Any]]:
-        """
-        Gets all Users Groups for your tenant
-        """
-
-        url = "/v1/users_groups"
-
-        return self._get_request(url)
-
-    def get_users_group(self, id: str) -> Dict[str, Any]:
-        """
-        Gets a Users Group by ID
-        @param id: The ID of the User
-        """
-
-        url = f"/v1/users_groups/{id}"
-
-        return self._get_request(url)
-
-    def create_user_group(self, group_name: str, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Creates a new Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
-        """
-
-        url = "/v1/users_groups"
-
-        body = {
-            "groupName": group_name,
-            "memberIds": member_ids
-        }
-
-        return self._post_request(url, body)
-
-    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Updates a Users Group
-        @param id: The ID of the Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
-        """
-
-        url = f"/v1/users_groups/{id}"
-
-        body = {
-            "groupName": group_name,
-            "memberIds": member_ids
-        }
-
-        return self._put_request(url, body)
-
-    def delete_user_group(self, id: str) -> None:
-        """
-        Deletes a Users Group
-        @param id: The ID of the Users Group
-        """
-
-        url = f"/v1/users_groups/{id}"
-
-        return self._delete_request(url)
-
     def get_off_exchanges(self):
         """
         Get your connected off exchanges virtual accounts
@@ -2497,3 +2227,162 @@ class FireblocksSDK(object):
                 f"{platform.machine()})"
             )
         return user_agent
+
+
+class FireblocksNCW:
+    def __init__(self, sdk: FireblocksSDK):
+        self.sdk = sdk
+        self._wallet_url = "/v1/wallets"
+
+    def create_wallet(self):
+        url = "/v1/wallets"
+        return self.sdk._post_request(url)
+
+    def get_wallets(self):
+        return self.sdk._get_request(self._wallet_url)
+
+    def get_wallet(self, wallet_id: str):
+        url = f"{self._wallet_url}/{wallet_id}"
+        return self.sdk._get_request(url)
+
+    def enable_wallet(self, wallet_id: str, enabled: bool):
+        url = f"{self._wallet_url}/{wallet_id}/enable"
+        body = {"enabled": enabled}
+        return self.sdk._put_request(url, body)
+
+    def create_wallet_account(self, wallet_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/accounts"
+        return self.sdk._post_request(url)
+
+    def get_wallet_accounts(
+        self,
+        wallet_id: str,
+        page_cursor: str = None,
+        page_size: int = None,
+        sort: str = None,
+        order: str = None,
+        enabled: bool = None,
+    ):
+        url = f"{self._wallet_url}/{wallet_id}/accounts"
+        query_params = {}
+
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        if sort:
+            query_params["sort"] = sort
+
+        if order:
+            query_params["order"] = order
+
+        if enabled:
+            query_params["enabled"] = enabled
+
+        return self.sdk._get_request(url, query_params=query_params)
+
+    def get_wallet_account(self, wallet_id: str, account_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}"
+        return self.sdk._get_request(url)
+
+    def get_wallet_assets(
+        self,
+        wallet_id: str,
+        account_id: str,
+        page_cursor: str = None,
+        page_size: int = None,
+        sort: str = None,
+        order: str = None,
+        enabled: bool = None,
+    ):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets"
+        query_params = {}
+
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        if sort:
+            query_params["sort"] = sort
+
+        if order:
+            query_params["order"] = order
+
+        if enabled:
+            query_params["enabled"] = enabled
+
+        return self.sdk._get_request(url, query_params=query_params)
+
+    def get_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
+        return self.sdk._get_request(url)
+
+    def activate_wallet_asset(self, wallet_id: str, account_id: str, asset_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}"
+        return self.sdk._post_request(url)
+
+    def refresh_wallet_asset_balance(
+        self, wallet_id: str, account_id: str, asset_id: str
+    ):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
+        return self.sdk._put_request(url)
+
+    def get_wallet_asset_balance(
+        self, wallet_id: str, account_id: str, asset_id: str
+    ):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
+        return self.sdk._get_request(url)
+
+    def get_wallet_asset_addresses(
+        self,
+        wallet_id: str,
+        account_id: str,
+        asset_id: str,
+        page_cursor: str = None,
+        page_size: int = None,
+        sort: str = None,
+        order: str = None,
+        enabled: bool = None,
+    ):
+        url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
+        query_params = {}
+
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        if sort:
+            query_params["sort"] = sort
+
+        if order:
+            query_params["order"] = order
+
+        if enabled:
+            query_params["enabled"] = enabled
+
+        return self.sdk._get_request(url, query_params=query_params)
+
+    def get_devices(self, wallet_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/devices"
+        return self.sdk._get_request(url)
+
+    def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
+        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
+        body = {"enabled": enabled}
+
+        return self.sdk._put_request(url, body)
+
+    def invoke_wallet_rpc(self, wallet_id: str, device_id: str, payload: str):
+        """
+        payload: stringified JSON, message originated in the NCW SDK
+        """
+        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/rpc"
+        body = {"payload": payload}
+
+        return self.sdk._post_request(url, body)
