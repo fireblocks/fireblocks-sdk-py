@@ -282,6 +282,7 @@ class GetAssetWalletsFilters(object):
         self.before = before
         self.after = after
 
+
 class GetSmartTransferFilters(object):
     """ Optional filters to apply for request
     Args
@@ -300,8 +301,9 @@ class GetSmartTransferFilters(object):
         - You should only insert 'before' or 'after' (or none of them), but not both
     """
 
-    def __init__(self, q=None, statuses=None, network_id=None, created_by_me=None, expires_after=None,
-                 expires_before=None, ticket_type=None, external_ref_id=None, after=None, limit=None):
+    def __init__(self, q: str = None, statuses: str = None, network_id: str = None, created_by_me: bool = None,
+                 expires_after: str = None, expires_before: str = None, ticket_type: str = None,
+                 external_ref_id: str = None, after: str = None, limit: str = None):
         self.q = q
         self.statuses = statuses
         self.network_id = network_id
@@ -312,6 +314,7 @@ class GetSmartTransferFilters(object):
         self.external_ref_id = external_ref_id
         self.limit = limit
         self.after = after
+
 
 class GetOwnedNftsSortValues(str, Enum):
     OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
@@ -333,6 +336,7 @@ class NFTOwnershipStatusValues(str, Enum):
 
 class GetOwnedCollectionsSortValue(str, Enum):
     COLLECTION_NAME = "name"
+
 
 class GetOwnedAssetsSortValues(str, Enum):
     ASSET_NAME = "name"

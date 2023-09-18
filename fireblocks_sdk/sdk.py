@@ -1975,41 +1975,37 @@ class FireblocksSDK(object):
 
         url = f"/v1/smart-transfers"
 
-        q, statuses, network_id, created_by_me, expires_after, expires_before, ticket_type, external_ref_id, limit,\
-            after = attrgetter('q', 'statuses', 'network_id', 'created_by_me', 'expires_after', 'expires_before',
-                               'ticket_type', 'external_ref_id', 'limit', 'after')(paged_smart_transfer_request_filters)
-
         params = {}
 
-        if q is not None:
-            params['q'] = q
+        if paged_smart_transfer_request_filters.q is not None:
+            params['q'] = paged_smart_transfer_request_filters.q
 
-        if statuses is not None:
-            params['statuses'] = statuses
+        if paged_smart_transfer_request_filters.statuses is not None:
+            params['statuses'] = paged_smart_transfer_request_filters.statuses
 
-        if network_id is not None:
-            params['networkId'] = network_id
+        if paged_smart_transfer_request_filters.network_id is not None:
+            params['networkId'] = paged_smart_transfer_request_filters.network_id
 
-        if created_by_me is not None:
-            params['createdByMe'] = bool(created_by_me)
+        if paged_smart_transfer_request_filters.created_by_me is not None:
+            params['createdByMe'] = bool(paged_smart_transfer_request_filters.created_by_me)
 
-        if expires_after is not None:
-            params['expiresAfter'] = expires_after
+        if paged_smart_transfer_request_filters.expires_after is not None:
+            params['expiresAfter'] = paged_smart_transfer_request_filters.expires_after
 
-        if expires_before is not None:
-            params['expiresBefore'] = expires_before
+        if paged_smart_transfer_request_filters.expires_before is not None:
+            params['expiresBefore'] = paged_smart_transfer_request_filters.expires_before
 
-        if ticket_type is not None:
-            params['type'] = str(ticket_type)
+        if paged_smart_transfer_request_filters.ticket_type is not None:
+            params['type'] = paged_smart_transfer_request_filters.ticket_type
 
-        if external_ref_id is not None:
-            params['externalRefId'] = external_ref_id
+        if paged_smart_transfer_request_filters.external_ref_id is not None:
+            params['externalRefId'] = paged_smart_transfer_request_filters.external_ref_id
 
-        if after is not None:
-            params['after'] = after
+        if paged_smart_transfer_request_filters.after is not None:
+            params['after'] = paged_smart_transfer_request_filters.after
 
-        if limit is not None:
-            params['limit'] = limit
+        if paged_smart_transfer_request_filters.limit is not None:
+            params['limit'] = int(paged_smart_transfer_request_filters.limit)
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)
@@ -2043,13 +2039,13 @@ class FireblocksSDK(object):
             terms = []
 
         payload = {
-            "createdByNetworkId": str(created_by_network_id),
-            "type": str(ticket_type),
-            "expiresIn": int(expires_in),
+            "createdByNetworkId": created_by_network_id,
+            "type": ticket_type,
+            "expiresIn": expires_in,
             "terms": terms,
-            "externalRefId": str(external_ref_id),
-            "note": str(note),
-            "submit": bool(submit)
+            "externalRefId": external_ref_id,
+            "note": note,
+            "submit": submit
         }
 
         return self._post_request(url, payload, idempotency_key)
