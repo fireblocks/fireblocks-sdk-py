@@ -2,6 +2,24 @@ from enum import Enum
 from typing import Optional, List, Union
 
 
+def snake_to_camel(snake_case: str):
+    words = snake_case.split('_')
+    return words[0] + ''.join(word.capitalize() for word in words[1:])
+
+
+def convert_class_to_dict(class_dict: dict):
+    output_dict = {}
+    for key, value in class_dict.items():
+        if isinstance(value, list):
+            output_dict[snake_to_camel(key)] = [item.to_dict() if hasattr(item, 'to_dict') else item for item
+                                                in value]
+        elif hasattr(value, 'to_dict') and callable(getattr(value, 'to_dict')):
+            output_dict[snake_to_camel(key)] = value.to_dict()
+        else:
+            output_dict[snake_to_camel(key)] = value
+    return output_dict
+
+
 class TransferPeerPath(object):
     def __init__(self, peer_type, peer_id):
         """Defines a source or a destination for a transfer
@@ -380,205 +398,166 @@ class AuthorizationLogic(str, Enum):
     OR = "OR"
 
 class AuthorizationGroup:
-    def __init__(self, users: Optional[List[str]] = None, usersGroups: Optional[List[str]] = None, th: int = 0):
+    def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, th: int = 0):
         if users:
             self.users = users
-        if usersGroups:
-            self.usersGroups = usersGroups
+        if users_groups:
+            self.users_groups = users_groups
         self.th = th
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 class PolicyAuthorizationGroups:
-    def __init__(self, logic: AuthorizationLogic, allowOperatorAsAuthorizer: Optional[bool] = None, groups: List[AuthorizationGroup] = []):
+    def __init__(self, logic: AuthorizationLogic, allow_operator_as_authorizer: Optional[bool] = None, groups: List[AuthorizationGroup] = []):
         self.logic = logic
-        if allowOperatorAsAuthorizer:
-            self.allowOperatorAsAuthorizer = allowOperatorAsAuthorizer
+        if allow_operator_as_authorizer:
+            self.allow_operator_as_authorizer = allow_operator_as_authorizer
         self.groups = groups
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 class Operators:
-    def __init__(self, wildcard: Optional[Wildcard] = None, users: Optional[List[str]] = None, usersGroups: Optional[List[str]] = None, services: Optional[List[str]] = None):
+    def __init__(self, wildcard: Optional[Wildcard] = None, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, services: Optional[List[str]] = None):
         if wildcard:
             self.wildcard = wildcard
         if users:
             self.users = users
-        if usersGroups:
-            self.usersGroups = usersGroups
+        if users_groups:
+            self.users_groups = users_groups
         if services:
             self.services = services
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 class DesignatedSigners:
-    def __init__(self, users: Optional[List[str]] = None, usersGroups: Optional[List[str]] = None):
+    def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None):
         if users:
             self.users = users
-        if usersGroups:
-            self.usersGroups = usersGroups
+        if users_groups:
+            self.users_groups = users_groups
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class SrcDst:
     def __init__(self, ids: Optional[List[List[Union[str, PolicySrcOrDestType, PolicySrcOrDestSubType]]]] = None):
         if ids:
             self.ids = ids
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 class AmountAggregation:
-    def __init__(self, operators: str, srcTransferPeers: str, dstTransferPeers: str):
+    def __init__(self, operators: str, src_transfer_peers: str, dst_transfer_peers: str):
         self.operators = operators
-        self.srcTransferPeers = srcTransferPeers
-        self.dstTransferPeers = dstTransferPeers
+        self.src_transfer_peers = src_transfer_peers
+        self.dst_transfer_peers = dst_transfer_peers
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class DerivationPath:
     def __init__(self, path: List[int]):
         self.path = path
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 class RawMessageSigning:
-    def __init__(self, derivationPath: DerivationPath, algorithm: str):
-        self.derivationPath = derivationPath
+    def __init__(self, derivation_path: DerivationPath, algorithm: str):
+        self.derivation_path = derivation_path
         self.algorithm = algorithm
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class PolicyRule:
     def __init__(self,
                  type: PolicyType,
                  action: PolicyAction,
                  asset: str,
-                 amountCurrency: str,
-                 amountScope: PolicyAmountScope,
+                 amount_currency: str,
+                 amount_scope: PolicyAmountScope,
                  amount: Union[int, str],
-                 periodSec: int,
-                 externalDescriptor: str,
+                 period_sec: int,
+                 external_descriptor: str,
                  operator: Optional[str] = None,
                  operators: Optional[Operators] = None,
-                 transactionType: Optional[PolicyTransactionType] = None,
-                 operatorServices: Optional[List[str]] = None,
-                 designatedSigner: Optional[str] = None,
-                 designatedSigners: Optional[DesignatedSigners] = None,
-                 srcType: Optional[PolicySrcOrDestType] = None,
-                 srcSubType: Optional[PolicySrcOrDestSubType] = None,
-                 srcId: Optional[str] = None,
+                 transaction_type: Optional[PolicyTransactionType] = None,
+                 operator_services: Optional[List[str]] = None,
+                 designated_signer: Optional[str] = None,
+                 designated_signers: Optional[DesignatedSigners] = None,
+                 src_type: Optional[PolicySrcOrDestType] = None,
+                 src_sub_type: Optional[PolicySrcOrDestSubType] = None,
+                 src_id: Optional[str] = None,
                  src: Optional[SrcDst] = None,
-                 dstType: Optional[PolicySrcOrDestType] = None,
-                 dstSubType: Optional[PolicySrcOrDestSubType] = None,
-                 dstId: Optional[str] = None,
+                 dst_type: Optional[PolicySrcOrDestType] = None,
+                 dst_sub_type: Optional[PolicySrcOrDestSubType] = None,
+                 dst_id: Optional[str] = None,
                  dst: Optional[SrcDst] = None,
-                 dstAddressType: Optional[PolicyDestAddressType] = None,
+                 dst_address_type: Optional[PolicyDestAddressType] = None,
                  authorizers: Optional[List[str]] = None,
-                 authorizersCount: Optional[int] = None,
-                 authorizationGroups: Optional[PolicyAuthorizationGroups] = None,
-                 amountAggregation: Optional[AmountAggregation] = None,
-                 rawMessageSigning: Optional[RawMessageSigning] = None,
-                 applyForApprove: Optional[bool] = None,
-                 applyForTypedMessage: Optional[bool] = None):
+                 authorizers_count: Optional[int] = None,
+                 authorization_groups: Optional[PolicyAuthorizationGroups] = None,
+                 amount_aggregation: Optional[AmountAggregation] = None,
+                 raw_message_signing: Optional[RawMessageSigning] = None,
+                 apply_for_approve: Optional[bool] = None,
+                 apply_for_typed_message: Optional[bool] = None):
         self.type = type
         self.action = action
         self.asset = asset
-        self.amountCurrency = amountCurrency
-        self.amountScope = amountScope
+        self.amount_currency = amount_currency
+        self.amount_scope = amount_scope
         self.amount = amount
-        self.periodSec = periodSec
-        self.externalDescriptor = externalDescriptor
+        self.period_sec = period_sec
+        self.external_descriptor = external_descriptor
         if operator:
             self.operator = operator
         if operators:
             self.operators = operators
-        if transactionType:
-            self.transactionType = transactionType
-        if operatorServices:
-           self.operatorServices = operatorServices
-        if designatedSigner:
-            self.designatedSigner = designatedSigner
-        if designatedSigners:
-            self.designatedSigners = designatedSigners
-        if srcType:
-            self.srcType = srcType
-        if srcSubType:
-            self.srcSubType = srcSubType
-        if srcId:
-            self.srcId = srcId
+        if transaction_type:
+            self.transaction_type = transaction_type
+        if operator_services:
+           self.operator_services = operator_services
+        if designated_signer:
+            self.designated_signer = designated_signer
+        if designated_signers:
+            self.designated_signers = designated_signers
+        if src_type:
+            self.src_type = src_type
+        if src_sub_type:
+            self.src_sub_type = src_sub_type
+        if src_id:
+            self.src_id = src_id
         if src:
             self.src = src
-        if dstType:
-            self.dstType = dstType
-        if dstSubType:
-            self.dstSubType = dstSubType
-        if dstId:
-            self.dstId = dstId
+        if dst_type:
+            self.dst_type = dst_type
+        if dst_sub_type:
+            self.dst_sub_type = dst_sub_type
+        if dst_id:
+            self.dst_id = dst_id
         if dst:
             self.dst = dst
-        if dstAddressType:
-            self.dstAddressType = dstAddressType
+        if dst_address_type:
+            self.dst_address_type = dst_address_type
         if authorizers:
             self.authorizers = authorizers
-        if authorizersCount:
-            self.authorizersCount = authorizersCount
-        if authorizationGroups:
-            self.authorizationGroups = authorizationGroups
-        if amountAggregation:
-            self.amountAggregation = amountAggregation
-        if rawMessageSigning:
-            self.rawMessageSigning = rawMessageSigning
-        if applyForApprove:
-            self.applyForApprove = applyForApprove
-        if applyForTypedMessage:
-            self.applyForTypedMessage = applyForTypedMessage
+        if authorizers_count:
+            self.authorizers_count = authorizers_count
+        if authorization_groups:
+            self.authorization_groups = authorization_groups
+        if amount_aggregation:
+            self.amount_aggregation = amount_aggregation
+        if raw_message_signing:
+            self.raw_message_signing = raw_message_signing
+        if apply_for_approve:
+            self.apply_for_approve = apply_for_approve
+        if apply_for_typed_message:
+            self.apply_for_typed_message = apply_for_typed_message
 
     def to_dict(self):
-        rule_dict = {
-            "type": self.type,
-            "action": self.action,
-            "asset": self.asset,
-            "amountCurrency": self.amountCurrency,
-            "amountScope": self.amountScope,
-            "amount": self.amount,
-            "periodSec": self.periodSec,
-            "externalDescriptor": self.externalDescriptor
-        }
-
-        if hasattr(self, "operator"):
-            rule_dict["operator"] = self.operator
-        if hasattr(self, "operators"):
-            rule_dict["operators"] = self.operators.__dict__
-        if hasattr(self, "transactionType"):
-            rule_dict["transactionType"] = self.transactionType
-        if hasattr(self, "operatorServices"):
-            rule_dict["operatorServices"] = self.operatorServices
-        if hasattr(self, "designatedSigner"):
-            rule_dict["designatedSigner"] = self.designatedSigner
-        if hasattr(self, "designatedSigners"):
-            rule_dict["designatedSigners"] = self.designatedSigners.__dict__
-        if hasattr(self, "srcType"):
-            rule_dict["srcType"] = self.srcType
-        if hasattr(self, "srcSubType"):
-            rule_dict["srcSubType"] = self.srcSubType
-        if hasattr(self, "srcId"):
-            rule_dict["srcId"] = self.srcId
-        if hasattr(self, "src"):
-            rule_dict["src"] = self.src.__dict__
-        if hasattr(self, "dstType"):
-            rule_dict["dstType"] = self.dstType
-        if hasattr(self, "dstSubType"):
-            rule_dict["dstSubType"] = self.dstSubType
-        if hasattr(self, "dstId"):
-            rule_dict["dstId"] = self.dstId
-        if hasattr(self, "dst"):
-            rule_dict["dst"] = self.dst.__dict__
-        if hasattr(self, "dstAddressType"):
-            rule_dict["dstAddressType"] = self.dstAddressType
-        if hasattr(self, "authorizers"):
-            rule_dict["authorizers"] = self.authorizers
-        if hasattr(self, "authorizersCount"):
-            rule_dict["authorizersCount"] = self.authorizersCount
-        if hasattr(self, "authorizationGroups"):
-            rule_dict["authorizationGroups"] = {
-                "logic": self.authorizationGroups.logic,
-                "allowOperatorAsAuthorizer": self.authorizationGroups.allowOperatorAsAuthorizer,
-                "groups": [group.__dict__ for group in self.authorizationGroups.groups]
-            }
-        if hasattr(self, "amountAggregation"):
-            rule_dict["amountAggregation"] = self.amountAggregation.__dict__
-        if hasattr(self, "rawMessageSigning"):
-            rule_dict["rawMessageSigning"] = {
-                "derivationPath": self.rawMessageSigning.derivationPath.__dict__,
-                "algorithm": self.rawMessageSigning.algorithm
-            }
-        if hasattr(self, "applyForApprove"):
-            rule_dict["applyForApprove"] = self.applyForApprove
-        if hasattr(self, "applyForTypedMessage"):
-            rule_dict["applyForTypedMessage"] = self.applyForTypedMessage
-
-        return rule_dict
+        return convert_class_to_dict(self.__dict__)
