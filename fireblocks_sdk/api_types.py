@@ -1,5 +1,23 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List, Union
+
+
+def snake_to_camel(snake_case: str):
+    words = snake_case.split('_')
+    return words[0] + ''.join(word.capitalize() for word in words[1:])
+
+
+def convert_class_to_dict(class_dict: dict):
+    output_dict = {}
+    for key, value in class_dict.items():
+        if isinstance(value, list):
+            output_dict[snake_to_camel(key)] = [item.to_dict() if hasattr(item, 'to_dict') else item for item
+                                                in value]
+        elif hasattr(value, 'to_dict') and callable(getattr(value, 'to_dict')):
+            output_dict[snake_to_camel(key)] = value.to_dict()
+        else:
+            output_dict[snake_to_camel(key)] = value
+    return output_dict
 
 
 class TransferPeerPath(object):
@@ -107,7 +125,8 @@ NETWORK_CONNECTION = "NETWORK_CONNECTION"
 COMPOUND = "COMPOUND"
 
 PEER_TYPES = (
-    VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION, COMPOUND, ONE_TIME_ADDRESS)
+    VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT, NETWORK_CONNECTION,
+    COMPOUND, ONE_TIME_ADDRESS)
 
 MPC_ECDSA_SECP256K1 = "MPC_ECDSA_SECP256K1"
 MPC_EDDSA_ED25519 = "MPC_EDDSA_ED25519"
@@ -226,7 +245,8 @@ class PagedVaultAccountsRequestFilters(object):
         - For default and max 'limit' values please see: https://docs.fireblocks.com/api/swagger-ui/#/
     """
 
-    def __init__(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None, limit=None, before=None,
+    def __init__(self, name_prefix=None, name_suffix=None, min_amount_threshold=None, asset_id=None, order_by=None,
+                 limit=None, before=None,
                  after=None):
         self.name_prefix = name_prefix
         self.name_suffix = name_suffix
@@ -253,7 +273,8 @@ class GetAssetWalletsFilters(object):
         - You should only insert 'before' or 'after' (or none of them), but not both
     """
 
-    def __init__(self, total_amount_larger_than=None, asset_id=None, order_by=None, limit=None, before=None, after=None):
+    def __init__(self, total_amount_larger_than=None, asset_id=None, order_by=None, limit=None, before=None,
+                 after=None):
         self.total_amount_larger_than = total_amount_larger_than
         self.asset_id = asset_id
         self.order_by = order_by
@@ -320,3 +341,223 @@ class IssueTokenRequest:
             obj.update({'issuerAddress': self.issuer_address})
 
         return obj
+
+
+class PolicyTransactionType(str, Enum):
+    ANY = "*"
+    CONTRACT_CALL = "CONTRACT_CALL"
+    RAW = "RAW"
+    TRANSFER = "TRANSFER"
+    APPROVE = "APPROVE"
+    MINT = "MINT"
+    BURN = "BURN"
+    SUPPLY = "SUPPLY"
+    REDEEM = "REDEEM"
+    STAKE = "STAKE"
+    TYPED_MESSAGE = "TYPED_MESSAGE"
+
+class PolicySrcOrDestType(str, Enum):
+    EXCHANGE = "EXCHANGE"
+    UNMANAGED = "UNMANAGED"
+    VAULT = "VAULT"
+    NETWORK_CONNECTION = "NETWORK_CONNECTION"
+    COMPOUND = "COMPOUND"
+    FIAT_ACCOUNT = "FIAT_ACCOUNT"
+    ONE_TIME_ADDRESS = "ONE_TIME_ADDRESS"
+    ANY = "*"
+
+class PolicyType(str, Enum):
+    TRANSFER = "TRANSFER"
+
+class PolicyAction(str, Enum):
+    ALLOW = "ALLOW"
+    BLOCK = "BLOCK"
+    TWO_TIER = "2-TIER"
+
+class PolicyDestAddressType(str, Enum):
+    ANY = "*"
+    WHITELISTED = "WHITELISTED"
+    ONE_TIME = "ONE_TIME"
+
+class PolicyAmountScope(str, Enum):
+    SINGLE_TX = "SINGLE_TX"
+    TIMEFRAME = "TIMEFRAME"
+
+class PolicySrcOrDestSubType(str, Enum):
+    ANY = "*"
+    EXTERNAL = "EXTERNAL"
+    INTERNAL = "INTERNAL"
+    CONTRACT = "CONTRACT"
+    EXCHANGETEST = "EXCHANGETEST"
+
+class Wildcard(str, Enum):
+    WILDCARD = "*"
+
+class AuthorizationLogic(str, Enum):
+    AND = "AND"
+    OR = "OR"
+
+class AuthorizationGroup:
+    def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, th: int = 0):
+        if users:
+            self.users = users
+        if users_groups:
+            self.users_groups = users_groups
+        self.th = th
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class PolicyAuthorizationGroups:
+    def __init__(self, logic: AuthorizationLogic, allow_operator_as_authorizer: Optional[bool] = None, groups: List[AuthorizationGroup] = []):
+        self.logic = logic
+        if allow_operator_as_authorizer:
+            self.allow_operator_as_authorizer = allow_operator_as_authorizer
+        self.groups = groups
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class Operators:
+    def __init__(self, wildcard: Optional[Wildcard] = None, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, services: Optional[List[str]] = None):
+        if wildcard:
+            self.wildcard = wildcard
+        if users:
+            self.users = users
+        if users_groups:
+            self.users_groups = users_groups
+        if services:
+            self.services = services
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class DesignatedSigners:
+    def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None):
+        if users:
+            self.users = users
+        if users_groups:
+            self.users_groups = users_groups
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class SrcDst:
+    def __init__(self, ids: Optional[List[List[Union[str, PolicySrcOrDestType, PolicySrcOrDestSubType]]]] = None):
+        if ids:
+            self.ids = ids
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class AmountAggregation:
+    def __init__(self, operators: str, src_transfer_peers: str, dst_transfer_peers: str):
+        self.operators = operators
+        self.src_transfer_peers = src_transfer_peers
+        self.dst_transfer_peers = dst_transfer_peers
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class DerivationPath:
+    def __init__(self, path: List[int]):
+        self.path = path
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class RawMessageSigning:
+    def __init__(self, derivation_path: DerivationPath, algorithm: str):
+        self.derivation_path = derivation_path
+        self.algorithm = algorithm
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class PolicyRule:
+    def __init__(self,
+                 type: PolicyType,
+                 action: PolicyAction,
+                 asset: str,
+                 amount_currency: str,
+                 amount_scope: PolicyAmountScope,
+                 amount: Union[int, str],
+                 period_sec: int,
+                 external_descriptor: str,
+                 operator: Optional[str] = None,
+                 operators: Optional[Operators] = None,
+                 transaction_type: Optional[PolicyTransactionType] = None,
+                 operator_services: Optional[List[str]] = None,
+                 designated_signer: Optional[str] = None,
+                 designated_signers: Optional[DesignatedSigners] = None,
+                 src_type: Optional[PolicySrcOrDestType] = None,
+                 src_sub_type: Optional[PolicySrcOrDestSubType] = None,
+                 src_id: Optional[str] = None,
+                 src: Optional[SrcDst] = None,
+                 dst_type: Optional[PolicySrcOrDestType] = None,
+                 dst_sub_type: Optional[PolicySrcOrDestSubType] = None,
+                 dst_id: Optional[str] = None,
+                 dst: Optional[SrcDst] = None,
+                 dst_address_type: Optional[PolicyDestAddressType] = None,
+                 authorizers: Optional[List[str]] = None,
+                 authorizers_count: Optional[int] = None,
+                 authorization_groups: Optional[PolicyAuthorizationGroups] = None,
+                 amount_aggregation: Optional[AmountAggregation] = None,
+                 raw_message_signing: Optional[RawMessageSigning] = None,
+                 apply_for_approve: Optional[bool] = None,
+                 apply_for_typed_message: Optional[bool] = None):
+        self.type = type
+        self.action = action
+        self.asset = asset
+        self.amount_currency = amount_currency
+        self.amount_scope = amount_scope
+        self.amount = amount
+        self.period_sec = period_sec
+        self.external_descriptor = external_descriptor
+        if operator:
+            self.operator = operator
+        if operators:
+            self.operators = operators
+        if transaction_type:
+            self.transaction_type = transaction_type
+        if operator_services:
+           self.operator_services = operator_services
+        if designated_signer:
+            self.designated_signer = designated_signer
+        if designated_signers:
+            self.designated_signers = designated_signers
+        if src_type:
+            self.src_type = src_type
+        if src_sub_type:
+            self.src_sub_type = src_sub_type
+        if src_id:
+            self.src_id = src_id
+        if src:
+            self.src = src
+        if dst_type:
+            self.dst_type = dst_type
+        if dst_sub_type:
+            self.dst_sub_type = dst_sub_type
+        if dst_id:
+            self.dst_id = dst_id
+        if dst:
+            self.dst = dst
+        if dst_address_type:
+            self.dst_address_type = dst_address_type
+        if authorizers:
+            self.authorizers = authorizers
+        if authorizers_count:
+            self.authorizers_count = authorizers_count
+        if authorization_groups:
+            self.authorization_groups = authorization_groups
+        if amount_aggregation:
+            self.amount_aggregation = amount_aggregation
+        if raw_message_signing:
+            self.raw_message_signing = raw_message_signing
+        if apply_for_approve:
+            self.apply_for_approve = apply_for_approve
+        if apply_for_typed_message:
+            self.apply_for_typed_message = apply_for_typed_message
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)

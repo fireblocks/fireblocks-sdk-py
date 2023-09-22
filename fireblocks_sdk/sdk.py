@@ -11,7 +11,7 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
     GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
-    GetOwnedAssetsSortValues
+    GetOwnedAssetsSortValues, PolicyRule
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -833,7 +833,7 @@ class FireblocksSDK(object):
 
     def get_contract_wallet(self, wallet_id):
         """Gets a single contract wallet
-  
+
         Args:
         wallet_id (str): The contract wallet ID
         """
@@ -841,7 +841,7 @@ class FireblocksSDK(object):
 
     def get_contract_wallet_asset(self, wallet_id, asset_id):
         """Gets a single contract wallet asset
-  
+
         Args:
         wallet_id (str): The contract wallet ID
         asset_id (str): The asset ID
@@ -1068,7 +1068,7 @@ class FireblocksSDK(object):
 
     def create_contract_wallet(self, name, idempotency_key=None):
         """Creates a new contract wallet
-  
+
         Args:
         name (str): A name for the new contract wallet
         """
@@ -1076,7 +1076,7 @@ class FireblocksSDK(object):
 
     def create_contract_wallet_asset(self, wallet_id, assetId, address, tag=None, idempotency_key=None):
         """Creates a new contract wallet asset
-  
+
         Args:
         wallet_id (str): The wallet id
         assetId (str): The asset to add
@@ -1903,6 +1903,69 @@ class FireblocksSDK(object):
         url = f"/v1/connections/wc/{session_id}"
 
         return self._delete_request(url)
+
+    def get_active_policy(self):
+        """
+        Get active policy (TAP) [BETA]
+        """
+
+        url = "/v1/tap/active_policy"
+
+        return self._get_request(url)
+
+    def get_draft(self):
+        """
+        Get draft policy (TAP) [BETA]
+        """
+
+        url = "/v1/tap/draft"
+
+        return self._get_request(url)
+
+    def update_draft(self, rules: List[PolicyRule]):
+        """
+        Update draft policy (TAP) [BETA]
+        @param rules: list of policy rules
+        """
+
+        url = "/v1/tap/draft"
+        body = {}
+
+        if rules is not None and isinstance(rules, list):
+            if any([not isinstance(x, PolicyRule) for x in rules]):
+                raise FireblocksApiException("Expected rules of type List[PolicyRule]")
+            body['rules'] = [rule.to_dict() for rule in rules]
+
+        return self._put_request(url, body)
+
+    def publish_draft(self, draft_id: str):
+        """
+        Publish draft policy (TAP) [BETA]
+        """
+
+        url = "/v1/tap/draft"
+
+        body = {
+            "draftId": draft_id
+        }
+
+        return self._post_request(url, body)
+
+    def publish_policy_rules(self, rules: List[PolicyRule]):
+        """
+        Publish policy rules (TAP) [BETA]
+        @param rules: list of rules
+        """
+
+        url = "/v1/tap/publish"
+        body = {}
+
+        if rules is not None and isinstance(rules, list):
+            if any([not isinstance(x, PolicyRule) for x in rules]):
+                raise FireblocksApiException("Expected rules of type List[PolicyRule]")
+            body['rules'] = [rule.to_dict() for rule in rules]
+
+        return self._post_request(url, body)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
