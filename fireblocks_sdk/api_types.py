@@ -1,6 +1,5 @@
 from enum import Enum
-from typing import Optional, List, Union
-
+from typing import Optional, List, Union, Dict
 
 def snake_to_camel(snake_case: str):
     words = snake_case.split('_')
@@ -317,31 +316,209 @@ class TimePeriod(str, Enum):
     DAY = "DAY"
     WEEK = "WEEK"
 
-
-class IssueTokenRequest:
-    symbol: str
-    name: str
-    blockchain_id: str
-    eth_contract_address: Optional[str]
-    issuer_address: Optional[str]
-    decimals: int
+class StellarRippleCreateParams:
+    def __init__(
+        self,
+        issuerAddress: Optional[str] = None
+    ):
+        self.issuerAddress = issuerAddress
 
     def serialize(self) -> dict:
-        obj = {
-            'symbol': self.symbol,
-            'name': self.name,
-            'blockchainId': self.blockchain_id,
-            'decimals': self.decimals,
-        }
+        obj = {}
 
-        if self.eth_contract_address:
-            obj.update({'ethContractAddress': self.eth_contract_address})
-
-        if self.issuer_address:
-            obj.update({'issuerAddress': self.issuer_address})
+        if self.issuerAddress:
+            obj.update({'issuerAddress': self.issuerAddress})
 
         return obj
 
+class Parameter:
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        internalType: str,
+        description: Optional[str] = None,
+        components: Optional[List['Parameter']] = None
+    ):
+        self.name = name
+        self.type = type
+        self.internalType = internalType
+        self.description = description
+        self.components = components
+    
+    def serialize(self) -> dict:
+        obj = {
+            'name': self.name,
+            'type': self.type,
+            'internalType': self.internalType,
+        }
+
+        if self.description:
+            obj.update({'description': self.description})
+        if self.components:
+            obj.update({'components': self.components})
+
+        return obj
+
+class ParameterWithValue(Parameter):
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        internalType: str,
+        value: Union[str, int, float, bool],
+        description: Optional[str] = None,
+        components: Optional[List['Parameter']] = None
+    ):
+        super().__init__(name, type, internalType, description, components)
+        self.value = value
+    
+    def serialize(self) -> dict:
+        obj = super().serialize()
+        obj.update({'value': self.value})
+        
+        return obj
+
+class EVMTokenCreateParams:
+    def __init__(
+        self,
+        contractId: str,
+        constructorParams: Optional[List[ParameterWithValue]] = []
+    ):
+        self.contractId = contractId
+        self.constructorParams = constructorParams
+    
+    def serialize(self) -> dict:
+        return {
+            'contractId': self.contractId,
+            'constructorParams': self.constructorParams,
+        }
+        
+class CreateTokenRequest:
+    def __init__(
+        self, 
+        symbol: str,
+        name: str,
+        blockchainId: str,
+        vaultAccountId: str,
+        createParams: Union[EVMTokenCreateParams, StellarRippleCreateParams]
+    ):
+        self.symbol = symbol
+        self.name = name
+        self.blockchainId = blockchainId
+        self.vaultAccountId = vaultAccountId
+        self.createParams = createParams
+    
+    def serialize(self) -> dict:
+        return {
+            'symbol': self.symbol,
+            'name': self.name,
+            'blockchainId': self.blockchainId,
+            'vaultAccountId': self.vaultAccountId,
+            'createParams': self.createParams
+        }
+
+class ContractDeployRequest(object):
+    def __init__(
+        self,
+        asset_id: str,
+        vault_account_id: str,
+        constructorParameters: Optional[List[ParameterWithValue]] = []
+    ):
+        self.asset_id = asset_id
+        self.vault_account_id = vault_account_id
+        self.constructorParameters = constructorParameters
+
+    def serialize(self) -> dict:
+        obj = {
+            'assetId': self.asset_id,
+            'vaultAccountId': self.vault_account_id,
+        }
+
+        if self.constructorParameters:
+            obj.update({'constructorParameters': self.constructorParameters})
+
+        return obj
+
+class AbiFunction(object):
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        stateMutability: str,
+        inputs: List[Parameter],
+        outputs: Optional[List[Parameter]] = None,
+        description: Optional[str] = None,
+        returns: Optional[Dict[str, str]] = None
+    ):
+        self.name = name
+        self.type = type
+        self.stateMutability = stateMutability
+        self.inputs = inputs
+        self.outputs = outputs
+        self.description = description
+        self.returns = returns
+    
+    def serialize(self) -> dict:
+        obj = {
+            'name': self.name,
+            'type': self.type,
+            'stateMutability': self.stateMutability,
+            'inputs': self.inputs,
+        }
+
+        if self.outputs is not None:
+            obj.update({'outputs': self.outputs})
+
+        if self.description:
+            obj.update({'description': self.description})
+
+        if self.returns:
+            obj.update({'returns': self.returns})
+
+        return obj
+
+class ContractUploadRequest(object): 
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        bytecode: str,
+        sourcecode: str,
+        abi: Optional[List[AbiFunction]] = None,
+        vendorId: Optional[str] = None,
+        compilerOutputMetadata: Optional[object] = None,
+        docs: Optional[object] = None,
+        attributes: Optional[Dict[str, str]] = None,
+    ):
+        self.name = name
+        self.description = description
+        self.bytecode = bytecode
+        self.sourcecode = sourcecode
+        self.abi = abi
+        self.vendorId = vendorId
+        self.compilerOutputMetadata = compilerOutputMetadata
+        self.docs = docs
+        self.attributes = attributes
+    
+    def serialize(self) -> dict:
+        obj = {
+            'name': self.name,
+            'description': self.description,
+            'bytecode': self.bytecode,
+            'sourcecode': self.sourcecode,
+        }
+
+        if self.compilerOutputMetadata:
+            obj.update({'compilerOutputMetadata': self.compilerOutputMetadata})
+
+        if self.attributes:
+            obj.update({'attributes': self.attributes})
+
+        if self.vendorId:
+            obj.update({'vendorId': self.vendorId})
+
+        return obj
 
 class PolicyTransactionType(str, Enum):
     ANY = "*"
