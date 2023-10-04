@@ -324,12 +324,12 @@ class StellarRippleCreateParams:
         self.issuerAddress = issuerAddress
 
     def serialize(self) -> dict:
-        obj = {}
+        output_dict = {}
 
         if self.issuerAddress:
-            obj.update({'issuerAddress': self.issuerAddress})
+            output_dict['issuerAddress'] = self.issuerAddress
 
-        return obj
+        return output_dict
 
 class Parameter:
     def __init__(
@@ -347,18 +347,18 @@ class Parameter:
         self.components = components
     
     def serialize(self) -> dict:
-        obj = {
+        output_dict = {
             'name': self.name,
             'type': self.type,
             'internalType': self.internalType,
         }
 
         if self.description:
-            obj.update({'description': self.description})
+            output_dict['description'] = self.description
         if self.components:
-            obj.update({'components': self.components})
+            output_dict['components'] = self.components
 
-        return obj
+        return output_dict
 
 class ParameterWithValue(Parameter):
     def __init__(
@@ -374,25 +374,29 @@ class ParameterWithValue(Parameter):
         self.value = value
     
     def serialize(self) -> dict:
-        obj = super().serialize()
-        obj.update({'value': self.value})
+        output_dict = super().serialize()
+        output_dict['value'] = self.value
         
-        return obj
+        return output_dict
 
 class EVMTokenCreateParams:
     def __init__(
         self,
         contractId: str,
-        constructorParams: Optional[List[ParameterWithValue]] = []
+        constructorParams: Optional[List[ParameterWithValue]] = None
     ):
         self.contractId = contractId
         self.constructorParams = constructorParams
     
     def serialize(self) -> dict:
-        return {
+        output_dict = {
             'contractId': self.contractId,
-            'constructorParams': self.constructorParams,
         }
+
+        if self.constructorParams:
+            output_dict['constructorParams'] = self.constructorParams
+
+        return output_dict
         
 class CreateTokenRequest:
     def __init__(
@@ -423,22 +427,22 @@ class ContractDeployRequest(object):
         self,
         asset_id: str,
         vault_account_id: str,
-        constructorParameters: Optional[List[ParameterWithValue]] = []
+        constructorParameters: Optional[List[ParameterWithValue]] = None
     ):
         self.asset_id = asset_id
         self.vault_account_id = vault_account_id
         self.constructorParameters = constructorParameters
 
     def serialize(self) -> dict:
-        obj = {
+        output_dict = {
             'assetId': self.asset_id,
             'vaultAccountId': self.vault_account_id,
         }
 
         if self.constructorParameters:
-            obj.update({'constructorParameters': self.constructorParameters})
+            output_dict['constructorParameters'] = self.constructorParameters
 
-        return obj
+        return output_dict
 
 class AbiFunction(object):
     def __init__(
@@ -460,7 +464,7 @@ class AbiFunction(object):
         self.returns = returns
     
     def serialize(self) -> dict:
-        obj = {
+        output_dict = {
             'name': self.name,
             'type': self.type,
             'stateMutability': self.stateMutability,
@@ -468,15 +472,15 @@ class AbiFunction(object):
         }
 
         if self.outputs is not None:
-            obj.update({'outputs': self.outputs})
+            output_dict['outputs'] = self.outputs
 
         if self.description:
-            obj.update({'description': self.description})
+            output_dict['description'] = self.description
 
         if self.returns:
-            obj.update({'returns': self.returns})
+            output_dict['returns'] = self.returns
 
-        return obj
+        return output_dict
 
 class ContractUploadRequest(object): 
     def __init__(
@@ -502,7 +506,7 @@ class ContractUploadRequest(object):
         self.attributes = attributes
     
     def serialize(self) -> dict:
-        obj = {
+        output_dict = {
             'name': self.name,
             'description': self.description,
             'bytecode': self.bytecode,
@@ -510,15 +514,15 @@ class ContractUploadRequest(object):
         }
 
         if self.compilerOutputMetadata:
-            obj.update({'compilerOutputMetadata': self.compilerOutputMetadata})
+            output_dict['compilerOutputMetadata'] = self.compilerOutputMetadata
 
         if self.attributes:
-            obj.update({'attributes': self.attributes})
+            output_dict['attributes'] = self.attributes
 
         if self.vendorId:
-            obj.update({'vendorId': self.vendorId})
+            output_dict['vendorId'] = self.vendorId
 
-        return obj
+        return output_dict
 
 class PolicyTransactionType(str, Enum):
     ANY = "*"
