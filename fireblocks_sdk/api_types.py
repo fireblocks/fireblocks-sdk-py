@@ -14,7 +14,7 @@ def convert_class_to_dict(class_dict: dict):
                                                 in value]
         elif hasattr(value, 'to_dict') and callable(getattr(value, 'to_dict')):
             output_dict[snake_to_camel(key)] = value.to_dict()
-        else:
+        elif value is not None:
             output_dict[snake_to_camel(key)] = value
     return output_dict
 
@@ -323,13 +323,8 @@ class StellarRippleCreateParams:
     ):
         self.issuerAddress = issuerAddress
 
-    def serialize(self) -> dict:
-        output_dict = {}
-
-        if self.issuerAddress:
-            output_dict['issuerAddress'] = self.issuerAddress
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class Parameter:
     def __init__(
@@ -346,19 +341,8 @@ class Parameter:
         self.description = description
         self.components = components
     
-    def serialize(self) -> dict:
-        output_dict = {
-            'name': self.name,
-            'type': self.type,
-            'internalType': self.internalType,
-        }
-
-        if self.description:
-            output_dict['description'] = self.description
-        if self.components:
-            output_dict['components'] = self.components
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class ParameterWithValue(Parameter):
     def __init__(
@@ -372,12 +356,9 @@ class ParameterWithValue(Parameter):
     ):
         super().__init__(name, type, internalType, description, components)
         self.value = value
-    
-    def serialize(self) -> dict:
-        output_dict = super().serialize()
-        output_dict['value'] = self.value
-        
-        return output_dict
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class EVMTokenCreateParams:
     def __init__(
@@ -388,15 +369,8 @@ class EVMTokenCreateParams:
         self.contractId = contractId
         self.constructorParams = constructorParams
     
-    def serialize(self) -> dict:
-        output_dict = {
-            'contractId': self.contractId,
-        }
-
-        if self.constructorParams:
-            output_dict['constructorParams'] = self.constructorParams
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
         
 class CreateTokenRequest:
     def __init__(
@@ -413,14 +387,8 @@ class CreateTokenRequest:
         self.vaultAccountId = vaultAccountId
         self.createParams = createParams
     
-    def serialize(self) -> dict:
-        return {
-            'symbol': self.symbol,
-            'name': self.name,
-            'blockchainId': self.blockchainId,
-            'vaultAccountId': self.vaultAccountId,
-            'createParams': self.createParams
-        }
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class ContractDeployRequest(object):
     def __init__(
@@ -433,16 +401,8 @@ class ContractDeployRequest(object):
         self.vault_account_id = vault_account_id
         self.constructorParameters = constructorParameters
 
-    def serialize(self) -> dict:
-        output_dict = {
-            'assetId': self.asset_id,
-            'vaultAccountId': self.vault_account_id,
-        }
-
-        if self.constructorParameters:
-            output_dict['constructorParameters'] = self.constructorParameters
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class AbiFunction(object):
     def __init__(
@@ -463,24 +423,8 @@ class AbiFunction(object):
         self.description = description
         self.returns = returns
     
-    def serialize(self) -> dict:
-        output_dict = {
-            'name': self.name,
-            'type': self.type,
-            'stateMutability': self.stateMutability,
-            'inputs': self.inputs,
-        }
-
-        if self.outputs is not None:
-            output_dict['outputs'] = self.outputs
-
-        if self.description:
-            output_dict['description'] = self.description
-
-        if self.returns:
-            output_dict['returns'] = self.returns
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class ContractUploadRequest(object): 
     def __init__(
@@ -505,24 +449,8 @@ class ContractUploadRequest(object):
         self.docs = docs
         self.attributes = attributes
     
-    def serialize(self) -> dict:
-        output_dict = {
-            'name': self.name,
-            'description': self.description,
-            'bytecode': self.bytecode,
-            'sourcecode': self.sourcecode,
-        }
-
-        if self.compilerOutputMetadata:
-            output_dict['compilerOutputMetadata'] = self.compilerOutputMetadata
-
-        if self.attributes:
-            output_dict['attributes'] = self.attributes
-
-        if self.vendorId:
-            output_dict['vendorId'] = self.vendorId
-
-        return output_dict
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class PolicyTransactionType(str, Enum):
     ANY = "*"
