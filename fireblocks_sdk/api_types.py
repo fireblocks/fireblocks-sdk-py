@@ -301,6 +301,10 @@ class NFTOwnershipStatusValues(str, Enum):
     ARCHIVED = "ARCHIVED"
 
 
+class NFTOwnershipStatusUpdatedPayload:
+    assetId: str
+    status: NFTOwnershipStatusValues
+
 class GetOwnedCollectionsSortValue(str, Enum):
     COLLECTION_NAME = "name"
 

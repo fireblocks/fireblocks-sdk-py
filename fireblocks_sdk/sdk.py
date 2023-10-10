@@ -11,7 +11,7 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
     GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
-    GetOwnedAssetsSortValues, PolicyRule
+    GetOwnedAssetsSortValues, PolicyRule, NFTOwnershipStatusUpdatedPayload
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -247,6 +247,16 @@ class FireblocksSDK(object):
         url = "/v1/nfts/ownership/tokens/" + id + "/status"
 
         return self._put_request(url, {"status": status.value})
+
+    def update_nft_ownerships_status(self, payload: List[NFTOwnershipStatusUpdatedPayload]):
+        """Updates tokens status for a tenant, in all tenant vaults.
+
+        Args:
+            payload (string): List of assets with status for update
+        """
+        url = "/v1/nfts/ownership/tokens/status"
+
+        return self._put_request(url, payload)
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
