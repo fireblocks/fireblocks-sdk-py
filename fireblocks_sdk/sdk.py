@@ -11,7 +11,7 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
     GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
-    GetOwnedAssetsSortValues, PolicyRule
+    GetOwnedAssetsSortValues, PolicyRule, PagedExchangeAccountRequestFilters
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -585,6 +585,35 @@ class FireblocksSDK(object):
         """Gets all exchange accounts for your tenant"""
 
         return self._get_request("/v1/exchange_accounts")
+
+    def get_exchange_accounts_paged(self, paged_exchange_accounts_request_filters: PagedExchangeAccountRequestFilters):
+        """Gets a page of vault accounts for your tenant according to filters given
+
+        Args:
+            paged_exchange_accounts_request_filters (object, optional): Possible filters to apply for request
+        """
+
+        url = f"/v1/exchange_accounts/paged"
+        limit, before, after = \
+            attrgetter('limit', 'before', 'after')(
+                paged_exchange_accounts_request_filters)
+
+        params = {}
+
+    
+        if limit is not None:
+            params['limit'] = limit
+
+        if before is not None:
+            params['before'] = before
+
+        if after is not None:
+            params['after'] = after
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
 
     def get_exchange_account(self, exchange_account_id):
         """Gets an exchange account for your tenant

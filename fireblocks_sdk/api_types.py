@@ -257,6 +257,24 @@ class PagedVaultAccountsRequestFilters(object):
         self.before = before
         self.after = after
 
+class PagedExchangeAccountRequestFilters(object):
+    """ Optional filters to apply for request
+
+    Args
+
+        limit (number, optional): Results page size
+        before (string, optional): cursor string received from previous request
+        after (string, optional): cursor string received from previous request
+
+    Constraints
+        - You should only insert 'before' or 'after' (or none of them), but not both
+        - For default and max 'limit' values please see: https://docs.fireblocks.com/api/swagger-ui/#/
+    """
+
+    def __init__(self, limit=None, before=None, after=None):
+            self.limit = limit
+            self.before = before
+            self.after = after
 
 class GetAssetWalletsFilters(object):
     """ Optional filters to apply for request
