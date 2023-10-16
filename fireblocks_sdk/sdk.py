@@ -11,7 +11,7 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
     GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
-    GetOwnedAssetsSortValues, PolicyRule
+    GetOwnedAssetsSortValues, PolicyRule, GetSmartTransferFilters
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -1966,6 +1966,311 @@ class FireblocksSDK(object):
             body['rules'] = [rule.to_dict() for rule in rules]
 
         return self._post_request(url, body)
+
+    def get_smart_transfer_tickets(self, paged_smart_transfer_request_filters: GetSmartTransferFilters):
+        """Gets a page of smart transfer for your tenant according to filters given
+        Args:
+            paged_smart_transfer_request_filters (object, optional): Possible filters to apply for request
+        """
+
+        url = "/v1/smart-transfers"
+
+        params = {}
+
+        if paged_smart_transfer_request_filters.query is not None:
+            params['q'] = paged_smart_transfer_request_filters.query
+
+        if paged_smart_transfer_request_filters.statuses is not None:
+            params['statuses'] = paged_smart_transfer_request_filters.statuses
+
+        if paged_smart_transfer_request_filters.network_id is not None:
+            params['networkId'] = paged_smart_transfer_request_filters.network_id
+
+        if paged_smart_transfer_request_filters.created_by_me is not None:
+            params['createdByMe'] = bool(paged_smart_transfer_request_filters.created_by_me)
+
+        if paged_smart_transfer_request_filters.expires_after is not None:
+            params['expiresAfter'] = paged_smart_transfer_request_filters.expires_after
+
+        if paged_smart_transfer_request_filters.expires_before is not None:
+            params['expiresBefore'] = paged_smart_transfer_request_filters.expires_before
+
+        if paged_smart_transfer_request_filters.ticket_type is not None:
+            params['type'] = paged_smart_transfer_request_filters.ticket_type
+
+        if paged_smart_transfer_request_filters.external_ref_id is not None:
+            params['externalRefId'] = paged_smart_transfer_request_filters.external_ref_id
+
+        if paged_smart_transfer_request_filters.after is not None:
+            params['after'] = paged_smart_transfer_request_filters.after
+
+        if paged_smart_transfer_request_filters.limit is not None:
+            params['limit'] = int(paged_smart_transfer_request_filters.limit)
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
+    def create_smart_transfer_ticket(self, ticket_type: str, created_by_network_id: str, terms=None,
+                                     expires_in: Optional[int] = None, submit: bool = True, note: Optional[str] = None,
+                                     external_ref_id: Optional[str] = None, idempotency_key: str = None):
+        """Creates new Smart Transfer ticket
+        Args:
+            ticket_type (str): Type of the ticket (ASYNC)
+            created_by_network_id (str): NetworkId that is used for ticket creation
+            expires_in (int): Ticket expiration in hours. Optional
+            submit (bool): Flag that will submit ticket immediately - create ticket with OPEN status (ticket will be created in DRAFT otherwise). Optional
+            note (str): Note. Optional;
+            terms (list, optional): Ticket terms array.
+                Each term should have the following keys:
+                - 'asset': Asset
+                - 'amount': Amount
+                - 'fromNetworkId': Source networkId
+                - 'toNetworkId': Destination networkId
+                Default is an empty list.
+            external_ref_id (str): External Reference ID. Optional;
+            idempotency_key: Idempotency key
+        """
+
+        url = f"/v1/smart-transfers"
+
+        if terms is None:
+            terms = []
+
+        payload = {
+            "createdByNetworkId": created_by_network_id,
+            "type": ticket_type,
+            "terms": terms,
+            "submit": submit
+        }
+
+        if expires_in is not None:
+            payload["expiresIn"] = expires_in
+        if note is not None:
+            payload["note"] = note
+        if external_ref_id is not None:
+            payload["externalRefId"] = external_ref_id
+
+        return self._post_request(url, payload, idempotency_key)
+
+    def get_smart_transfer_ticket(self, ticket_id: str):
+        """Fetch single Smart Transfer ticket
+        Args:
+            ticket_id (str): ID of the ticket
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}"
+
+        return self._get_request(url)
+
+    def set_smart_transfer_ticket_expires_in(self, ticket_id: str, expires_in: int):
+        """Set expiration for ticket.
+        Args:
+            ticket_id (str): ID of the ticket
+            expires_in (int): Expires in (number of hours)
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/expires-in"
+
+        payload = {
+            "expiresIn": expires_in
+        }
+
+        return self._put_request(url, payload)
+
+    def set_smart_transfer_ticket_external_ref_id(self, ticket_id: str, external_ref_id: str):
+        """Set External Ref. ID for Ticket
+        Args:
+            ticket_id (str): ID of the ticket
+            external_ref_id (str): ticket External Ref. id
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/external-id"
+
+        payload = {
+            "externalRefId": external_ref_id
+        }
+
+        return self._put_request(url, payload)
+
+    def submit_smart_transfer_ticket(self, ticket_id: str, expires_in: int):
+        """Submit Smart Transfer ticket - change status to OPEN
+        Args:
+            ticket_id (str): ID of the ticket
+            expires_in (int): Expires in (number of hours)
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/submit"
+
+        payload = {
+            "expiresIn": expires_in
+        }
+
+        return self._put_request(url, payload)
+
+    def fulfill_smart_transfer_ticket(self, ticket_id: str):
+        """Manually fulfill ticket, in case when all terms (legs) are funded manually
+        Args:
+            ticket_id (str): ID of the ticket
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/fulfill"
+
+        return self._put_request(url)
+
+    def cancel_smart_transfer_ticket(self, ticket_id: str):
+        """Cancel Smart Transfer ticket
+        Args:
+            ticket_id (str): ID of the ticket
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/cancel"
+
+        return self._put_request(url)
+
+    def create_smart_transfer_ticket_term(self, ticket_id: str, asset: str, amount, from_network_id: str,
+                                          to_network_id: str, idempotency_key: str = None):
+        """Create new Smart Transfer ticket term/leg (when ticket in DRAFT)
+        Args:
+            ticket_id (str): Ticket ID
+            asset (str): ID of asset
+            amount (double): Amount
+            from_network_id (str): Source network id
+            to_network_id (str): Destination network id
+            idempotency_key (str): Idempotency key
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms"
+
+        payload = {
+            "asset": asset,
+            "amount": amount,
+            "fromNetworkId": from_network_id,
+            "toNetworkId": to_network_id,
+        }
+
+        return self._post_request(url, payload, idempotency_key)
+
+    def get_smart_transfer_ticket_term(self, ticket_id: str, term_id: str):
+        """Gets Smart Transfer ticket term/leg
+        Args:
+            ticket_id (str): Ticket ID
+            term_id (str): Term ID
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}"
+
+        return self._get_request(url)
+
+    def update_smart_transfer_ticket_term(self, ticket_id: str, term_id: str, asset: str, amount, from_network_id: str,
+                                          to_network_id: str):
+        """Update Smart Transfer ticket term/leg
+        Args:
+            ticket_id (str): Ticket ID
+            term_id (str): Term ID
+            asset (str): ID of asset
+            amount (double): Amount
+            from_network_id (str): Source network id
+            to_network_id (str): Destination network id
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}"
+
+        payload = {
+            "asset": asset,
+            "amount": amount,
+            "fromNetworkId": from_network_id,
+            "toNetworkId": to_network_id,
+        }
+
+        return self._put_request(url, payload)
+
+    def delete_smart_transfer_ticket_term(self, ticket_id: str, term_id: str):
+        """Delete Smart Transfer ticket term/leg
+        Args:
+            ticket_id (str): Ticket ID
+            term_id (str): Term ID
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}"
+
+        return self._delete_request(url)
+
+    def fund_smart_transfer_ticket_term(self, ticket_id: str, term_id, asset: str, amount, network_connection_id: str,
+                                        source_id: str, source_type: str, fee: Optional[str] = None,
+                                        fee_level: Optional[str] = None):
+        """Fund Smart Transfer ticket term/leg
+        Args:
+            ticket_id (str): Ticket ID
+            term_id (str): Term ID
+            asset (str): ID of asset
+            amount (str): String representation of amount ("1.2" e.g.)
+            network_connection_id (str): Connection id
+            source_id (str): Source id for transaction
+            source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
+                VAULT_ACCOUNT, EXCHANGE, FIAT_ACCOUNT
+            fee (double, optional): Sathoshi/Latoshi per byte.
+            fee_level: The fee level of the dropping transaction (HIGH, MEDIUM, LOW)
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}/fund"
+
+        payload = {
+            "asset": asset,
+            "amount": amount,
+            "networkConnectionId": network_connection_id,
+            "srcId": source_id,
+            "srcType": source_type,
+        }
+
+        if fee is not None:
+            payload["fee"] = fee
+
+        if fee_level is not None:
+            if fee_level not in FEE_LEVEL:
+                raise FireblocksApiException("Got invalid fee level: " + fee_level)
+            payload["feeLevel"] = fee_level
+
+        return self._put_request(url, payload)
+
+    def manually_fund_smart_transfer_ticket_term(self, ticket_id: str, term_id, tx_hash: str):
+        """Manually fund Smart Transfer ticket term/leg
+        Args:
+            ticket_id (str): Ticket ID
+            term_id (str): Term ID
+            tx_hash (str): Transaction hash
+        """
+
+        url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}/manually-fund"
+
+        payload = {
+            "txHash": tx_hash,
+        }
+
+        return self._put_request(url, payload)
+
+    def set_smart_transfer_user_group_ids(self, user_group_ids):
+        """Set Smart Transfer user group ids
+        Args:
+            user_group_ids (list): List of user groups ids to receive Smart Transfer notifications
+        """
+
+        url = "/v1/smart-transfers/settings/user-groups"
+
+        payload = {
+            "userGroupIds": user_group_ids,
+        }
+
+        return self._post_request(url, payload)
+
+    def get_smart_transfer_user_group_ids(self):
+        """Fetch Smart Transfer user group ids that will receive Smart Transfer notifications
+        """
+
+        url = "/v1/smart-transfers/settings/user-groups"
+
+        return self._get_request(url)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
