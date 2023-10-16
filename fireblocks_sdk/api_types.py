@@ -286,7 +286,7 @@ class GetAssetWalletsFilters(object):
 class GetSmartTransferFilters(object):
     """ Optional filters to apply for request
     Args
-        q (string, optional):  Search query string - either ticketId, asset or network name
+        query (string, optional):  Search query string - either ticketId, asset or network name
         statuses (DRAFT/PENDING_APPROVAL/OPEN/IN_SETTLEMENT/FULFILLED/EXPIRED/CANCELED, optional): array of ticket statuses
         network_id (string, optional): networkId used in ticket
         created_by_me (bool, optional): created by me flag
@@ -301,10 +301,11 @@ class GetSmartTransferFilters(object):
         - You should only insert 'before' or 'after' (or none of them), but not both
     """
 
-    def __init__(self, q: str = None, statuses: str = None, network_id: str = None, created_by_me: bool = None,
-                 expires_after: str = None, expires_before: str = None, ticket_type: str = None,
-                 external_ref_id: str = None, after: str = None, limit: str = None):
-        self.q = q
+    def __init__(self, query: Optional[str] = None, statuses: Optional[str] = None, network_id: Optional[str] = None,
+                 created_by_me: Optional[bool] = None, expires_after: Optional[str] = None,
+                 expires_before: Optional[str] = None, ticket_type: Optional[str] = None,
+                 external_ref_id: Optional[str] = None, after: Optional[str] = None, limit: Optional[str] = None):
+        self.query = query
         self.statuses = statuses
         self.network_id = network_id
         self.created_by_me = created_by_me

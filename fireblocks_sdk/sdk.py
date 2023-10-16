@@ -1973,12 +1973,12 @@ class FireblocksSDK(object):
             paged_smart_transfer_request_filters (object, optional): Possible filters to apply for request
         """
 
-        url = f"/v1/smart-transfers"
+        url = "/v1/smart-transfers"
 
         params = {}
 
-        if paged_smart_transfer_request_filters.q is not None:
-            params['q'] = paged_smart_transfer_request_filters.q
+        if paged_smart_transfer_request_filters.query is not None:
+            params['q'] = paged_smart_transfer_request_filters.query
 
         if paged_smart_transfer_request_filters.statuses is not None:
             params['statuses'] = paged_smart_transfer_request_filters.statuses
@@ -2013,8 +2013,8 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def create_smart_transfer_ticket(self, ticket_type: str, created_by_network_id: str, terms=None,
-                                     expires_in: int = None, submit: bool = True, note: str = None,
-                                     external_ref_id: str = None, idempotency_key: str = None):
+                                     expires_in: Optional[int] = None, submit: bool = True, note: Optional[str] = None,
+                                     external_ref_id: Optional[str] = None, idempotency_key: str = None):
         """Creates new Smart Transfer ticket
         Args:
             ticket_type (str): Type of the ticket (ASYNC)
@@ -2041,12 +2041,16 @@ class FireblocksSDK(object):
         payload = {
             "createdByNetworkId": created_by_network_id,
             "type": ticket_type,
-            "expiresIn": expires_in,
             "terms": terms,
-            "externalRefId": external_ref_id,
-            "note": note,
             "submit": submit
         }
+
+        if expires_in is not None:
+            payload["expiresIn"] = expires_in
+        if note is not None:
+            payload["note"] = note
+        if external_ref_id is not None:
+            payload["externalRefId"] = external_ref_id
 
         return self._post_request(url, payload, idempotency_key)
 
@@ -2070,7 +2074,7 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/expires-in"
 
         payload = {
-            "expiresIn": int(expires_in)
+            "expiresIn": expires_in
         }
 
         return self._put_request(url, payload)
@@ -2085,7 +2089,7 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/external-id"
 
         payload = {
-            "externalRefId": str(external_ref_id)
+            "externalRefId": external_ref_id
         }
 
         return self._put_request(url, payload)
@@ -2100,7 +2104,7 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/submit"
 
         payload = {
-            "expiresIn": int(expires_in)
+            "expiresIn": expires_in
         }
 
         return self._put_request(url, payload)
@@ -2140,10 +2144,10 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/terms"
 
         payload = {
-            "asset": str(asset),
+            "asset": asset,
             "amount": amount,
-            "fromNetworkId": str(from_network_id),
-            "toNetworkId": str(to_network_id),
+            "fromNetworkId": from_network_id,
+            "toNetworkId": to_network_id,
         }
 
         return self._post_request(url, payload, idempotency_key)
@@ -2174,10 +2178,10 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}"
 
         payload = {
-            "asset": str(asset),
+            "asset": asset,
             "amount": amount,
-            "fromNetworkId": str(from_network_id),
-            "toNetworkId": str(to_network_id),
+            "fromNetworkId": from_network_id,
+            "toNetworkId": to_network_id,
         }
 
         return self._put_request(url, payload)
@@ -2194,7 +2198,8 @@ class FireblocksSDK(object):
         return self._delete_request(url)
 
     def fund_smart_transfer_ticket_term(self, ticket_id: str, term_id, asset: str, amount, network_connection_id: str,
-                                        source_id: str, source_type: str, fee: str = None, fee_level: str = None):
+                                        source_id: str, source_type: str, fee: Optional[str] = None,
+                                        fee_level: Optional[str] = None):
         """Fund Smart Transfer ticket term/leg
         Args:
             ticket_id (str): Ticket ID
@@ -2212,14 +2217,20 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}/fund"
 
         payload = {
-            "asset": str(asset),
-            "amount": str(amount),
-            "networkConnectionId": str(network_connection_id),
-            "srcId": str(source_id),
-            "srcType": str(source_type),
-            "fee": str(fee),
-            "feeLevel": str(fee_level),
+            "asset": asset,
+            "amount": amount,
+            "networkConnectionId": network_connection_id,
+            "srcId": source_id,
+            "srcType": source_type,
         }
+
+        if fee is not None:
+            payload["fee"] = fee
+
+        if fee_level is not None:
+            if fee_level not in FEE_LEVEL:
+                raise FireblocksApiException("Got invalid fee level: " + fee_level)
+            payload["feeLevel"] = fee_level
 
         return self._put_request(url, payload)
 
@@ -2234,7 +2245,7 @@ class FireblocksSDK(object):
         url = f"/v1/smart-transfers/{ticket_id}/terms/{term_id}/manually-fund"
 
         payload = {
-            "txHash": str(tx_hash),
+            "txHash": tx_hash,
         }
 
         return self._put_request(url, payload)
@@ -2245,7 +2256,7 @@ class FireblocksSDK(object):
             user_group_ids (list): List of user groups ids to receive Smart Transfer notifications
         """
 
-        url = f"/v1/smart-transfers/settings/user-groups"
+        url = "/v1/smart-transfers/settings/user-groups"
 
         payload = {
             "userGroupIds": user_group_ids,
@@ -2257,7 +2268,7 @@ class FireblocksSDK(object):
         """Fetch Smart Transfer user group ids that will receive Smart Transfer notifications
         """
 
-        url = f"/v1/smart-transfers/settings/user-groups"
+        url = "/v1/smart-transfers/settings/user-groups"
 
         return self._get_request(url)
 
