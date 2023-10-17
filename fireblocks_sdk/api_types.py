@@ -361,6 +361,11 @@ class GetOwnedAssetsSortValues(str, Enum):
     ASSET_NAME = "name"
 
 
+class NFTsWalletTypeValues(str, Enum):
+    VAULT_ACCOUNT = "VAULT_ACCOUNT"
+    END_USER_WALLET = "END_USER_WALLET"
+
+
 class OrderValues(str, Enum):
     ASC = "ASC"
     DESC = "DESC"
