@@ -252,11 +252,11 @@ class FireblocksSDK(object):
         """Updates tokens status for a tenant, in all tenant vaults.
 
         Args:
-            payload (string): List of assets with status for update
+            payload (NFTOwnershipStatusUpdatedPayload[]): List of assets with status for update
         """
         url = "/v1/nfts/ownership/tokens/status"
 
-        return self._put_request(url, payload)
+        return self._put_request(url, list(map((lambda payload_item: payload_item.serialize()), payload)))
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
