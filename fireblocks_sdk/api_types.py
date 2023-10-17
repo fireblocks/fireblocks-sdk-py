@@ -301,6 +301,40 @@ class GetAssetWalletsFilters(object):
         self.after = after
 
 
+class GetSmartTransferFilters(object):
+    """ Optional filters to apply for request
+    Args
+        query (string, optional):  Search query string - either ticketId, asset or network name
+        statuses (DRAFT/PENDING_APPROVAL/OPEN/IN_SETTLEMENT/FULFILLED/EXPIRED/CANCELED, optional): array of ticket statuses
+        network_id (string, optional): networkId used in ticket
+        created_by_me (bool, optional): created by me flag
+        expires_after (string, optional): Lower bound of search range
+        expires_before (string, optional): Upper bound of search range
+        ticket_type (ASYNC/ATOMIC, optional): type of ticket
+        external_ref_id (string, optional): external ref id
+        after (string, optional): cursor string received from previous request
+        limit (number, optional): Results page size
+
+    Constraints
+        - You should only insert 'before' or 'after' (or none of them), but not both
+    """
+
+    def __init__(self, query: Optional[str] = None, statuses: Optional[str] = None, network_id: Optional[str] = None,
+                 created_by_me: Optional[bool] = None, expires_after: Optional[str] = None,
+                 expires_before: Optional[str] = None, ticket_type: Optional[str] = None,
+                 external_ref_id: Optional[str] = None, after: Optional[str] = None, limit: Optional[str] = None):
+        self.query = query
+        self.statuses = statuses
+        self.network_id = network_id
+        self.created_by_me = created_by_me
+        self.expires_after = expires_after
+        self.expires_before = expires_before
+        self.ticket_type = ticket_type
+        self.external_ref_id = external_ref_id
+        self.limit = limit
+        self.after = after
+
+
 class GetOwnedNftsSortValues(str, Enum):
     OWNERSHIP_LAST_UPDATE_TIME = "ownershipLastUpdateTime"
     TOKEN_NAME = "name"
@@ -321,6 +355,7 @@ class NFTOwnershipStatusValues(str, Enum):
 
 class GetOwnedCollectionsSortValue(str, Enum):
     COLLECTION_NAME = "name"
+
 
 class GetOwnedAssetsSortValues(str, Enum):
     ASSET_NAME = "name"
