@@ -119,11 +119,14 @@ class FireblocksSDK(object):
         url = "/v1/nfts/tokens/" + id
         return self._put_request(path=url)
 
-    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str, vault_account_id: str):
+    def refresh_nft_ownership_by_vault(self, blockchain_descriptor: str,
+                                       vault_account_id: str = None, ncw_id: str = None, ncw_account_id: str = None):
         """
 
         :param blockchain_descriptor:
-        :param vault_account_id:
+        :param vault_account_id: Required for Non-NCW
+        :param ncw_id: Required for NCW
+        :param ncw_account_id: Required for NCW
         :return:
         """
         url = "/v1/nfts/ownership/tokens"
@@ -134,6 +137,12 @@ class FireblocksSDK(object):
 
         if vault_account_id:
             params['vaultAccountId'] = vault_account_id
+
+        if ncw_id:
+            params['ncwId'] = ncw_id
+
+        if ncw_account_id:
+            params['ncwAccountId'] = ncw_account_id
 
         return self._put_request(url, query_params=params)
 
