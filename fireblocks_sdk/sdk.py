@@ -11,7 +11,7 @@ from .api_types import FireblocksApiException, TRANSACTION_TYPES, TRANSACTION_ST
     DestinationTransferPeerPath, TransferTicketTerm, TRANSACTION_TRANSFER, SIGNING_ALGORITHM, UnsignedMessage, \
     FEE_LEVEL, PagedVaultAccountsRequestFilters, TransactionDestination, NFTOwnershipStatusValues, IssueTokenRequest, \
     GetAssetWalletsFilters, TimePeriod, GetOwnedCollectionsSortValue, GetOwnedNftsSortValues, GetNftsSortValues, OrderValues, \
-    GetOwnedAssetsSortValues, PolicyRule, PagedExchangeAccountRequestFilters
+    GetOwnedAssetsSortValues, PolicyRule, GetSmartTransferFilters, PagedExchangeAccountRequestFilters
 from .sdk_token_provider import SdkTokenProvider
 
 
