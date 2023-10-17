@@ -204,7 +204,7 @@ class FireblocksSDK(object):
             params['search'] = search
 
         if status:
-            params['status'] = status
+            params['status'] = status.value
 
         if ncw_id:
             params['ncwId'] = ncw_id.value
@@ -224,9 +224,6 @@ class FireblocksSDK(object):
         if order:
             params['order'] = order.value
 
-        if status:
-            params['status'] = status
-
         return self._get_request(url, query_params=params)
 
     def list_owned_assets(self, search: str = None, status: NFTOwnershipStatusValues = None,
@@ -243,7 +240,7 @@ class FireblocksSDK(object):
             params['search'] = search
 
         if status:
-            params['status'] = status
+            params['status'] = status.value
 
         if ncw_id:
             params['ncwId'] = ncw_id.value
