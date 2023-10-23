@@ -3,7 +3,7 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import List, Dict
+from typing import Any, Dict, Optional, List
 
 import requests
 
