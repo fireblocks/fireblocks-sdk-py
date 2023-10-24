@@ -611,7 +611,7 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/exchange_accounts")
 
-    def get_exchange_accounts_paged(self, paged_exchange_accounts_request_filters: PagedExchangeAccountRequestFilters):
+    def get_exchange_accounts_paged(self, paged_exchange_accounts_request_filters: PagedExchangeAccountRequestFilters=PagedExchangeAccountRequestFilters()):
         """Gets a page of vault accounts for your tenant according to filters given
 
         Args:
