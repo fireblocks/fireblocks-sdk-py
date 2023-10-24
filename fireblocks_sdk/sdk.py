@@ -21,7 +21,6 @@ from .api_types import (
     PagedVaultAccountsRequestFilters,
     TransactionDestination,
     NFTOwnershipStatusValues,
-    IssueTokenRequest,
     GetAssetWalletsFilters,
     TimePeriod,
     GetOwnedCollectionsSortValue,
@@ -33,6 +32,9 @@ from .api_types import (
     GetSmartTransferFilters,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
+    CreateTokenRequest,
+    ContractUploadRequest, 
+    ContractDeployRequest,
 )
 from .sdk_token_provider import SdkTokenProvider
 
