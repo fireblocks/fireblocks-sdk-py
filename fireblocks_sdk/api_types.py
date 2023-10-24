@@ -353,6 +353,18 @@ class NFTOwnershipStatusValues(str, Enum):
     ARCHIVED = "ARCHIVED"
 
 
+class NFTOwnershipStatusUpdatedPayload:
+    def __init__(self, asset_id: str, status: NFTOwnershipStatusValues):
+        self.asset_id = asset_id
+        self.status = status
+
+    def serialize(self) -> dict:
+        return {
+            'assetId': self.asset_id,
+            'status': self.status,
+        }
+
+
 class GetOwnedCollectionsSortValue(str, Enum):
     COLLECTION_NAME = "name"
 
