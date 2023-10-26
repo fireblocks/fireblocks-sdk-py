@@ -30,6 +30,7 @@ from .api_types import (
     OrderValues,
     GetOwnedAssetsSortValues,
     PolicyRule,
+    CheckTermsOfServiceRequest,
     GetSmartTransferFilters,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
@@ -112,6 +113,33 @@ class FireblocksSDK(object):
 
     def unlink_token(self, asset_id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
+
+    def get_staking_chains(self):
+        return self._get_request(f"/v1/staking/chains")
+
+    def get_staking_chain_info(self, chainDescriptor: str):
+        return self._get_request(f"/v1/staking/{chainDescriptor}/chainInfo")
+
+    def get_staking_positions_summary(self):
+        return self._get_request(f"/v1/staking/positions/summary")
+
+    def execute_staking_action(self, chainDescriptor: str, actionId: str, requestBody):
+        return self._post_request(f"/v1/staking/chains/{chainDescriptor}/{actionId}", requestBody)
+
+    def get_staking_positions(self, chainDescriptor: str):
+        url = "/v1/staking/positions"
+        if chainDescriptor:
+            url += f"?chainDescriptor={chainDescriptor}"
+        return self._get_request(url)
+
+    def get_staking_position(self, positionId: str):
+        return self._get_request(f"/v1/staking/position/{positionId}")
+
+    def get_staking_validators(self, chainDescriptor: str):
+        return self._get_request(f"/v1/staking/validators/{chainDescriptor}")
+
+    def approve_staking_provider(self, validatorProviderId: str):
+        return self._get_request(f"/v1/staking/validators/{chainDescriptor}", { validatorProviderId })
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
@@ -741,7 +769,7 @@ class FireblocksSDK(object):
 
         params = {}
 
-    
+
         if limit is not None:
             params['limit'] = limit
 

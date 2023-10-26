@@ -412,6 +412,8 @@ class IssueTokenRequest:
 
         return obj
 
+class CheckTermsOfServiceRequestDto:
+    validatorProviderId: int
 
 class PolicyTransactionType(str, Enum):
     ANY = "*"
