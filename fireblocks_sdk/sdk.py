@@ -113,32 +113,40 @@ class FireblocksSDK(object):
     def unlink_token(self, asset_id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
 
+    """Get all staking chains."""
     def get_staking_chains(self):
         return self._get_request(f"/v1/staking/chains")
 
+    """Get chain info."""
     def get_staking_chain_info(self, chain_descriptor: str):
-        return self._get_request(f"/v1/staking/{chain_descriptor}/chainInfo")
+        return self._get_request(f"/v1/staking/chains/{chain_descriptor}/chainInfo")
 
-    def get_staking_positions_summary(self):
-        return self._get_request(f"/v1/staking/positions/summary")
+    """Get staking positions summary."""
+    def get_staking_positions_summary(self, by_vault: bool = None):
+        return self._get_request(f"/v1/staking/positions/summary",
+                                 query_params={"byVault": "true" if by_vault else "false"} if by_vault else None)
 
+    """Execute staking action on a chain."""
     def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body):
         return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body)
 
-    def get_staking_positions(self, chain_descriptor: str):
-        url = "/v1/staking/positions"
-        if chain_descriptor:
-            url += f"?chainDescriptor={chain_descriptor}"
-        return self._get_request(url)
+    """Get all staking positions, optionally filtered by chain."""
+    def get_staking_positions(self, chain_descriptor: str = None):
+        return self._get_request(f"/v1/staking/positions",
+                                 query_params={"chainDescriptor": chain_descriptor} if chain_descriptor else None)
 
+    """Get a staking position by id."""
     def get_staking_position(self, position_id: str):
-        return self._get_request(f"/v1/staking/position/{position_id}")
+        return self._get_request(f"/v1/staking/positions/{position_id}")
 
+    """Get all staking validators, filtered by chain."""
     def get_staking_validators(self, chain_descriptor: str):
         return self._get_request(f"/v1/staking/validators/{chain_descriptor}")
 
-    def approve_staking_provider(self, validatorProviderId: int):
-        return self._post_request(f"/v1/staking/providers/approveTermsOfService", {validatorProviderId})
+    """Approve staking provider terms of service."""
+    def approve_staking_provider(self, validator_provider_id: int):
+        return self._post_request(f"/v1/staking/providers/approveTermsOfService",
+                                  body={"validatorProviderId": validator_provider_id})
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
