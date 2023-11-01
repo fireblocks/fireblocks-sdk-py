@@ -124,7 +124,7 @@ class FireblocksSDK(object):
     """Get staking positions summary."""
     def get_staking_positions_summary(self, by_vault: bool = None):
         return self._get_request(f"/v1/staking/positions/summary",
-                                 query_params={"byVault": "true" if by_vault else "false"} if by_vault else None)
+                                 query_params={"byVault": "true"} if by_vault else None)
 
     """Execute staking action on a chain."""
     def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body):
