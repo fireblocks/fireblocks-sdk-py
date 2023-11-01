@@ -412,7 +412,6 @@ class IssueTokenRequest:
 
         return obj
 
-
 class PolicyTransactionType(str, Enum):
     ANY = "*"
     CONTRACT_CALL = "CONTRACT_CALL"
