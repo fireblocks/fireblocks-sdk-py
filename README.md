@@ -3,7 +3,7 @@
 
 ## About
 This repository contains the official Python SDK for Fireblocks API.
-For the complete API reference, go to the [API reference](https://docs.fireblocks.com/api).
+For the complete API reference, go to the [API reference](https://developers.fireblocks.com/).
 
 ## Usage
 ### Before You Begin

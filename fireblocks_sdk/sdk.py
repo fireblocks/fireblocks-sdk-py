@@ -20,19 +20,21 @@ from .api_types import (
     FEE_LEVEL,
     PagedVaultAccountsRequestFilters,
     TransactionDestination,
-    NFTOwnershipStatusValues,
-    IssueTokenRequest,
     GetAssetWalletsFilters,
     TimePeriod,
     GetOwnedCollectionsSortValue,
-    GetOwnedNftsSortValues,
-    GetNftsSortValues,
     OrderValues,
     GetOwnedAssetsSortValues,
     PolicyRule,
     GetSmartTransferFilters,
+    NFTOwnershipStatusValues,
+    GetOwnedNftsSortValues,
+    GetNftsSortValues,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
+    CreateTokenRequest,
+    ContractUploadRequest,
+    ContractDeployRequest,
     PagedExchangeAccountRequestFilters,
 )
 from .sdk_token_provider import SdkTokenProvider
@@ -98,11 +100,10 @@ class FireblocksSDK(object):
 
     def get_linked_tokens(self, limit: int = 100, offset: int = 0):
         request_filter = {"limit": limit, "offset": offset}
-        url = f"/v1/tokenization/tokens"
-        return self._get_request(url, query_params=request_filter)
+        return self._get_request(f"/v1/tokenization/tokens", query_params=request_filter)
 
-    def issue_new_token(self, request: IssueTokenRequest):
-        return self._post_request("/v1/tokenization/tokens", request.serialize())
+    def issue_new_token(self, request: CreateTokenRequest):
+        return self._post_request("/v1/tokenization/tokens", request)
 
     def get_linked_token(self, asset_id: str):
         return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
@@ -147,6 +148,28 @@ class FireblocksSDK(object):
         """Approve staking provider terms of service."""
         return self._post_request(f"/v1/staking/providers/approveTermsOfService",
                                   body={"validatorProviderId": validator_provider_id})
+
+    def get_contract_templates(self, limit: int = 100, offset: int = 0):
+        request_filter = {
+            "limit": limit,
+            "offset": offset
+        }
+        return self._get_request(f"/v1/contract-registry/contracts", query_params=request_filter)
+
+    def upload_contract_template(self, request: ContractUploadRequest):
+        return self._post_request(f"/v1/contract-registry/contracts", request.serialize())
+
+    def get_contract_template(self, contract_id: str):
+        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}")
+
+    def get_contract_template_constructor(self, contract_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}/constructor?withDocs=${with_docs}`")
+
+    def delete_contract_template(self, contract_id: str):
+        return self._delete_request(f"/v1/contract-registry/contracts/{contract_id}")
+
+    def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
+        return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request.serialize())
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
