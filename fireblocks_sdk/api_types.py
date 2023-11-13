@@ -460,7 +460,7 @@ class CreateTokenRequest:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class ContractDeployRequest(object):
+class ContractDeployRequest():
     def __init__(
         self,
         asset_id: str,
@@ -474,7 +474,7 @@ class ContractDeployRequest(object):
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class AbiFunction(object):
+class AbiFunction():
     def __init__(
         self,
         name: str,
@@ -496,7 +496,7 @@ class AbiFunction(object):
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class ContractUploadRequest(object):
+class ContractUploadRequest():
     def __init__(
         self,
         name: str,
@@ -521,6 +521,7 @@ class ContractUploadRequest(object):
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
+
 class PolicyTransactionType(str, Enum):
     ANY = "*"
     CONTRACT_CALL = "CONTRACT_CALL"
