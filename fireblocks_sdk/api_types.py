@@ -8,7 +8,7 @@ def snake_to_camel(snake_case: str):
 
 def convert_class_to_dict(class_dict: dict):
     output_dict = {}
-    for key, value in class_dict.items():
+    for key, value in class_dict.items:
         if isinstance(value, list):
             output_dict[snake_to_camel(key)] = [item.to_dict() if hasattr(item, 'to_dict') else item for item
                                                 in value]
@@ -460,7 +460,7 @@ class CreateTokenRequest:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class ContractDeployRequest():
+class ContractDeployRequest:
     def __init__(
         self,
         asset_id: str,
@@ -474,7 +474,7 @@ class ContractDeployRequest():
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class AbiFunction():
+class AbiFunction:
     def __init__(
         self,
         name: str,
@@ -496,7 +496,7 @@ class AbiFunction():
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class ContractUploadRequest():
+class ContractUploadRequest:
     def __init__(
         self,
         name: str,
