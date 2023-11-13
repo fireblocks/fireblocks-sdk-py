@@ -19,7 +19,6 @@ from .api_types import (
     UnsignedMessage,
     FEE_LEVEL,
     PagedVaultAccountsRequestFilters,
-    RawMessage,
     TransactionDestination,
     GetAssetWalletsFilters,
     TimePeriod,
