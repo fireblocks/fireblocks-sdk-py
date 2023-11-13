@@ -256,6 +256,24 @@ class PagedVaultAccountsRequestFilters(object):
         self.before = before
         self.after = after
 
+class PagedExchangeAccountRequestFilters(object):
+    """ Optional filters to apply for request
+
+    Args
+
+        limit (number, optional): Results page size
+        before (string, optional): cursor string received from previous request
+        after (string, optional): cursor string received from previous request
+
+    Constraints
+        - You should only insert 'before' or 'after' (or none of them), but not both
+        - For default and max 'limit' values please see: https://docs.fireblocks.com/api/swagger-ui/#/
+    """
+
+    def __init__(self, limit=None, before=None, after=None):
+            self.limit = limit
+            self.before = before
+            self.after = after
 
 class GetAssetWalletsFilters(object):
     """ Optional filters to apply for request
@@ -392,7 +410,7 @@ class Parameter:
         self.internalType = internalType
         self.description = description
         self.components = components
-    
+
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
@@ -420,13 +438,13 @@ class EVMTokenCreateParams:
     ):
         self.contractId = contractId
         self.constructorParams = constructorParams
-    
+
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
-        
+
 class CreateTokenRequest:
     def __init__(
-        self, 
+        self,
         symbol: str,
         name: str,
         blockchainId: str,
@@ -438,7 +456,7 @@ class CreateTokenRequest:
         self.blockchainId = blockchainId
         self.vaultAccountId = vaultAccountId
         self.createParams = createParams
-    
+
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
@@ -474,11 +492,11 @@ class AbiFunction(object):
         self.outputs = outputs
         self.description = description
         self.returns = returns
-    
+
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-class ContractUploadRequest(object): 
+class ContractUploadRequest(object):
     def __init__(
         self,
         name: str,
@@ -500,10 +518,9 @@ class ContractUploadRequest(object):
         self.compilerOutputMetadata = compilerOutputMetadata
         self.docs = docs
         self.attributes = attributes
-    
+
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
-
 class PolicyTransactionType(str, Enum):
     ANY = "*"
     CONTRACT_CALL = "CONTRACT_CALL"

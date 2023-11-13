@@ -34,8 +34,9 @@ from .api_types import (
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
     CreateTokenRequest,
-    ContractUploadRequest, 
+    ContractUploadRequest,
     ContractDeployRequest,
+    PagedExchangeAccountRequestFilters,
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -69,13 +70,13 @@ def handle_response(response, page_mode=False):
 
 class FireblocksSDK(object):
     def __init__(
-        self,
-        private_key,
-        api_key,
-        api_base_url="https://api.fireblocks.io",
-        timeout=None,
-        anonymous_platform=False,
-        seconds_jwt_exp=55,
+            self,
+            private_key,
+            api_key,
+            api_base_url="https://api.fireblocks.io",
+            timeout=None,
+            anonymous_platform=False,
+            seconds_jwt_exp=55,
     ):
         """Creates a new Fireblocks API Client.
 
@@ -114,6 +115,41 @@ class FireblocksSDK(object):
     def unlink_token(self, asset_id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
 
+    def get_staking_chains(self):
+        """Get all staking chains."""
+        return self._get_request(f"/v1/staking/chains")
+
+    def get_staking_chain_info(self, chain_descriptor: str):
+        """Get chain info."""
+        return self._get_request(f"/v1/staking/chains/{chain_descriptor}/chainInfo")
+
+    def get_staking_positions_summary(self, by_vault: bool = None):
+        """Get staking positions summary."""
+        return self._get_request(f"/v1/staking/positions/summary",
+                                 query_params={"byVault": "true"} if by_vault else None)
+
+    def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body):
+        """Execute staking action on a chain."""
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body)
+
+    def get_staking_positions(self, chain_descriptor: str = None):
+        """Get all staking positions, optionally filtered by chain."""
+        return self._get_request(f"/v1/staking/positions",
+                                 query_params={"chainDescriptor": chain_descriptor} if chain_descriptor else None)
+
+    def get_staking_position(self, position_id: str):
+        """Get a staking position by id."""
+        return self._get_request(f"/v1/staking/positions/{position_id}")
+
+    def get_staking_validators(self, chain_descriptor: str):
+        """Get all staking validators, filtered by chain."""
+        return self._get_request(f"/v1/staking/validators/{chain_descriptor}")
+
+    def approve_staking_provider(self, validator_provider_id: int):
+        """Approve staking provider terms of service."""
+        return self._post_request(f"/v1/staking/providers/approveTermsOfService",
+                                  body={"validatorProviderId": validator_provider_id})
+
     def get_contract_templates(self, limit: int = 100, offset: int = 0):
         request_filter = {
             "limit": limit,
@@ -142,12 +178,12 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def get_nfts(
-        self,
-        ids: List[str],
-        page_cursor: str = "",
-        page_size: int = 100,
-        sort: List[GetNftsSortValues] = None,
-        order: OrderValues = None,
+            self,
+            ids: List[str],
+            page_cursor: str = "",
+            page_size: int = 100,
+            sort: List[GetNftsSortValues] = None,
+            order: OrderValues = None,
     ):
         """
         Example list: "[1,2,3,4]"
@@ -188,7 +224,7 @@ class FireblocksSDK(object):
         return self._put_request(path=url)
 
     def refresh_nft_ownership_by_vault(
-        self, blockchain_descriptor: str, vault_account_id: str
+            self, blockchain_descriptor: str, vault_account_id: str
     ):
         """
 
@@ -360,11 +396,11 @@ class FireblocksSDK(object):
         return self._get_request("/v1/supported_assets")
 
     def get_vault_accounts(
-        self,
-        name_prefix=None,
-        name_suffix=None,
-        min_amount_threshold=None,
-        assetId=None,
+            self,
+            name_prefix=None,
+            name_suffix=None,
+            min_amount_threshold=None,
+            assetId=None,
     ):
         """Gets all vault accounts for your tenant
 
@@ -397,7 +433,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def get_vault_accounts_with_page_info(
-        self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
+            self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
     ):
         """Gets a page of vault accounts for your tenant according to filters given
 
@@ -535,7 +571,7 @@ class FireblocksSDK(object):
         return self._get_request(f"/v1/vault/accounts/{vault_account_id}/{asset_id}")
 
     def refresh_vault_asset_balance(
-        self, vault_account_id, asset_id, idempotency_key=None
+            self, vault_account_id, asset_id, idempotency_key=None
     ):
         """Gets a single vault account asset after forcing refresh from the blockchain
         Args:
@@ -572,12 +608,12 @@ class FireblocksSDK(object):
         )
 
     def generate_new_address(
-        self,
-        vault_account_id,
-        asset_id,
-        description=None,
-        customer_ref_id=None,
-        idempotency_key=None,
+            self,
+            vault_account_id,
+            asset_id,
+            description=None,
+            customer_ref_id=None,
+            idempotency_key=None,
     ):
         """Generates a new address for an asset in a vault account
 
@@ -596,7 +632,7 @@ class FireblocksSDK(object):
         )
 
     def set_address_description(
-        self, vault_account_id, asset_id, address, tag=None, description=None
+            self, vault_account_id, asset_id, address, tag=None, description=None
     ):
         """Sets the description of an existing address
 
@@ -624,11 +660,11 @@ class FireblocksSDK(object):
         return self._get_request("/v1/network_connections")
 
     def create_network_connection(
-        self,
-        local_network_id: str,
-        remote_network_id: str,
-        routing_policy=None,
-        idempotency_key=None,
+            self,
+            local_network_id: str,
+            remote_network_id: str,
+            routing_policy=None,
+            idempotency_key=None,
     ):
         """Creates a network connection
         Args:
@@ -662,7 +698,7 @@ class FireblocksSDK(object):
         return self._delete_request(f"/v1/network_connections/{connection_id}")
 
     def set_network_connection_routing_policy(
-        self, connection_id: str, routing_policy=None
+            self, connection_id: str, routing_policy=None
     ):
         """Sets routing policy for a network connection
         Args:
@@ -750,6 +786,35 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/exchange_accounts")
 
+    def get_exchange_accounts_paged(self, paged_exchange_accounts_request_filters: PagedExchangeAccountRequestFilters):
+        """Gets a page of vault accounts for your tenant according to filters given
+
+        Args:
+            paged_exchange_accounts_request_filters (object, optional): Possible filters to apply for request
+        """
+
+        url = f"/v1/exchange_accounts/paged"
+        limit, before, after = \
+            attrgetter('limit', 'before', 'after')(
+                paged_exchange_accounts_request_filters)
+
+        params = {}
+
+
+        if limit is not None:
+            params['limit'] = limit
+
+        if before is not None:
+            params['before'] = before
+
+        if after is not None:
+            params['after'] = after
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
+        return self._get_request(url)
+
     def get_exchange_account(self, exchange_account_id):
         """Gets an exchange account for your tenant
         Args:
@@ -771,7 +836,7 @@ class FireblocksSDK(object):
         )
 
     def transfer_to_subaccount(
-        self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None
+            self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None
     ):
         """Transfer to a subaccount from a main exchange account
 
@@ -791,7 +856,7 @@ class FireblocksSDK(object):
         )
 
     def transfer_from_subaccount(
-        self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None
+            self, exchange_account_id, subaccount_id, asset_id, amount, idempotency_key=None
     ):
         """Transfer from a subaccount to a main exchange account
 
@@ -861,18 +926,18 @@ class FireblocksSDK(object):
         )
 
     def get_transactions_with_page_info(
-        self,
-        before=0,
-        after=None,
-        status=None,
-        limit=None,
-        txhash=None,
-        assets=None,
-        source_type=None,
-        source_id=None,
-        dest_type=None,
-        dest_id=None,
-        next_or_previous_path=None,
+            self,
+            before=0,
+            after=None,
+            status=None,
+            limit=None,
+            txhash=None,
+            assets=None,
+            source_type=None,
+            source_id=None,
+            dest_type=None,
+            dest_id=None,
+            next_or_previous_path=None,
     ):
         """Gets a list of transactions matching the given filters or path.
         Note that "next_or_previous_path" is mutually exclusive with other parameters.
@@ -927,18 +992,18 @@ class FireblocksSDK(object):
             )
 
     def get_transactions(
-        self,
-        before=0,
-        after=0,
-        status=None,
-        limit=None,
-        order_by=None,
-        txhash=None,
-        assets=None,
-        source_type=None,
-        source_id=None,
-        dest_type=None,
-        dest_id=None,
+            self,
+            before=0,
+            after=0,
+            status=None,
+            limit=None,
+            order_by=None,
+            txhash=None,
+            assets=None,
+            source_type=None,
+            source_id=None,
+            dest_type=None,
+            dest_id=None,
     ):
         """Gets a list of transactions matching the given filters
 
@@ -977,19 +1042,19 @@ class FireblocksSDK(object):
         )
 
     def _get_transactions(
-        self,
-        before,
-        after,
-        status,
-        limit,
-        order_by,
-        txhash,
-        assets,
-        source_type,
-        source_id,
-        dest_type,
-        dest_id,
-        page_mode=False,
+            self,
+            before,
+            after,
+            status,
+            limit,
+            order_by,
+            txhash,
+            assets,
+            source_type,
+            source_id,
+            dest_type,
+            dest_id,
+            page_mode=False,
     ):
         path = "/v1/transactions"
         params = {}
@@ -1115,14 +1180,14 @@ class FireblocksSDK(object):
         return self._get_request(f"/v1/estimate_network_fee?assetId={asset_id}")
 
     def estimate_fee_for_transaction(
-        self,
-        asset_id,
-        amount,
-        source,
-        destination=None,
-        tx_type=TRANSACTION_TRANSFER,
-        idempotency_key=None,
-        destinations=None,
+            self,
+            asset_id,
+            amount,
+            source,
+            destination=None,
+            tx_type=TRANSACTION_TRANSFER,
+            idempotency_key=None,
+            destinations=None,
     ):
         """Estimates transaction fee
 
@@ -1154,7 +1219,7 @@ class FireblocksSDK(object):
 
         if destination:
             if not isinstance(
-                destination, (TransferPeerPath, DestinationTransferPeerPath)
+                    destination, (TransferPeerPath, DestinationTransferPeerPath)
             ):
                 raise FireblocksApiException(
                     "Expected transaction fee estimation destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: "
@@ -1186,7 +1251,7 @@ class FireblocksSDK(object):
         )
 
     def drop_transaction(
-        self, txid, fee_level=None, requested_fee=None, idempotency_key=None
+            self, txid, fee_level=None, requested_fee=None, idempotency_key=None
     ):
         """Drops the selected transaction from the blockchain by replacing it with a 0 ETH transaction to itself
 
@@ -1209,12 +1274,12 @@ class FireblocksSDK(object):
         )
 
     def create_vault_account(
-        self,
-        name,
-        hiddenOnUI=False,
-        customer_ref_id=None,
-        autoFuel=False,
-        idempotency_key=None,
+            self,
+            name,
+            hiddenOnUI=False,
+            customer_ref_id=None,
+            autoFuel=False,
+            idempotency_key=None,
     ):
         """Creates a new vault account.
 
@@ -1319,7 +1384,7 @@ class FireblocksSDK(object):
         )
 
     def set_vault_account_customer_ref_id(
-        self, vault_account_id, customer_ref_id, idempotency_key=None
+            self, vault_account_id, customer_ref_id, idempotency_key=None
     ):
         """Sets an AML/KYT customer reference ID for the vault account
 
@@ -1336,12 +1401,12 @@ class FireblocksSDK(object):
         )
 
     def set_vault_account_customer_ref_id_for_address(
-        self,
-        vault_account_id,
-        asset_id,
-        address,
-        customer_ref_id=None,
-        idempotency_key=None,
+            self,
+            vault_account_id,
+            asset_id,
+            address,
+            customer_ref_id=None,
+            idempotency_key=None,
     ):
         """Sets an AML/KYT customer reference ID for the given address
 
@@ -1368,7 +1433,7 @@ class FireblocksSDK(object):
         return self._post_request("/v1/contracts", {"name": name}, idempotency_key)
 
     def create_contract_wallet_asset(
-        self, wallet_id, assetId, address, tag=None, idempotency_key=None
+            self, wallet_id, assetId, address, tag=None, idempotency_key=None
     ):
         """Creates a new contract wallet asset
 
@@ -1415,7 +1480,7 @@ class FireblocksSDK(object):
         )
 
     def create_external_wallet_asset(
-        self, wallet_id, asset_id, address, tag=None, idempotency_key=None
+            self, wallet_id, asset_id, address, tag=None, idempotency_key=None
     ):
         """Creates a new asset within an exiting external wallet
 
@@ -1436,7 +1501,7 @@ class FireblocksSDK(object):
         )
 
     def create_internal_wallet_asset(
-        self, wallet_id, asset_id, address, tag=None, idempotency_key=None
+            self, wallet_id, asset_id, address, tag=None, idempotency_key=None
     ):
         """Creates a new asset within an exiting internal wallet
 
@@ -1457,30 +1522,30 @@ class FireblocksSDK(object):
         )
 
     def create_transaction(
-        self,
-        asset_id=None,
-        amount=None,
-        source=None,
-        destination=None,
-        fee=None,
-        gas_price=None,
-        wait_for_status=False,
-        tx_type=TRANSACTION_TRANSFER,
-        note=None,
-        network_fee=None,
-        customer_ref_id=None,
-        replace_tx_by_hash=None,
-        extra_parameters=None,
-        destinations=None,
-        fee_level=None,
-        fail_on_low_fee=None,
-        max_fee=None,
-        gas_limit=None,
-        idempotency_key=None,
-        external_tx_id=None,
-        treat_as_gross_amount=None,
-        force_sweep=None,
-        priority_fee=None,
+            self,
+            asset_id=None,
+            amount=None,
+            source=None,
+            destination=None,
+            fee=None,
+            gas_price=None,
+            wait_for_status=False,
+            tx_type=TRANSACTION_TRANSFER,
+            note=None,
+            network_fee=None,
+            customer_ref_id=None,
+            replace_tx_by_hash=None,
+            extra_parameters=None,
+            destinations=None,
+            fee_level=None,
+            fail_on_low_fee=None,
+            max_fee=None,
+            gas_limit=None,
+            idempotency_key=None,
+            external_tx_id=None,
+            treat_as_gross_amount=None,
+            force_sweep=None,
+            priority_fee=None,
     ):
         """Creates a new transaction
 
@@ -1558,7 +1623,7 @@ class FireblocksSDK(object):
 
         if destination:
             if not isinstance(
-                destination, (TransferPeerPath, DestinationTransferPeerPath)
+                    destination, (TransferPeerPath, DestinationTransferPeerPath)
             ):
                 raise FireblocksApiException(
                     "Expected transaction destination of type DestinationTransferPeerPath or TransferPeerPath, but got type: "
@@ -1657,7 +1722,7 @@ class FireblocksSDK(object):
         return self._delete_request(f"/v1/external_wallets/{wallet_id}/{asset_id}")
 
     def set_customer_ref_id_for_internal_wallet(
-        self, wallet_id, customer_ref_id=None, idempotency_key=None
+            self, wallet_id, customer_ref_id=None, idempotency_key=None
     ):
         """Sets an AML/KYT customer reference ID for the specific internal wallet
 
@@ -1674,7 +1739,7 @@ class FireblocksSDK(object):
         )
 
     def set_customer_ref_id_for_external_wallet(
-        self, wallet_id, customer_ref_id=None, idempotency_key=None
+            self, wallet_id, customer_ref_id=None, idempotency_key=None
     ):
         """Sets an AML/KYT customer reference ID for the specific external wallet
 
@@ -1696,7 +1761,7 @@ class FireblocksSDK(object):
         return self._get_request("/v1/transfer_tickets")
 
     def create_transfer_ticket(
-        self, terms, external_ticket_id=None, description=None, idempotency_key=None
+            self, terms, external_ticket_id=None, description=None, idempotency_key=None
     ):
         """Creates a new transfer ticket
 
@@ -1756,7 +1821,7 @@ class FireblocksSDK(object):
         )
 
     def execute_ticket_term(
-        self, ticket_id, term_id, source=None, idempotency_key=None
+            self, ticket_id, term_id, source=None, idempotency_key=None
     ):
         """Initiate a transfer ticket transaction
 
@@ -1783,7 +1848,7 @@ class FireblocksSDK(object):
         )
 
     def set_confirmation_threshold_for_txid(
-        self, txid, required_confirmations_number, idempotency_key=None
+            self, txid, required_confirmations_number, idempotency_key=None
     ):
         """Set the required number of confirmations for transaction
 
@@ -1800,7 +1865,7 @@ class FireblocksSDK(object):
         )
 
     def set_confirmation_threshold_for_txhash(
-        self, txhash, required_confirmations_number, idempotency_key=None
+            self, txhash, required_confirmations_number, idempotency_key=None
     ):
         """Set the required number of confirmations for transaction by txhash
 
@@ -1835,7 +1900,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def get_public_key_info_for_vault_account(
-        self, asset_id, vault_account_id, change, address_index, compressed=None
+            self, asset_id, vault_account_id, change, address_index, compressed=None
     ):
         """Get the public key information for a vault account
 
@@ -1854,13 +1919,13 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def allocate_funds_to_private_ledger(
-        self,
-        vault_account_id,
-        asset,
-        allocation_id,
-        amount,
-        treat_as_gross_amount=None,
-        idempotency_key=None,
+            self,
+            vault_account_id,
+            asset,
+            allocation_id,
+            amount,
+            treat_as_gross_amount=None,
+            idempotency_key=None,
     ):
         """Allocate funds from your default balance to a private ledger
 
@@ -1886,7 +1951,7 @@ class FireblocksSDK(object):
         )
 
     def deallocate_funds_from_private_ledger(
-        self, vault_account_id, asset, allocation_id, amount, idempotency_key=None
+            self, vault_account_id, asset, allocation_id, amount, idempotency_key=None
     ):
         """deallocate funds from a private ledger to your default balance
 
@@ -1919,7 +1984,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def set_gas_station_configuration(
-        self, gas_threshold, gas_cap, max_gas_price=None, asset_id=None
+            self, gas_threshold, gas_cap, max_gas_price=None, asset_id=None
     ):
         """Set configuration of the Gas Station account
 
@@ -1944,7 +2009,7 @@ class FireblocksSDK(object):
         return self._put_request(url, body)
 
     def get_vault_assets_balance(
-        self, account_name_prefix=None, account_name_suffix=None
+            self, account_name_prefix=None, account_name_suffix=None
     ):
         """Gets vault assets accumulated balance
 
@@ -1981,7 +2046,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def create_raw_transaction(
-        self, raw_message: RawMessage, source=None, asset_id=None, note=None
+            self, raw_message: RawMessage, source=None, asset_id=None, note=None
     ):
         """Creates a new raw transaction with the specified parameters
 
@@ -2012,7 +2077,7 @@ class FireblocksSDK(object):
         )
 
     def get_max_spendable_amount(
-        self, vault_account_id, asset_id, manual_signing=False
+            self, vault_account_id, asset_id, manual_signing=False
     ):
         """Get max spendable amount per asset and vault.
 
@@ -2069,7 +2134,7 @@ class FireblocksSDK(object):
         return self._post_request("/v1/webhooks/resend")
 
     def resend_transaction_webhooks_by_id(
-        self, tx_id, resend_created, resend_status_updated
+            self, tx_id, resend_created, resend_status_updated
     ):
         """Resend webhooks of transaction
 
@@ -2197,7 +2262,7 @@ class FireblocksSDK(object):
         return self._post_request(url, {}, idempotency_key)
 
     def set_fee_payer_configuration(
-        self, base_asset, fee_payer_account_id, idempotency_key=None
+            self, base_asset, fee_payer_account_id, idempotency_key=None
     ):
         """
         Setting fee payer configuration for base asset
@@ -2233,7 +2298,7 @@ class FireblocksSDK(object):
         return self._delete_request(url)
 
     def get_web3_connections(
-        self, pageCursor=None, pageSize=None, sort=None, filter=None, order=None
+            self, pageCursor=None, pageSize=None, sort=None, filter=None, order=None
     ):
         """
         Get all signer connections of the current user
@@ -2256,12 +2321,12 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def create_web3_connection(
-        self,
-        vault_account_id: str,
-        uri: str,
-        chain_ids: List[str],
-        fee_level: str = "MEDIUM",
-        idempotency_key: str = None,
+            self,
+            vault_account_id: str,
+            uri: str,
+            chain_ids: List[str],
+            fee_level: str = "MEDIUM",
+            idempotency_key: str = None,
     ):
         """
         Initiate a new signer connection
@@ -2721,7 +2786,7 @@ class FireblocksSDK(object):
             headers=headers,
             data=json.dumps(body),
             timeout=self.timeout,
-        )
+            )
         return handle_response(response)
 
     def _patch_request(self, path, body=None):
