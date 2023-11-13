@@ -2046,7 +2046,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def create_raw_transaction(
-            self, raw_message: RawMessage, source=None, asset_id=None, note=None
+            self, raw_message, source=None, asset_id=None, note=None
     ):
         """Creates a new raw transaction with the specified parameters
 
