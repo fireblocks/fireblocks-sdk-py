@@ -1,6 +1,5 @@
 from enum import Enum
-from typing import Optional, List, Union
-
+from typing import Optional, List, Union, Dict
 
 def snake_to_camel(snake_case: str):
     words = snake_case.split('_')
@@ -9,13 +8,13 @@ def snake_to_camel(snake_case: str):
 
 def convert_class_to_dict(class_dict: dict):
     output_dict = {}
-    for key, value in class_dict.items():
+    for key, value in class_dict.items:
         if isinstance(value, list):
             output_dict[snake_to_camel(key)] = [item.to_dict() if hasattr(item, 'to_dict') else item for item
                                                 in value]
         elif hasattr(value, 'to_dict') and callable(getattr(value, 'to_dict')):
             output_dict[snake_to_camel(key)] = value.to_dict()
-        else:
+        elif value is not None:
             output_dict[snake_to_camel(key)] = value
     return output_dict
 
@@ -387,31 +386,141 @@ class TimePeriod(str, Enum):
     DAY = "DAY"
     WEEK = "WEEK"
 
+class StellarRippleCreateParams:
+    def __init__(
+        self,
+        issuerAddress: Optional[str] = None
+    ):
+        self.issuerAddress = issuerAddress
 
-class IssueTokenRequest:
-    symbol: str
-    name: str
-    blockchain_id: str
-    eth_contract_address: Optional[str]
-    issuer_address: Optional[str]
-    decimals: int
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
-    def serialize(self) -> dict:
-        obj = {
-            'symbol': self.symbol,
-            'name': self.name,
-            'blockchainId': self.blockchain_id,
-            'decimals': self.decimals,
-        }
+class Parameter:
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        internalType: str,
+        description: Optional[str] = None,
+        components: Optional[List['Parameter']] = None
+    ):
+        self.name = name
+        self.type = type
+        self.internalType = internalType
+        self.description = description
+        self.components = components
 
-        if self.eth_contract_address:
-            obj.update({'ethContractAddress': self.eth_contract_address})
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
-        if self.issuer_address:
-            obj.update({'issuerAddress': self.issuer_address})
+class ParameterWithValue(Parameter):
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        internalType: str,
+        value: Union[str, int, float, bool],
+        description: Optional[str] = None,
+        components: Optional[List['Parameter']] = None
+    ):
+        super().__init__(name, type, internalType, description, components)
+        self.value = value
 
-        return obj
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
+class EVMTokenCreateParams:
+    def __init__(
+        self,
+        contractId: str,
+        constructorParams: Optional[List[ParameterWithValue]] = None
+    ):
+        self.contractId = contractId
+        self.constructorParams = constructorParams
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class CreateTokenRequest:
+    def __init__(
+        self,
+        symbol: str,
+        name: str,
+        blockchainId: str,
+        vaultAccountId: str,
+        createParams: Union[EVMTokenCreateParams, StellarRippleCreateParams]
+    ):
+        self.symbol = symbol
+        self.name = name
+        self.blockchainId = blockchainId
+        self.vaultAccountId = vaultAccountId
+        self.createParams = createParams
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class ContractDeployRequest:
+    def __init__(
+        self,
+        asset_id: str,
+        vault_account_id: str,
+        constructorParameters: Optional[List[ParameterWithValue]] = None
+    ):
+        self.asset_id = asset_id
+        self.vault_account_id = vault_account_id
+        self.constructorParameters = constructorParameters
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class AbiFunction:
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        stateMutability: str,
+        inputs: List[Parameter],
+        outputs: Optional[List[Parameter]] = None,
+        description: Optional[str] = None,
+        returns: Optional[Dict[str, str]] = None
+    ):
+        self.name = name
+        self.type = type
+        self.stateMutability = stateMutability
+        self.inputs = inputs
+        self.outputs = outputs
+        self.description = description
+        self.returns = returns
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class ContractUploadRequest:
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        bytecode: str,
+        sourcecode: str,
+        abi: Optional[List[AbiFunction]] = None,
+        vendorId: Optional[str] = None,
+        compilerOutputMetadata: Optional[object] = None,
+        docs: Optional[object] = None,
+        attributes: Optional[Dict[str, str]] = None,
+    ):
+        self.name = name
+        self.description = description
+        self.bytecode = bytecode
+        self.sourcecode = sourcecode
+        self.abi = abi
+        self.vendorId = vendorId
+        self.compilerOutputMetadata = compilerOutputMetadata
+        self.docs = docs
+        self.attributes = attributes
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
 
 class PolicyTransactionType(str, Enum):
     ANY = "*"
