@@ -2107,7 +2107,7 @@ class FireblocksSDK(object):
             vault_account_id (str): The vault account Id
             asset_id (str): the asset Id
             limit(number, optional): limit of addresses per paging request
-            before (str, optional): curser for the previus paging
+            before (str, optional): curser for the previous paging
             after (str, optional): curser for the next paging
 
         """
