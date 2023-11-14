@@ -2111,7 +2111,7 @@ class FireblocksSDK(object):
             after (str, optional): curser for the next paging
 
         """
-        path = f"/v1/vault/accounts/${vault_account_id}/${asset_id}/addresses_paginated"
+        path = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses_paginated"
         params = {}
         if limit:
             params["limit"] = limit
