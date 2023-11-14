@@ -394,43 +394,6 @@ class FireblocksSDK(object):
 
         return self._get_request("/v1/supported_assets")
 
-    def get_vault_accounts(
-            self,
-            name_prefix=None,
-            name_suffix=None,
-            min_amount_threshold=None,
-            assetId=None,
-    ):
-        """Gets all vault accounts for your tenant
-
-        Args:
-            name_prefix (string, optional): Vault account name prefix
-            name_suffix (string, optional): Vault account name suffix
-            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
-            assetId (string, optional): The asset symbol
-        """
-
-        url = f"/v1/vault/accounts"
-
-        params = {}
-
-        if name_prefix:
-            params["namePrefix"] = name_prefix
-
-        if name_suffix:
-            params["nameSuffix"] = name_suffix
-
-        if min_amount_threshold is not None:
-            params["minAmountThreshold"] = min_amount_threshold
-
-        if assetId is not None:
-            params["assetId"] = assetId
-
-        if params:
-            url = url + "?" + urllib.parse.urlencode(params)
-
-        return self._get_request(url)
-
     def get_vault_accounts_with_page_info(
             self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
     ):
