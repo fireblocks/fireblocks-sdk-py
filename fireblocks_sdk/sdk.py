@@ -35,6 +35,8 @@ from .api_types import (
     CreateTokenRequest,
     ContractUploadRequest,
     ContractDeployRequest,
+    ReadCallFunction,
+    WriteCallFunction,
     PagedExchangeAccountRequestFilters,
 )
 from .sdk_token_provider import SdkTokenProvider
@@ -170,6 +172,21 @@ class FireblocksSDK(object):
 
     def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
         return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request.serialize())
+    
+    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
+        return self._get_request(f"/v1/contract-service/contract?templateId={templateId}&blockchainId={blockchainId}")
+    
+    def get_contract_by_address(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}")
+    
+    def get_contract_abi(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/abi")
+    
+    def read_contract_call_function(self, blockchainId: str, contractAddress: str, payload: ReadCallFunction):
+        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/read", payload)
+
+    def write_contract_call_function(self, blockchainId: str, contractAddress: str, payload: WriteCallFunction):
+        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/write", payload)
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
