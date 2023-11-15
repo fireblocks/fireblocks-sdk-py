@@ -2101,7 +2101,7 @@ class FireblocksSDK(object):
         return self._get_request(url)
 
     def get_paginated_addresses(self, vault_account_id, asset_id, limit=500, before=None, after=None):
-        """get addresses for a vault account for asset with paging
+        """Gets a paginated response of the addresses for a given vault account and asset
 
         Args:
             vault_account_id (str): The vault account Id
