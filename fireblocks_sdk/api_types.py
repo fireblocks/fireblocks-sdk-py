@@ -505,7 +505,6 @@ class ContractUploadRequest:
         bytecode: str,
         sourcecode: str,
         abi: Optional[List[AbiFunction]] = None,
-        vendorId: Optional[str] = None,
         compilerOutputMetadata: Optional[object] = None,
         docs: Optional[object] = None,
         attributes: Optional[Dict[str, str]] = None,
@@ -516,7 +515,6 @@ class ContractUploadRequest:
         self.bytecode = bytecode
         self.sourcecode = sourcecode
         self.abi = abi
-        self.vendorId = vendorId
         self.compilerOutputMetadata = compilerOutputMetadata
         self.docs = docs
         self.attributes = attributes
