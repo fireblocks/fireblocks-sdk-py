@@ -501,6 +501,7 @@ class ContractUploadRequest:
         self,
         name: str,
         description: str,
+        longDescription: str,
         bytecode: str,
         sourcecode: str,
         abi: Optional[List[AbiFunction]] = None,
@@ -511,6 +512,7 @@ class ContractUploadRequest:
     ):
         self.name = name
         self.description = description
+        self.longDescription = longDescription
         self.bytecode = bytecode
         self.sourcecode = sourcecode
         self.abi = abi
