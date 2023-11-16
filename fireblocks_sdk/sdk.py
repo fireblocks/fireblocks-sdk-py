@@ -2080,6 +2080,27 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def get_paginated_addresses(self, vault_account_id, asset_id, limit=500, before=None, after=None):
+        """Gets a paginated response of the addresses for a given vault account and asset
+        Args:
+            vault_account_id (str): The vault account Id
+            asset_id (str): the asset Id
+            limit(number, optional): limit of addresses per paging request
+            before (str, optional): curser for the previous paging
+            after (str, optional): curser for the next paging
+        """
+        path = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses_paginated"
+        params = {}
+        if limit:
+            params["limit"] = limit
+        if before:
+            params["before"] = before
+        if after:
+            params["after"] = after
+        if params:
+            path = path + "?" + urllib.parse.urlencode(params)
+        return self._get_request(path)
+
     def set_auto_fuel(self, vault_account_id, auto_fuel, idempotency_key=None):
         """Sets autoFuel to true/false for a vault account
 
