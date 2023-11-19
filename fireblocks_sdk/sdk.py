@@ -3,7 +3,7 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Union
 
 import requests
 
@@ -33,7 +33,7 @@ from .api_types import (
     GetSmartTransferFilters,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
-    PagedExchangeAccountRequestFilters,
+    PagedExchangeAccountRequestFilters, StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto,
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -129,7 +129,8 @@ class FireblocksSDK(object):
         """Get staking positions summary by vault."""
         return self._get_request("/v1/staking/positions/summary/vaults")
 
-    def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body):
+    def execute_staking_action(self, chain_descriptor: str, action_id: str,
+                               request_body: Union[StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto]):
         """Execute staking action on a chain."""
         return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body)
 
@@ -222,7 +223,8 @@ class FireblocksSDK(object):
         return self._put_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
-                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
+                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100,
+                       sort: List[GetOwnedNftsSortValues] = None,
                        order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
                        ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None):
         """
@@ -342,7 +344,6 @@ class FireblocksSDK(object):
             params["sort"] = ",".join(sort)
 
         if order:
-
             params['order'] = order
 
         return self._get_request(url, query_params=params)
@@ -777,7 +778,6 @@ class FireblocksSDK(object):
                 paged_exchange_accounts_request_filters)
 
         params = {}
-
 
         if limit is not None:
             params['limit'] = limit
@@ -2172,7 +2172,8 @@ class FireblocksSDK(object):
 
         return self._post_request(url, body)
 
-    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> \
+            Dict[str, Any]:
         """
         Updates a Users Group
         @param id: The ID of the Users Group
@@ -2764,7 +2765,7 @@ class FireblocksSDK(object):
             headers=headers,
             data=json.dumps(body),
             timeout=self.timeout,
-            )
+        )
         return handle_response(response)
 
     def _patch_request(self, path, body=None):
