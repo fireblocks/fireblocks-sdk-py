@@ -669,6 +669,9 @@ class StakeRequestDto:
         self.fee = fee
         self.fee_level = fee_level
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 
 class UnstakeRequestDto:
     def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
@@ -677,6 +680,9 @@ class UnstakeRequestDto:
         self.fee_level = fee_level
         self.tx_note = tx_note
 
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
 
 class WithdrawRequestDto:
     def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
@@ -684,3 +690,6 @@ class WithdrawRequestDto:
         self.fee = fee
         self.fee_level = fee_level
         self.tx_note = tx_note
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
