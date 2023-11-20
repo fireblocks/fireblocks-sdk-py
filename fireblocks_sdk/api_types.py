@@ -498,6 +498,16 @@ class AbiFunction:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
+class ContractInitializationPhase(str, Enum):
+    ON_DEPLOYMENT = "ON_DEPLOYMENT"
+    POST_DEPLOYMENT = "POST_DEPLOYMENT"
+
+class ContractTemplateType(str, Enum):
+	FUNGIBLE_TOKEN = "FUNGIBLE_TOKEN"
+	NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
+	NON_TOKEN = "NON_TOKEN"
+	UUPS_PROXY = "UUPS_PROXY"
+
 class ContractUploadRequest:
     def __init__(
         self,
@@ -506,20 +516,26 @@ class ContractUploadRequest:
         longDescription: str,
         bytecode: str,
         sourcecode: str,
+        initializationPhase: ContractInitializationPhase,
         abi: Optional[List[AbiFunction]] = None,
         compilerOutputMetadata: Optional[object] = None,
         docs: Optional[object] = None,
         attributes: Optional[Dict[str, str]] = None,
+        type: Optional[ContractTemplateType] = None,
+        inputFieldsMetadata: Optional[str] = None,
     ):
         self.name = name
         self.description = description
         self.longDescription = longDescription
         self.bytecode = bytecode
         self.sourcecode = sourcecode
+        self.initializationPhase = initializationPhase
         self.abi = abi
         self.compilerOutputMetadata = compilerOutputMetadata
         self.docs = docs
         self.attributes = attributes
+        self.type = type
+        self.inputFieldsMetadata = inputFieldsMetadata
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
