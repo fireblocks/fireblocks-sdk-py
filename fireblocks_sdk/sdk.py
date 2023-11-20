@@ -3,7 +3,7 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, List
 
 import requests
 
@@ -37,7 +37,7 @@ from .api_types import (
     ContractDeployRequest,
     ReadCallFunction,
     WriteCallFunction,
-    PagedExchangeAccountRequestFilters, StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto,
+    PagedExchangeAccountRequestFilters,
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -118,42 +118,75 @@ class FireblocksSDK(object):
 
     def get_staking_chains(self):
         """Get all staking chains."""
-        return self._get_request("/v1/staking/chains")
+        return self._get_request(f"/v1/staking/chains")
 
     def get_staking_chain_info(self, chain_descriptor: str):
         """Get chain info."""
         return self._get_request(f"/v1/staking/chains/{chain_descriptor}/chainInfo")
 
-    def get_staking_positions_summary(self):
+    def get_staking_positions_summary(self, by_vault: bool = None):
         """Get staking positions summary."""
-        return self._get_request(f"/v1/staking/positions/summary")
+        return self._get_request(f"/v1/staking/positions/summary",
+                                 query_params={"byVault": "true"} if by_vault else None)
 
-    def get_staking_positions_summary_by_vault(self):
-        """Get staking positions summary by vault."""
-        return self._get_request("/v1/staking/positions/summary/vaults")
-
-    def execute_staking_action(self, chain_descriptor: str, action_id: str,
-                               request_body: Union[StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto]):
-        """Execute staking action on a chain.
-        """
-        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body.to_dict())
+    def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body):
+        """Execute staking action on a chain."""
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body)
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
-        return self._get_request("/v1/staking/positions",
+        return self._get_request(f"/v1/staking/positions",
                                  query_params={"chainDescriptor": chain_descriptor} if chain_descriptor else None)
 
     def get_staking_position(self, position_id: str):
         """Get a staking position by id."""
         return self._get_request(f"/v1/staking/positions/{position_id}")
 
-    def get_staking_providers(self):
-        """Get all staking providers."""
-        return self._get_request(f"/v1/staking/providers")
+    def get_staking_validators(self, chain_descriptor: str):
+        """Get all staking validators, filtered by chain."""
+        return self._get_request(f"/v1/staking/validators/{chain_descriptor}")
 
-    def approve_staking_provider_terms_of_service(self, provider_id: str):
+    def approve_staking_provider(self, validator_provider_id: int):
         """Approve staking provider terms of service."""
-        return self._post_request(f"/v1/staking/providers/{provider_id}/approveTermsOfService")
+        return self._post_request(f"/v1/staking/providers/approveTermsOfService",
+                                  body={"validatorProviderId": validator_provider_id})
+
+    def get_contract_templates(self, limit: int = 100, offset: int = 0):
+        request_filter = {
+            "limit": limit,
+            "offset": offset
+        }
+        return self._get_request(f"/v1/contract-registry/contracts", query_params=request_filter)
+
+    def upload_contract_template(self, request: ContractUploadRequest):
+        return self._post_request(f"/v1/contract-registry/contracts", request.serialize())
+
+    def get_contract_template(self, contract_id: str):
+        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}")
+
+    def get_contract_template_constructor(self, contract_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}/constructor?withDocs=${with_docs}`")
+
+    def delete_contract_template(self, contract_id: str):
+        return self._delete_request(f"/v1/contract-registry/contracts/{contract_id}")
+
+    def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
+        return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request.serialize())
+    
+    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
+        return self._get_request(f"/v1/contract-service/contract?templateId={templateId}&blockchainId={blockchainId}")
+    
+    def get_contract_by_address(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}")
+    
+    def get_contract_abi(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/abi")
+    
+    def read_contract_call_function(self, blockchainId: str, contractAddress: str, payload: ReadCallFunction):
+        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/read", payload)
+
+    def write_contract_call_function(self, blockchainId: str, contractAddress: str, payload: WriteCallFunction):
+        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/write", payload)
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
@@ -227,8 +260,7 @@ class FireblocksSDK(object):
         return self._put_request(url, query_params=params)
 
     def get_owned_nfts(self, blockchain_descriptor: str, vault_account_ids: List[str] = None, ids: List[str] = None,
-                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100,
-                       sort: List[GetOwnedNftsSortValues] = None,
+                       collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100, sort: List[GetOwnedNftsSortValues] = None,
                        order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
                        ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None):
         """
@@ -348,6 +380,7 @@ class FireblocksSDK(object):
             params["sort"] = ",".join(sort)
 
         if order:
+
             params['order'] = order
 
         return self._get_request(url, query_params=params)
@@ -377,43 +410,6 @@ class FireblocksSDK(object):
         """Gets all assets that are currently supported by Fireblocks"""
 
         return self._get_request("/v1/supported_assets")
-
-    def get_vault_accounts(
-            self,
-            name_prefix=None,
-            name_suffix=None,
-            min_amount_threshold=None,
-            assetId=None,
-    ):
-        """Gets all vault accounts for your tenant
-
-        Args:
-            name_prefix (string, optional): Vault account name prefix
-            name_suffix (string, optional): Vault account name suffix
-            min_amount_threshold (number, optional):  The minimum amount for asset to have in order to be included in the results
-            assetId (string, optional): The asset symbol
-        """
-
-        url = f"/v1/vault/accounts"
-
-        params = {}
-
-        if name_prefix:
-            params["namePrefix"] = name_prefix
-
-        if name_suffix:
-            params["nameSuffix"] = name_suffix
-
-        if min_amount_threshold is not None:
-            params["minAmountThreshold"] = min_amount_threshold
-
-        if assetId is not None:
-            params["assetId"] = assetId
-
-        if params:
-            url = url + "?" + urllib.parse.urlencode(params)
-
-        return self._get_request(url)
 
     def get_vault_accounts_with_page_info(
             self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
@@ -782,6 +778,7 @@ class FireblocksSDK(object):
                 paged_exchange_accounts_request_filters)
 
         params = {}
+
 
         if limit is not None:
             params['limit'] = limit
@@ -2197,8 +2194,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url, body)
 
-    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> \
-            Dict[str, Any]:
+    def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Updates a Users Group
         @param id: The ID of the Users Group

@@ -256,7 +256,6 @@ class PagedVaultAccountsRequestFilters(object):
         self.before = before
         self.after = after
 
-
 class PagedExchangeAccountRequestFilters(object):
     """ Optional filters to apply for request
 
@@ -272,10 +271,9 @@ class PagedExchangeAccountRequestFilters(object):
     """
 
     def __init__(self, limit=None, before=None, after=None):
-        self.limit = limit
-        self.before = before
-        self.after = after
-
+            self.limit = limit
+            self.before = before
+            self.after = after
 
 class GetAssetWalletsFilters(object):
     """ Optional filters to apply for request
@@ -565,7 +563,6 @@ class PolicyTransactionType(str, Enum):
     STAKE = "STAKE"
     TYPED_MESSAGE = "TYPED_MESSAGE"
 
-
 class PolicySrcOrDestType(str, Enum):
     EXCHANGE = "EXCHANGE"
     UNMANAGED = "UNMANAGED"
@@ -576,27 +573,22 @@ class PolicySrcOrDestType(str, Enum):
     ONE_TIME_ADDRESS = "ONE_TIME_ADDRESS"
     ANY = "*"
 
-
 class PolicyType(str, Enum):
     TRANSFER = "TRANSFER"
-
 
 class PolicyAction(str, Enum):
     ALLOW = "ALLOW"
     BLOCK = "BLOCK"
     TWO_TIER = "2-TIER"
 
-
 class PolicyDestAddressType(str, Enum):
     ANY = "*"
     WHITELISTED = "WHITELISTED"
     ONE_TIME = "ONE_TIME"
 
-
 class PolicyAmountScope(str, Enum):
     SINGLE_TX = "SINGLE_TX"
     TIMEFRAME = "TIMEFRAME"
-
 
 class PolicySrcOrDestSubType(str, Enum):
     ANY = "*"
@@ -605,15 +597,12 @@ class PolicySrcOrDestSubType(str, Enum):
     CONTRACT = "CONTRACT"
     EXCHANGETEST = "EXCHANGETEST"
 
-
 class Wildcard(str, Enum):
     WILDCARD = "*"
-
 
 class AuthorizationLogic(str, Enum):
     AND = "AND"
     OR = "OR"
-
 
 class AuthorizationGroup:
     def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, th: int = 0):
@@ -626,10 +615,8 @@ class AuthorizationGroup:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-
 class PolicyAuthorizationGroups:
-    def __init__(self, logic: AuthorizationLogic, allow_operator_as_authorizer: Optional[bool] = None,
-                 groups: List[AuthorizationGroup] = []):
+    def __init__(self, logic: AuthorizationLogic, allow_operator_as_authorizer: Optional[bool] = None, groups: List[AuthorizationGroup] = []):
         self.logic = logic
         if allow_operator_as_authorizer:
             self.allow_operator_as_authorizer = allow_operator_as_authorizer
@@ -638,10 +625,8 @@ class PolicyAuthorizationGroups:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-
 class Operators:
-    def __init__(self, wildcard: Optional[Wildcard] = None, users: Optional[List[str]] = None,
-                 users_groups: Optional[List[str]] = None, services: Optional[List[str]] = None):
+    def __init__(self, wildcard: Optional[Wildcard] = None, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, services: Optional[List[str]] = None):
         if wildcard:
             self.wildcard = wildcard
         if users:
@@ -654,7 +639,6 @@ class Operators:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-
 class DesignatedSigners:
     def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None):
         if users:
@@ -665,7 +649,6 @@ class DesignatedSigners:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-
 class SrcDst:
     def __init__(self, ids: Optional[List[List[Union[str, PolicySrcOrDestType, PolicySrcOrDestSubType]]]] = None):
         if ids:
@@ -673,7 +656,6 @@ class SrcDst:
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
-
 
 class AmountAggregation:
     def __init__(self, operators: str, src_transfer_peers: str, dst_transfer_peers: str):
@@ -684,14 +666,12 @@ class AmountAggregation:
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
 
-
 class DerivationPath:
     def __init__(self, path: List[int]):
         self.path = path
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
-
 
 class RawMessageSigning:
     def __init__(self, derivation_path: DerivationPath, algorithm: str):
@@ -700,7 +680,6 @@ class RawMessageSigning:
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
-
 
 class PolicyRule:
     def __init__(self,
@@ -749,7 +728,7 @@ class PolicyRule:
         if transaction_type:
             self.transaction_type = transaction_type
         if operator_services:
-            self.operator_services = operator_services
+           self.operator_services = operator_services
         if designated_signer:
             self.designated_signer = designated_signer
         if designated_signers:
@@ -786,47 +765,6 @@ class PolicyRule:
             self.apply_for_approve = apply_for_approve
         if apply_for_typed_message:
             self.apply_for_typed_message = apply_for_typed_message
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-
-class StakeRequestDto:
-    def __init__(self,
-                 vault_account_id: str,
-                 provider_id: str,
-                 stake_amount: str,
-                 tx_note: str = None,
-                 fee: str = None,
-                 fee_level: str = None):
-        self.vault_account_id = vault_account_id
-        self.provider_id = provider_id
-        self.stake_amount = stake_amount
-        self.tx_note = tx_note
-        self.fee = fee
-        self.fee_level = fee_level
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-
-class UnstakeRequestDto:
-    def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
-        self.id = id
-        self.fee = fee
-        self.fee_level = fee_level
-        self.tx_note = tx_note
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-
-class WithdrawRequestDto:
-    def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
-        self.id = id
-        self.fee = fee
-        self.fee_level = fee_level
-        self.tx_note = tx_note
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
