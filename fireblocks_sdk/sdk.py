@@ -129,15 +129,10 @@ class FireblocksSDK(object):
         """Get staking positions summary by vault."""
         return self._get_request("/v1/staking/positions/summary/vaults")
 
-    def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body: Dict[str, str]):
+    def execute_staking_action(self, chain_descriptor: str, action_id: str, request_body: Union[StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto]):
         """Execute staking action on a chain.
-
-            Args:
-                chain_descriptor (str)
-                action_id (str)
-                request_body (Dict[str, str]): use StakeRequestDto.to_dict() |  UnstakeRequestDto.to_dict(), WithdrawRequestDto.to_dict()
         """
-        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body)
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body.to_dict())
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
