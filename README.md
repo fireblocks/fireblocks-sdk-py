@@ -26,3 +26,13 @@ You can also pass additional arguments:
 ```python
 fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=2.0, anonymous_platform=True)
 ```
+
+#### Importing Fireblocks Tokenization SDK
+```python
+from fireblocks_sdk import FireblocksSDK, FireblocksTokenization
+
+fireblocks = FireblocksSDK(private_key, api_key)
+fbTokenization = FbTokenizationSDK(fireblocks)
+
+res=fbTokenization.get_linked_tokens()
+```

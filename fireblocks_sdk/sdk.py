@@ -32,15 +32,10 @@ from .api_types import (
     GetNftsSortValues,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
-    CreateTokenRequest,
     PagedExchangeAccountRequestFilters,
     StakeRequestDto,
     UnstakeRequestDto,
     WithdrawRequestDto,
-    ContractUploadRequest,
-    ContractDeployRequest,
-    ReadCallFunction,
-    WriteCallFunction,
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -103,22 +98,6 @@ class FireblocksSDK(object):
             }
         )
 
-    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
-        request_filter = {"limit": limit, "offset": offset}
-        return self._get_request(f"/v1/tokenization/tokens", query_params=request_filter)
-
-    def issue_new_token(self, request: CreateTokenRequest):
-        return self._post_request("/v1/tokenization/tokens", request)
-
-    def get_linked_token(self, asset_id: str):
-        return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
-
-    def link_token(self, asset_id: str):
-        return self._put_request(f"/v1/tokenization/tokens/{asset_id}/link", {})
-
-    def unlink_token(self, asset_id: str):
-        return self._delete_request(f"/v1/tokenization/tokens/{asset_id}")
-
     def get_staking_chains(self):
         """Get all staking chains."""
         return self._get_request("/v1/staking/chains")
@@ -157,45 +136,6 @@ class FireblocksSDK(object):
     def approve_staking_provider_terms_of_service(self, provider_id: str):
         """Approve staking provider terms of service."""
         return self._post_request(f"/v1/staking/providers/{provider_id}/approveTermsOfService")
-
-    ### TOKENIZATION ENDPOINTS BEGIN ###
-    def get_contract_templates(self, limit: int = 100, offset: int = 0):
-        request_filter = {
-            "limit": limit,
-            "offset": offset
-        }
-        return self._get_request(f"/v1/contract-registry/contracts", query_params=request_filter)
-
-    def upload_contract_template(self, request: ContractUploadRequest):
-        return self._post_request(f"/v1/contract-registry/contracts", request)
-
-    def get_contract_template(self, contract_id: str):
-        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}")
-
-    def get_contract_template_constructor(self, contract_id: str, with_docs: bool=False):
-        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}/constructor?withDocs=${with_docs}`")
-
-    def delete_contract_template(self, contract_id: str):
-        return self._delete_request(f"/v1/contract-registry/contracts/{contract_id}")
-
-    def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
-        return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request)
-    
-    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
-        return self._get_request(f"/v1/contract-service/contract?templateId={templateId}&blockchainId={blockchainId}")
-    
-    def get_contract_by_address(self, blockchainId: str, contractAddress: str):
-        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}")
-    
-    def get_contract_abi(self, blockchainId: str, contractAddress: str):
-        return self._get_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/abi")
-    
-    def read_contract_call_function(self, blockchainId: str, contractAddress: str, payload: ReadCallFunction):
-        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/read", payload)
-
-    def write_contract_call_function(self, blockchainId: str, contractAddress: str, payload: WriteCallFunction):
-        return self._post_request(f"/v1/contract-service/contract/{blockchainId}/{contractAddress}/function/write", payload)
-    ### TOKENIZATION ENDPOINTS END ###
 
     def get_nft(self, id: str):
         url = "/v1/nfts/tokens/" + id
