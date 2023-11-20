@@ -29,7 +29,7 @@ fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireb
 
 #### Importing Fireblocks Tokenization SDK
 ```python
-from fireblocks_sdk import FireblocksSDK, FireblocksTokenization
+from fireblocks_sdk import FireblocksSDK, FbTokenizationSDK
 
 fireblocks = FireblocksSDK(private_key, api_key)
 fbTokenization = FbTokenizationSDK(fireblocks)
