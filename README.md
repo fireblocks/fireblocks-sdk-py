@@ -34,5 +34,5 @@ from fireblocks_sdk import FireblocksSDK, FbTokenizationSDK
 fireblocks = FireblocksSDK(private_key, api_key)
 fbTokenization = FbTokenizationSDK(fireblocks)
 
-res=fbTokenization.get_linked_tokens()
+tokens=fbTokenization.get_linked_tokens()
 ```
