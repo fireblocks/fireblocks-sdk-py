@@ -20,19 +20,23 @@ from .api_types import (
     FEE_LEVEL,
     PagedVaultAccountsRequestFilters,
     TransactionDestination,
-    NFTOwnershipStatusValues,
-    IssueTokenRequest,
     GetAssetWalletsFilters,
     TimePeriod,
     GetOwnedCollectionsSortValue,
-    GetOwnedNftsSortValues,
-    GetNftsSortValues,
     OrderValues,
     GetOwnedAssetsSortValues,
     PolicyRule,
     GetSmartTransferFilters,
+    NFTOwnershipStatusValues,
+    GetOwnedNftsSortValues,
+    GetNftsSortValues,
     NFTsWalletTypeValues,
     NFTOwnershipStatusUpdatedPayload,
+    CreateTokenRequest,
+    ContractUploadRequest,
+    ContractDeployRequest,
+    ReadCallFunction,
+    WriteCallFunction,
     PagedExchangeAccountRequestFilters, StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto,
 )
 from .sdk_token_provider import SdkTokenProvider
@@ -98,11 +102,10 @@ class FireblocksSDK(object):
 
     def get_linked_tokens(self, limit: int = 100, offset: int = 0):
         request_filter = {"limit": limit, "offset": offset}
-        url = f"/v1/tokenization/tokens"
-        return self._get_request(url, query_params=request_filter)
+        return self._get_request(f"/v1/tokenization/tokens", query_params=request_filter)
 
-    def issue_new_token(self, request: IssueTokenRequest):
-        return self._post_request("/v1/tokenization/tokens", request.serialize())
+    def issue_new_token(self, request: CreateTokenRequest):
+        return self._post_request("/v1/tokenization/tokens", request)
 
     def get_linked_token(self, asset_id: str):
         return self._get_request(f"/v1/tokenization/tokens/{asset_id}")
@@ -2080,6 +2083,27 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def get_paginated_addresses(self, vault_account_id, asset_id, limit=500, before=None, after=None):
+        """Gets a paginated response of the addresses for a given vault account and asset
+        Args:
+            vault_account_id (str): The vault account Id
+            asset_id (str): the asset Id
+            limit(number, optional): limit of addresses per paging request
+            before (str, optional): curser for the previous paging
+            after (str, optional): curser for the next paging
+        """
+        path = f"/v1/vault/accounts/{vault_account_id}/{asset_id}/addresses_paginated"
+        params = {}
+        if limit:
+            params["limit"] = limit
+        if before:
+            params["before"] = before
+        if after:
+            params["after"] = after
+        if params:
+            path = path + "?" + urllib.parse.urlencode(params)
+        return self._get_request(path)
+
     def set_auto_fuel(self, vault_account_id, auto_fuel, idempotency_key=None):
         """Sets autoFuel to true/false for a vault account
 
@@ -2766,7 +2790,7 @@ class FireblocksSDK(object):
             headers=headers,
             data=json.dumps(body),
             timeout=self.timeout,
-        )
+            )
         return handle_response(response)
 
     def _patch_request(self, path, body=None):
