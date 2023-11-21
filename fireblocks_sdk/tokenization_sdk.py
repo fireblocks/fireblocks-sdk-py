@@ -1,5 +1,5 @@
 from .sdk import FireblocksSDK
-from .tokenization_types import \
+from .tokenization_api_types import \
     CreateTokenRequest, \
     ContractUploadRequest, \
     ContractDeployRequest, \
@@ -18,7 +18,7 @@ class FbTokenizationSDK:
         return self.sdk._get_request(f"{self._tokenization_url}", query_params=request_filter)
 
     def issue_new_token(self, request: CreateTokenRequest):
-        return self.sdk._post_request(self._tokenization_url, request)
+        return self.sdk._post_request(self._tokenization_url, request.to_dict())
 
     def get_linked_token(self, assetId: str):
         return self.sdk._get_request(f"{self._tokenization_url}/{assetId}")
@@ -37,7 +37,7 @@ class FbTokenizationSDK:
         return self.sdk._get_request(self._contract_registry_url, query_params=request_filter)
 
     def upload_contract_template(self, request: ContractUploadRequest):
-        return self.sdk._post_request(self._contract_registry_url, request)
+        return self.sdk._post_request(self._contract_registry_url, request.to_dict())
 
     def get_contract_template(self, contractId: str):
         return self.sdk._get_request(f"{self._contract_registry_url}/{contractId}")
@@ -49,7 +49,7 @@ class FbTokenizationSDK:
         return self.sdk._delete_request(f"{self._contract_registry_url}/{contractId}")
 
     def deploy_contract(self, contractId: str, request: ContractDeployRequest):
-        return self.sdk._post_request(f"{self._contract_registry_url}/{contractId}/deploy", request)
+        return self.sdk._post_request(f"{self._contract_registry_url}/{contractId}/deploy", request.to_dict())
     
     def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
         return self.sdk._get_request(f"{self._contract_service_url}?templateId={templateId}&blockchainId={blockchainId}")
@@ -61,7 +61,7 @@ class FbTokenizationSDK:
         return self.sdk._get_request(f"{self._contract_service_url}/{blockchainId}/{contractAddress}/abi")
     
     def read_contract_call_function(self, blockchainId: str, contractAddress: str, request: ReadCallFunction):
-        return self.sdk._post_request(f"{self._contract_service_url}/{blockchainId}/{contractAddress}/function/read", request)
+        return self.sdk._post_request(f"{self._contract_service_url}/{blockchainId}/{contractAddress}/function/read", request.to_dict())
 
     def write_contract_call_function(self, blockchainId: str, contractAddress: str, request: WriteCallFunction):
-        return self.sdk._post_request(f"{self._contract_service_url}/{blockchainId}/{contractAddress}/function/write", request)
+        return self.sdk._post_request(f"{self._contract_service_url}/{blockchainId}/{contractAddress}/function/write", request.to_dict())
