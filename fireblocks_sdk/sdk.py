@@ -2184,6 +2184,87 @@ class FireblocksSDK(object):
 
         return self._delete_request(url)
 
+    def get_console_users(self):
+        """
+        Gets all Console Users for your tenant
+        """
+
+        url = "/v1/management/console-users"
+
+        return self._get_request(url)
+
+    def get_api_users(self):
+        """
+        Gets all Api Users for your tenant
+        """
+
+        url = "/v1/management/api-users"
+
+        return self._get_request(url)
+
+    def create_console_user(self, first_name: str, last_name: str, email: str, role: str):
+        """
+        Create Console User for your tenant
+        @param first_name: firstName of the user, example: "Johnny".  Maximum length: 30 chars.
+        @param last_name: lastName of the user. Maximum length: 30 chars.
+        @param email: email of the user, example: "email@example.com"
+        @param role: role of the user, for example: "ADMIN"
+        """
+
+        url = "/v1/management/console-users"
+
+        body = {
+            "firstName": first_name,
+            "lastName": last_name,
+            "email": email,
+            "role": role
+        }
+
+        return self._post_request(url, body)
+
+    def create_api_user(self, name: str, role: str, csr_pem: str, co_signer_setup: Optional[str] = None, co_signer_setup_is_first_user: Optional[bool] = False):
+        """
+        Create Api User for your tenant
+        @param role: role of the user, for example: "ADMIN"
+        @param name: name of the api user, example: "Johnny The Api".  Maximum length: 30 chars.
+        @param csr_pem: generate .csr file and provide its string content here, example:  "-----BEGIN CERTIFICATE REQUEST-----aaa-----END CERTIFICATE REQUEST-----"
+        You can find more info about csrPem and how to create it here: https://developers.fireblocks.com/docs/quickstart
+        @param co_signer_setup: your cosigner, for example: "SGX_MACHINE", read more: https://developers.fireblocks.com/docs/quickstart
+        @param co_signer_setup_is_first_user: [SGX server enabled only] If you are the first user to be configured on this SGX-enabled Co-Signer server, this has to be true
+        """
+
+        url = "/v1/management/api-users"
+
+        body = {
+            "role": role,
+            "name": name,
+            "csrPem": csr_pem,
+            "coSignerSetup": co_signer_setup,
+            "coSignerSetupIsFirstUser": co_signer_setup_is_first_user
+        }
+
+        return self._post_request(url, body)
+
+    def reset_device_request(self, id: str):
+        """
+        Re-enroll Mobile Device of a user in your tenant
+        @param id: userId of the user to reset device
+        """
+
+        url = f"/v1/management/console-users/{id}/reset-device"
+
+        return self._post_request(url)
+
+    def get_whitelisted_ip_addresses(self, id: str):
+        """
+        Get whitelisted addresses of api user in your tenant
+        @param id: userId of the user
+        """
+
+        url = f"/v1/management/api-users/{id}/whitelist-ip-addresses"
+
+        return self._get_request(url)
+
     def get_off_exchanges(self):
         """
         Get your connected off exchanges virtual accounts
