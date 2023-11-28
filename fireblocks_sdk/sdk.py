@@ -37,6 +37,12 @@ from .api_types import (
     UnstakeRequestDto,
     WithdrawRequestDto,
 )
+from .tokenization_api_types import \
+    CreateTokenRequest, \
+    ContractUploadRequest, \
+    ContractDeployRequest, \
+    ReadCallFunction, \
+    WriteCallFunction
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -2688,6 +2694,59 @@ class FireblocksSDK(object):
         url = "/v1/smart-transfers/settings/user-groups"
 
         return self._get_request(url)
+    
+    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
+        request_filter = {"limit": limit, "offset": offset}
+        return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
+
+    def issue_new_token(self, request: CreateTokenRequest):
+        return self._post_request("/v1/tokenization/tokens", request.to_dict())
+
+    def get_linked_token(self, assetId: str):
+        return self._get_request(f"/v1/tokenization/tokens/{assetId}")
+
+    def link_token(self, assetId: str):
+        return self._put_request(f"/v1/tokenization/tokens/{assetId}/link", {})
+
+    def unlink_token(self, assetId: str):
+        return self._delete_request(f"/v1/tokenization/tokens/{assetId}")
+    
+    def get_contract_templates(self, limit: int = 100, offset: int = 0):
+        request_filter = {
+            "limit": limit,
+            "offset": offset
+        }
+        return self._get_request("/v1/contract-registry/contracts", query_params=request_filter)
+
+    def upload_contract_template(self, request: ContractUploadRequest):
+        return self._post_request("/v1/contract-registry/contracts", request.to_dict())
+
+    def get_contract_template(self, contractId: str):
+        return self._get_request(f"/v1/contract-registry/contracts/{contractId}")
+
+    def get_contract_template_constructor(self, contractId: str, with_docs: bool=False):
+        return self._get_request(f"/v1/contract-registry/contracts/{contractId}/constructor?withDocs=${with_docs}")
+
+    def delete_contract_template(self, contractId: str):
+        return self._delete_request(f"/v1/contract-registry/contracts/{contractId}")
+
+    def deploy_contract(self, contractId: str, request: ContractDeployRequest):
+        return self._post_request(f"/v1/contract-registry/contracts/{contractId}/deploy", request.to_dict())
+    
+    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
+        return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchainId}")
+    
+    def get_contract_by_address(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}")
+    
+    def get_contract_abi(self, blockchainId: str, contractAddress: str):
+        return self._get_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/abi")
+    
+    def read_contract_call_function(self, blockchainId: str, contractAddress: str, request: ReadCallFunction):
+        return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/read", request.to_dict())
+
+    def write_contract_call_function(self, blockchainId: str, contractAddress: str, request: WriteCallFunction):
+        return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/write", request.to_dict())
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:

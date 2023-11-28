@@ -27,16 +27,17 @@ You can also pass additional arguments:
 fireblocks = FireblocksSDK(private_key, api_key, api_base_url="https://api.fireblocks.io", timeout=2.0, anonymous_platform=True)
 ```
 
-#### Using Fireblocks Tokenization SDK
+#### Using Fireblocks Tokenization endpoints
 ```python
 from fireblocks_sdk import FireblocksSDK, FireblocksTokenization, \
                            ContractUploadRequest
 
 fireblocks = FireblocksSDK(private_key, api_key)
-fbTokenization = FireblocksTokenization(fireblocks)
 
-tokens=fbTokenization.get_linked_tokens()
+# Get linked tokens
+tokens=fireblocks.get_linked_tokens()
 
+# Upload a private contract
 contractTemplateRequest=ContractUploadRequest(
     name='New Contract Template',
     description='description',
@@ -46,6 +47,6 @@ contractTemplateRequest=ContractUploadRequest(
     initializationPhase='ON_DEPLOYMENT',
     abi=[]
 )
-template=fbTokenization.upload_contract_template(contractTemplateRequest)
+template=fireblocks.upload_contract_template(contractTemplateRequest)
 print(template['id'])
 ```
