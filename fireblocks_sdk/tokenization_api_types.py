@@ -1,184 +1,194 @@
-from .api_types import convert_class_to_dict
-
+from abc import ABC
 from enum import Enum
 from typing import Optional, List, Union, Dict
 
-class Parameter:
+from .api_types import convert_class_to_dict
+
+
+class BaseDictClass(ABC):
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+
+class Parameter(BaseDictClass):
     def __init__(
-        self,
-        name: str,
-        type: str,
-        internalType: str,
-        description: Optional[str] = None,
-        components: Optional[List['Parameter']] = None
+            self,
+            name: str,
+            type: str,
+            internal_type: str,
+            description: Optional[str] = None,
+            components: Optional[List['Parameter']] = None
     ):
         self.name = name
         self.type = type
-        self.internalType = internalType
+        self.internal_type = internal_type
         self.description = description
         self.components = components
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
 class ParameterWithValue(Parameter):
     def __init__(
-        self,
-        name: str,
-        type: str,
-        internalType: str,
-        value: Union[str, int, float, bool],
-        description: Optional[str] = None,
-        components: Optional[List['Parameter']] = None
+            self,
+            name: str,
+            type: str,
+            internal_type: str,
+            value: Union[str, int, float, bool],
+            function_value: 'LeanAbiFunction',
+            description: Optional[str] = None,
+            components: Optional[List['Parameter']] = None
     ):
-        super().__init__(name, type, internalType, description, components)
+        super().__init__(name, type, internal_type, description, components)
+        self.function_value = function_value
         self.value = value
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
-class EVMTokenCreateParams:
+class LeanAbiFunction(BaseDictClass):
+    def __init__(self, inputs: List[ParameterWithValue], name: Optional[str] = ""):
+        self.inputs = inputs
+        self.name = name
+
+
+class EVMTokenCreateParams(BaseDictClass):
+    def __init__(self, contract_id: str, constructor_params: Optional[List[ParameterWithValue]] = None):
+        self.contract_id = contract_id
+        self.constructor_params = constructor_params
+
+
+class StellarRippleCreateParams(BaseDictClass):
+    def __init__(self, issuer_address: Optional[str] = None):
+        self.issuer_address = issuer_address
+
+
+class CreateTokenRequest(BaseDictClass):
     def __init__(
-        self,
-        contractId: str,
-        constructorParams: Optional[List[ParameterWithValue]] = None
-    ):
-        self.contractId = contractId
-        self.constructorParams = constructorParams
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-class StellarRippleCreateParams:
-    def __init__(
-        self,
-        issuerAddress: Optional[str] = None
-    ):
-        self.issuerAddress = issuerAddress
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-class CreateTokenRequest:
-    def __init__(
-        self,
-        symbol: str,
-        name: str,
-        blockchainId: str,
-        vaultAccountId: str,
-        createParams: Union[EVMTokenCreateParams, StellarRippleCreateParams]
+            self,
+            symbol: str,
+            name: str,
+            blockchain_id: str,
+            vault_account_id: str,
+            create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams]
     ):
         self.symbol = symbol
         self.name = name
-        self.blockchainId = blockchainId
-        self.vaultAccountId = vaultAccountId
-        self.createParams = createParams
+        self.blockchain_id = blockchain_id
+        self.vault_account_id = vault_account_id
+        self.create_params = create_params
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
-class ContractDeployRequest:
+class ContractDeployRequest(BaseDictClass):
     def __init__(
-        self,
-        asset_id: str,
-        vault_account_id: str,
-        constructorParameters: Optional[List[ParameterWithValue]] = None
+            self,
+            asset_id: str,
+            vault_account_id: str,
+            constructor_parameters: Optional[List[ParameterWithValue]] = None
     ):
         self.asset_id = asset_id
         self.vault_account_id = vault_account_id
-        self.constructorParameters = constructorParameters
+        self.constructor_parameters = constructor_parameters
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
-class AbiFunction:
+class AbiFunction(BaseDictClass):
     def __init__(
-        self,
-        name: str,
-        type: str,
-        stateMutability: str,
-        inputs: List[Parameter],
-        outputs: Optional[List[Parameter]] = None,
-        description: Optional[str] = None,
-        returns: Optional[Dict[str, str]] = None
+            self,
+            name: str,
+            type: str,
+            state_mutability: str,
+            inputs: List[Parameter],
+            outputs: Optional[List[Parameter]] = None,
+            description: Optional[str] = None,
+            returns: Optional[Dict[str, str]] = None
     ):
         self.name = name
         self.type = type
-        self.stateMutability = stateMutability
+        self.state_mutability = state_mutability
         self.inputs = inputs
         self.outputs = outputs
         self.description = description
         self.returns = returns
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
 class ContractInitializationPhase(str, Enum):
     ON_DEPLOYMENT = "ON_DEPLOYMENT"
     POST_DEPLOYMENT = "POST_DEPLOYMENT"
 
-class ContractTemplateType(str, Enum):
-	FUNGIBLE_TOKEN = "FUNGIBLE_TOKEN"
-	NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
-	NON_TOKEN = "NON_TOKEN"
-	UUPS_PROXY = "UUPS_PROXY"
 
-class ContractUploadRequest:
+class ContractTemplateType(str, Enum):
+    FUNGIBLE_TOKEN = "FUNGIBLE_TOKEN"
+    NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
+    NON_TOKEN = "NON_TOKEN"
+    UUPS_PROXY = "UUPS_PROXY"
+
+
+class InputFieldMetadataTypes(str, Enum):
+    EncodedFunctionCallFieldType = "encodedFunctionCall",
+    DeployedContractAddressFieldType = "deployedContractAddress",
+    SupportedAssetAddressFieldType = "supportedAssetAddress",
+
+
+class EncodedFunctionCallFieldMetadata:
+    def __init__(self, template_id: str, function_signature: str):
+        self.template_id = template_id
+        self.function_signature = function_signature
+
+
+class DeployedContractAddressFieldMetadata:
+    def __init__(self, template_id: str):
+        self.template_id = template_id
+
+
+class FieldMetadata(BaseDictClass):
+    def __init__(self, type: InputFieldMetadataTypes,
+                 info: Union[EncodedFunctionCallFieldMetadata, DeployedContractAddressFieldMetadata]):
+        self.type = type
+        self.info = info
+
+
+class ContractUploadRequest(BaseDictClass):
     def __init__(
-        self,
-        name: str,
-        description: str,
-        longDescription: str,
-        bytecode: str,
-        sourcecode: str,
-        initializationPhase: ContractInitializationPhase,
-        abi: Optional[List[AbiFunction]] = None,
-        compilerOutputMetadata: Optional[object] = None,
-        docs: Optional[object] = None,
-        attributes: Optional[Dict[str, str]] = None,
-        type: Optional[ContractTemplateType] = None,
-        inputFieldsMetadata: Optional[str] = None,
+            self,
+            name: str,
+            description: str,
+            long_description: str,
+            bytecode: str,
+            sourcecode: str,
+            initialization_phase: ContractInitializationPhase,
+            abi: Optional[List[AbiFunction]] = None,
+            compiler_output_metadata: Optional[object] = None,
+            docs: Optional[object] = None,
+            attributes: Optional[Dict[str, str]] = None,
+            type: Optional[ContractTemplateType] = None,
+            input_fields_metadata: Optional[dict[str, FieldMetadata]] = None,
     ):
         self.name = name
         self.description = description
-        self.longDescription = longDescription
+        self.long_description = long_description
         self.bytecode = bytecode
         self.sourcecode = sourcecode
-        self.initializationPhase = initializationPhase
+        self.initialization_phase = initialization_phase
         self.abi = abi
-        self.compilerOutputMetadata = compilerOutputMetadata
+        self.compiler_output_metadata = compiler_output_metadata
         self.docs = docs
         self.attributes = attributes
         self.type = type
-        self.inputFieldsMetadata = inputFieldsMetadata
+        self.input_fields_metadata = input_fields_metadata
 
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
 
-class ReadCallFunction:
+class ReadCallFunction(BaseDictClass):
+    def __init__(self, abi_function: AbiFunction):
+        self.abiFunction = abi_function
+
+
+class WriteCallFunction(BaseDictClass):
     def __init__(
-        self,
-        abiFunction: AbiFunction,
+            self,
+            vault_account_id: str,
+            abi_function: AbiFunction,
+            amount: Optional[str] = None,
+            fee_level: Optional[str] = None,
+            note: Optional[str] = None,
     ):
-        self.abiFunction = abiFunction
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
-
-class WriteCallFunction:
-    def __init__(
-        self,
-        vaultAccountId: str,
-        abiFunction: AbiFunction,
-        amount: Optional[str] = None,
-        feeLevel: Optional[str] = None,
-        note: Optional[str] = None,
-    ):
-        self.vaultAccountId = vaultAccountId
-        self.abiFunction = abiFunction
+        self.vault_account_id = vault_account_id
+        self.abi_function = abi_function
         self.amount = amount
-        self.feeLevel = feeLevel
+        self.fee_level = fee_level
         self.note = note
-
-    def to_dict(self):
-        return convert_class_to_dict(self.__dict__)
