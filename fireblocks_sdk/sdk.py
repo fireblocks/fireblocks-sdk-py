@@ -34,6 +34,7 @@ from .api_types import (
     NFTOwnershipStatusUpdatedPayload,
     CreateTokenRequest,
     PagedExchangeAccountRequestFilters, StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto,
+    Role,
 )
 from .sdk_token_provider import SdkTokenProvider
 
@@ -2184,7 +2185,7 @@ class FireblocksSDK(object):
 
         return self._delete_request(url)
 
-    def get_console_users(self):
+    def get_console_users(self) -> List[Dict[str, Any]]:
         """
         Gets all Console Users for your tenant
         """
@@ -2193,7 +2194,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_api_users(self):
+    def get_api_users(self) -> List[Dict[str, Any]]:
         """
         Gets all Api Users for your tenant
         """
@@ -2202,7 +2203,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def create_console_user(self, first_name: str, last_name: str, email: str, role: str):
+    def create_console_user(self, first_name: str, last_name: str, email: str, role: Role) -> None:
         """
         Create Console User for your tenant
         @param first_name: firstName of the user, example: "Johnny".  Maximum length: 30 chars.
@@ -2222,7 +2223,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url, body)
 
-    def create_api_user(self, name: str, role: str, csr_pem: str, co_signer_setup: Optional[str] = None, co_signer_setup_is_first_user: Optional[bool] = False):
+    def create_api_user(self, name: str, role: Role, csr_pem: str, co_signer_setup: Optional[str] = None, co_signer_setup_is_first_user: Optional[bool] = False) -> None:
         """
         Create Api User for your tenant
         @param role: role of the user, for example: "ADMIN"
@@ -2245,7 +2246,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url, body)
 
-    def reset_device_request(self, id: str):
+    def reset_device_request(self, id: str) -> None:
         """
         Re-enroll Mobile Device of a user in your tenant
         @param id: userId of the user to reset device
@@ -2255,7 +2256,7 @@ class FireblocksSDK(object):
 
         return self._post_request(url)
 
-    def get_whitelisted_ip_addresses(self, id: str):
+    def get_whitelisted_ip_addresses(self, id: str) ->  Dict[str, Any]:
         """
         Get whitelisted addresses of api user in your tenant
         @param id: userId of the user
