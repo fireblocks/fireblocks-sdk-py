@@ -450,6 +450,17 @@ class AuthorizationLogic(str, Enum):
     AND = "AND"
     OR = "OR"
 
+class Role(str, Enum):
+    ADMIN = "ADMIN"
+    SIGNER = "SIGNER"
+    EDITOR = "EDITOR"
+    APPROVER = "APPROVER"
+    VIEWER = "VIEWER"
+    NON_SIGNING_ADMIN = "NON_SIGNING_ADMIN"
+    AUDITOR = "AUDITOR"
+    NCW_ADMIN = "NCW_ADMIN"
+    NCW_SIGNER = "NCW_SIGNER"
+
 
 class AuthorizationGroup:
     def __init__(self, users: Optional[List[str]] = None, users_groups: Optional[List[str]] = None, th: int = 0):
