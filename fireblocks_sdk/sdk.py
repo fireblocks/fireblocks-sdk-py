@@ -2123,7 +2123,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def update_ota_configuration(self, enable: bool) -> Dict[str, Any]:
+    def update_ota_configuration(self, enable: bool) -> None:
         """
         Update the tenant's OTA (One-Time-Address) configuration
         @param enable
