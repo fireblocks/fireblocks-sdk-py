@@ -2114,6 +2114,29 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
+    def get_ota_configuration(self) -> Dict[str, Any]:
+        """
+        Get the tenant's OTA (One-Time-Address) configuration
+        """
+
+        url = "/v1/management/ota"
+
+        return self._get_request(url)
+
+    def update_ota_configuration(self, enable: bool) -> None:
+        """
+        Update the tenant's OTA (One-Time-Address) configuration
+        @param enable
+        """
+
+        url = "/v1/management/ota"
+
+        body = {
+            "enabled": enable
+        }
+
+        return self._put_request(url, body)
+
     def get_users_groups(self) -> List[Dict[str, Any]]:
         """
         Gets all Users Groups for your tenant
