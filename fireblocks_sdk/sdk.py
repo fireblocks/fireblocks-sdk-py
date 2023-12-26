@@ -2142,7 +2142,7 @@ class FireblocksSDK(object):
         Gets all Users Groups for your tenant
         """
 
-        url = "/v1/users_groups"
+        url = "/v1/management/users_groups"
 
         return self._get_request(url)
 
@@ -2152,7 +2152,7 @@ class FireblocksSDK(object):
         @param id: The ID of the User
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/users_groups/{id}"
 
         return self._get_request(url)
 
@@ -2163,7 +2163,7 @@ class FireblocksSDK(object):
         @param member_ids: The ids of the Users Group members
         """
 
-        url = "/v1/users_groups"
+        url = "/v1/management/users_groups"
 
         body = {
             "groupName": group_name,
@@ -2181,7 +2181,7 @@ class FireblocksSDK(object):
         @param member_ids: The ids of the Users Group members
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/users_groups/{id}"
 
         body = {
             "groupName": group_name,
@@ -2196,7 +2196,7 @@ class FireblocksSDK(object):
         @param id: The ID of the Users Group
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/users_groups/{id}"
 
         return self._delete_request(url)
 
@@ -2205,7 +2205,7 @@ class FireblocksSDK(object):
         Gets all Console Users for your tenant
         """
 
-        url = "/v1/management/console-users"
+        url = "/v1/management/users"
 
         return self._get_request(url)
 
@@ -2214,7 +2214,7 @@ class FireblocksSDK(object):
         Gets all Api Users for your tenant
         """
 
-        url = "/v1/management/api-users"
+        url = "/v1/management/api_users"
 
         return self._get_request(url)
 
@@ -2227,7 +2227,7 @@ class FireblocksSDK(object):
         @param role: role of the user, for example: "ADMIN"
         """
 
-        url = "/v1/management/console-users"
+        url = "/v1/management/users"
 
         body = {
             "firstName": first_name,
@@ -2249,7 +2249,7 @@ class FireblocksSDK(object):
         @param co_signer_setup_is_first_user: [SGX server enabled only] If you are the first user to be configured on this SGX-enabled Co-Signer server, this has to be true
         """
 
-        url = "/v1/management/api-users"
+        url = "/v1/management/api_users"
 
         body = {
             "role": role,
@@ -2267,7 +2267,7 @@ class FireblocksSDK(object):
         @param id: userId of the user to reset device
         """
 
-        url = f"/v1/management/console-users/{id}/reset-device"
+        url = f"/v1/management/users/{id}/reset_device"
 
         return self._post_request(url)
 
@@ -2277,7 +2277,7 @@ class FireblocksSDK(object):
         @param id: userId of the user
         """
 
-        url = f"/v1/management/api-users/{id}/whitelist-ip-addresses"
+        url = f"/v1/management/api_users/{id}/whitelist_ip_addresses"
 
         return self._get_request(url)
 
