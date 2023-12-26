@@ -2,6 +2,7 @@ from distutils.core import setup
 setup(
   name = 'fireblocks_sdk',
   packages = ['fireblocks_sdk'],
+  authors = 'fireblocks',
   version = '2.2.1',
   license='MIT',
   description = 'Fireblocks python SDK',
