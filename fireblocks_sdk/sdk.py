@@ -2830,6 +2830,44 @@ class FireblocksSDK(object):
     def write_contract_call_function(self, blockchainId: str, contractAddress: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/write", request.to_dict())
 
+    def register_validator_key(self, validatorKeyPem: str):
+        """
+        Add a validator key which will be used to extrnal keys for your tenant
+        @param validatorKeyPem: A validator key in PEM format
+        """
+
+        url = "/v1/external_keys/validator_key"
+
+        body = {
+            "validatorKey": validatorKeyPem
+        }
+
+        print("url="+url)
+        print ("body="+str(body))
+        return self._post_request(url, body)
+
+    def add_external_keys(self, externalKeys: list):
+        """
+        Add external keys which will be used to sign transactions
+        @param externalKeys: A list of dictionaries [
+            {"signedkey":..., "signingDeviceKeyId": ...},
+            {"signedkey":..., "signingDeviceKeyId": ...},
+            ]
+        """
+
+        url = "/v1/external_keys/add_external_keys"
+        body = {
+            "externalKeys": externalKeys
+        }
+
+        print("url="+url)
+        print ("body="+str(body))
+        return self._post_request(url, body)
+
+    def get_external_keys(self):
+        """Get all staking chains."""
+        return self._get_request("/v1/external_keys/get_external_keys")
+    
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
