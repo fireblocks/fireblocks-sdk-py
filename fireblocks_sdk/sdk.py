@@ -2846,13 +2846,16 @@ class FireblocksSDK(object):
         print ("body="+str(body))
         return self._post_request(url, body)
 
-    def add_external_keys(self, externalKeys: list):
+    def add_external_keys(self, externalKeys: List):
         """
         Add external keys which will be used to sign transactions
-        @param externalKeys: A list of dictionaries [
-            {"signedkey":..., "signingDeviceKeyId": ...},
-            {"signedkey":..., "signingDeviceKeyId": ...},
+        @param externalKeys: A list of dictionaries. For example:
+            [
+                {"signedkey":..., "signingDeviceKeyId": ...},
+                {"signedkey":..., "signingDeviceKeyId": ...},
             ]
+            signedKey: A public blockchain key, signed with a validator key
+            signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
         """
 
         url = "/v1/external_keys/add_external_keys"
@@ -2868,6 +2871,24 @@ class FireblocksSDK(object):
         """Get all staking chains."""
         return self._get_request("/v1/external_keys/get_external_keys")
     
+    def link_external_key_to_users(self, keyId: str, userIds: List[str]):
+        """
+        Link a key to users which can use it to sign
+        @params
+          keyId: Id of the key to link. can be obtained via get_external_keys()
+          userIds: A list of users Ids to be linked to the key. Can be obtained via get_users()
+            ]
+        """
+        url = "/v1/external_keys/link_external_key_to_users"
+        body = {
+            "keyId": keyId,
+            "userIds": userIds
+        }
+
+        print("url="+url)
+        print ("body="+str(body))
+        return self._post_request(url, body)
+
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
