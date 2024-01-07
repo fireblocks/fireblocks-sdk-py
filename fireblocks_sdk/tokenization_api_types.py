@@ -157,7 +157,7 @@ class ContractUploadRequest(BaseDictClass):
             docs: Optional[object] = None,
             attributes: Optional[Dict[str, str]] = None,
             type: Optional[ContractTemplateType] = None,
-            input_fields_metadata: Optional[dict[str, FieldMetadata]] = None,
+            input_fields_metadata: Optional[Dict[str, FieldMetadata]] = None,
     ):
         self.name = name
         self.description = description
