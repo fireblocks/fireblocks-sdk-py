@@ -2289,7 +2289,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_audit_logs(self, time_period: TimePeriod):
+    def get_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY):
         """
         Get audit logs
         :param time_period: The last time period to fetch audit logs
@@ -2298,6 +2298,23 @@ class FireblocksSDK(object):
         url = "/v1/audits"
 
         return self._get_request(url, query_params={"timePeriod": time_period.value})
+        
+    def get_paginated_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY, cursor = None):
+        """
+        Get paginated audit logs
+        :param time_period: The last time period to fetch audit logs
+        :param cursor: The next id to fetch audit logs from
+        """
+        url = "/v1/management/audit_logs"
+        params = {}
+
+        if cursor:
+            params["cursor"] = cursor
+
+        if time_period:
+            params["timePeriod"] = time_period.value
+
+        return self._get_request(url, query_params=params)
 
     def get_off_exchange_by_id(self, off_exchange_id):
         """
