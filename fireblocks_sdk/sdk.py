@@ -74,7 +74,7 @@ def handle_response(response, page_mode=False):
         return response_data
 
 
-class FireblocksSDK(object):
+class FireblocksSDK:
     def __init__(
             self,
             private_key,
