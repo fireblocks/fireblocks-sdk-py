@@ -10,7 +10,7 @@ For the complete API reference, go to the [API reference](https://developers.fir
 Make sure you have the credentials for Fireblocks API Services. Otherwise, please contact Fireblocks support for further instructions on how to obtain your API credentials.
 
 ### Requirements
-Python 3.6 or newer.
+Python 3.7 or newer.
 
 ### Installation
 `pip3 install fireblocks-sdk`
