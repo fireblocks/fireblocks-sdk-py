@@ -559,7 +559,7 @@ class PolicyRule:
                  amount_scope: PolicyAmountScope,
                  amount: Union[int, str],
                  period_sec: int,
-                 external_descriptor: str,
+                 external_descriptor: Optional[str] = None,
                  operator: Optional[str] = None,
                  operators: Optional[Operators] = None,
                  transaction_type: Optional[PolicyTransactionType] = None,
