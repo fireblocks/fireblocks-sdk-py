@@ -2137,18 +2137,18 @@ class FireblocksSDK:
 
         return self._put_request(url, body)
 
-    def get_users_groups(self) -> List[Dict[str, Any]]:
+    def get_user_groups(self) -> List[Dict[str, Any]]:
         """
-        Gets all Users Groups for your tenant
+        Gets all User Groups for your tenant
         """
 
         url = "/v1/management/user_groups"
 
         return self._get_request(url)
 
-    def get_users_group(self, id: str) -> Dict[str, Any]:
+    def get_user_group(self, id: str) -> Dict[str, Any]:
         """
-        Gets a Users Group by ID
+        Gets a User Group by ID
         @param id: The ID of the User
         """
 
@@ -2158,9 +2158,9 @@ class FireblocksSDK:
 
     def create_user_group(self, group_name: str, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
         """
-        Creates a new Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
+        Creates a new User Group
+        @param group_name: The name of the User Group
+        @param member_ids: The ids of the User Group members
         """
 
         url = "/v1/management/user_groups"
@@ -2175,10 +2175,10 @@ class FireblocksSDK:
     def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> \
             Dict[str, Any]:
         """
-        Updates a Users Group
-        @param id: The ID of the Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
+        Updates a User Group
+        @param id: The ID of the User Group
+        @param group_name: The name of the User Group
+        @param member_ids: The ids of the User Group members
         """
 
         url = f"/v1/management/user_groups/{id}"
@@ -2192,8 +2192,8 @@ class FireblocksSDK:
 
     def delete_user_group(self, id: str) -> None:
         """
-        Deletes a Users Group
-        @param id: The ID of the Users Group
+        Deletes a User Group
+        @param id: The ID of the User Group
         """
 
         url = f"/v1/management/user_groups/{id}"
