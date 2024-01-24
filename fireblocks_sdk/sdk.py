@@ -2142,7 +2142,7 @@ class FireblocksSDK:
         Gets all Users Groups for your tenant
         """
 
-        url = "/v1/management/users_groups"
+        url = "/v1/management/user_groups"
 
         return self._get_request(url)
 
@@ -2152,7 +2152,7 @@ class FireblocksSDK:
         @param id: The ID of the User
         """
 
-        url = f"/v1/management/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         return self._get_request(url)
 
@@ -2163,7 +2163,7 @@ class FireblocksSDK:
         @param member_ids: The ids of the Users Group members
         """
 
-        url = "/v1/management/users_groups"
+        url = "/v1/management/user_groups"
 
         body = {
             "groupName": group_name,
@@ -2181,7 +2181,7 @@ class FireblocksSDK:
         @param member_ids: The ids of the Users Group members
         """
 
-        url = f"/v1/management/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         body = {
             "groupName": group_name,
@@ -2196,7 +2196,7 @@ class FireblocksSDK:
         @param id: The ID of the Users Group
         """
 
-        url = f"/v1/management/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         return self._delete_request(url)
 
