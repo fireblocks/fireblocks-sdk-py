@@ -559,7 +559,7 @@ class PolicyRule:
                  amount_scope: PolicyAmountScope,
                  amount: Union[int, str],
                  period_sec: int,
-                 external_descriptor: str,
+                 external_descriptor: Optional[str] = None,
                  operator: Optional[str] = None,
                  operators: Optional[Operators] = None,
                  transaction_type: Optional[PolicyTransactionType] = None,
@@ -589,7 +589,8 @@ class PolicyRule:
         self.amount_scope = amount_scope
         self.amount = amount
         self.period_sec = period_sec
-        self.external_descriptor = external_descriptor
+        if external_descriptor:
+            self.external_descriptor = external_descriptor
         if operator:
             self.operator = operator
         if operators:
