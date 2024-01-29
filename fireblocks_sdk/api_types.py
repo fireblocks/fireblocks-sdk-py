@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum, auto, Enum
 from typing import Optional, List, Union
 
 
@@ -379,10 +379,10 @@ class NFTsWalletTypeValues(str, Enum):
     VAULT_ACCOUNT = "VAULT_ACCOUNT"
     END_USER_WALLET = "END_USER_WALLET"
 
-class SpamTokenOwnershipValues(str, Enum):
-    true = "true"
-    false = "false"
-    all = "all"
+class SpamTokenOwnershipValues(StrEnum):
+    true = auto()
+    false = auto()
+    all = auto()
 
 class TokenOwnershipSpamUpdatePayload:
     def __init__(self, asset_id: str, spam: bool):
