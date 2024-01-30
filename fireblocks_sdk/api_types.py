@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum, auto, Enum
 from typing import Optional, List, Union
 
 
@@ -379,6 +379,21 @@ class NFTsWalletTypeValues(str, Enum):
     VAULT_ACCOUNT = "VAULT_ACCOUNT"
     END_USER_WALLET = "END_USER_WALLET"
 
+class SpamTokenOwnershipValues(StrEnum):
+    true = auto()
+    false = auto()
+    all = auto()
+
+class TokenOwnershipSpamUpdatePayload:
+    def __init__(self, asset_id: str, spam: bool):
+        self.asset_id = asset_id
+        self.spam = spam
+
+    def serialize(self) -> dict:
+        return {
+            'assetId': self.asset_id,
+            'spam': self.spam,
+        }
 
 class OrderValues(str, Enum):
     ASC = "ASC"

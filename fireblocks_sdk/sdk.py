@@ -37,6 +37,8 @@ from .api_types import (
     UnstakeRequestDto,
     WithdrawRequestDto,
     Role,
+    SpamTokenOwnershipValues,
+    TokenOwnershipSpamUpdatePayload,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
@@ -219,7 +221,7 @@ class FireblocksSDK:
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100,
                        sort: List[GetOwnedNftsSortValues] = None,
                        order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
-                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None):
+                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None, spam: SpamTokenOwnershipValues = None):
         """
 
         """
@@ -266,6 +268,9 @@ class FireblocksSDK:
         if search:
             params["search"] = search
 
+        if spam:
+            params["spam"] = spam.value
+
         return self._get_request(url, query_params=params)
 
     def list_owned_collections(self, search: str = None, status: NFTOwnershipStatusValues = None,
@@ -308,7 +313,7 @@ class FireblocksSDK:
     def list_owned_assets(self, search: str = None, status: NFTOwnershipStatusValues = None,
                           ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None,
                           sort: List[GetOwnedAssetsSortValues] = None,
-                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100, spam: SpamTokenOwnershipValues = None):
         """
         """
         url = f"/v1/nfts/ownership/assets"
@@ -339,6 +344,9 @@ class FireblocksSDK:
         if order:
             params['order'] = order
 
+        if spam:
+            params["spam"] = spam.value
+
         return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
@@ -361,6 +369,16 @@ class FireblocksSDK:
         url = "/v1/nfts/ownership/tokens/status"
 
         return self._put_request(url, list(map((lambda payload_item: payload_item.serialize()), payload)))
+
+        def update_nft_token_ownerships_spam_status(self, payload: List[TokenOwnershipSpamUpdatePayload]):
+            """Updates tokens spam status for a tenant, in all tenant vaults.
+
+            Args:
+                payload (TokenOwnershipSpamUpdatePayload[]): List of assets with status for update
+            """
+            url = "/v1/nfts/ownership/tokens/spam"
+
+            return self._put_request(url, list(map((lambda payload_item: payload_item.serialize()), payload)))
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
