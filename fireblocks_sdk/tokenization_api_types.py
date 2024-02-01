@@ -120,7 +120,12 @@ class ContractTemplateType(str, Enum):
 class InputFieldMetadataTypes(str, Enum):
     EncodedFunctionCallFieldType = "encodedFunctionCall",
     DeployedContractAddressFieldType = "deployedContractAddress",
-    SupportedAssetAddressFieldType = "supportedAssetAddress",
+    SupportedAssetAddressFieldType = "supportedAssetAddress"
+
+
+class TokenLinkStatus(str, Enum):
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED"
 
 
 class EncodedFunctionCallFieldMetadata:

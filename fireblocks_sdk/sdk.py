@@ -47,6 +47,7 @@ from .tokenization_api_types import \
     ContractDeployRequest, \
     ContractInitializationPhase, \
     ContractTemplateType, \
+    TokenLinkStatus, \
     ReadCallFunction, \
     WriteCallFunction
 from .sdk_token_provider import SdkTokenProvider
@@ -2838,7 +2839,7 @@ class FireblocksSDK:
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, status: Optional[str], pageSize: int = 100, pageCursor: Optional[str] = None):
+    def get_linked_tokens(self, status: Optional[TokenLinkStatus], pageSize: int = 100, pageCursor: Optional[str] = None):
         request_filter = {
             "status": status,
             "pageSize": pageSize,
