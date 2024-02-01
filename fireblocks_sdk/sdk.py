@@ -2838,8 +2838,12 @@ class FireblocksSDK:
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, pageSize: int = 100, pageCursor: Optional[str] = None):
-        request_filter = {"pageSize": pageSize, "pageCursor": pageCursor}
+    def get_linked_tokens(self, status: Optional[str], pageSize: int = 100, pageCursor: Optional[str] = None):
+        request_filter = {
+            "status": status,
+            "pageSize": pageSize,
+            "pageCursor": pageCursor
+        }
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
 
     def issue_new_token(self, request: CreateTokenRequest):
