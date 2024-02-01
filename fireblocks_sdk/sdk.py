@@ -2835,26 +2835,26 @@ class FireblocksSDK:
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
-        request_filter = {"limit": limit, "offset": offset}
+    def get_linked_tokens(self, pageSize: int = 100, pageCursor: Optional[str] = None):
+        request_filter = {"pageSize": pageSize, "pageCursor": pageCursor}
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
 
     def issue_new_token(self, request: CreateTokenRequest):
         return self._post_request("/v1/tokenization/tokens", request.to_dict())
 
-    def get_linked_token(self, assetId: str):
-        return self._get_request(f"/v1/tokenization/tokens/{assetId}")
+    def get_linked_token(self, id: str):
+        return self._get_request(f"/v1/tokenization/tokens/{id}")
 
-    def link_token(self, assetId: str):
-        return self._put_request(f"/v1/tokenization/tokens/{assetId}/link", {})
+    def link_token(self, type: str, refId: str):
+        return self._post_request(f"/v1/tokenization/tokens/link", { type, refId})
 
-    def unlink_token(self, assetId: str):
-        return self._delete_request(f"/v1/tokenization/tokens/{assetId}")
+    def unlink_token(self, id: str):
+        return self._delete_request(f"/v1/tokenization/tokens/{id}")
     
-    def get_contract_templates(self, limit: int = 100, offset: int = 0):
+    def get_contract_templates(self, pageSize: int = 100, pageCursor: str = None):
         request_filter = {
-            "limit": limit,
-            "offset": offset
+            "pageSize": pageSize,
+            "pageCursor": pageCursor
         }
         return self._get_request("/v1/contract-registry/contracts", query_params=request_filter)
 
