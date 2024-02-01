@@ -2852,6 +2852,9 @@ class FireblocksSDK:
 
     def get_linked_token(self, id: str):
         return self._get_request(f"/v1/tokenization/tokens/{id}")
+    
+    def get_linked_tokens_count(self):
+        return self._get_request(f"/v1/tokenization/tokens/count")
 
     def link_token(self, type: str, refId: str):
         return self._post_request(f"/v1/tokenization/tokens/link", { type, refId})
