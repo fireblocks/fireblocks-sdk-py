@@ -2839,7 +2839,7 @@ class FireblocksSDK:
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, status: Optional[TokenLinkStatus], pageSize: int = 100, pageCursor: Optional[str] = None):
+    def get_linked_tokens(self, status: Optional[TokenLinkStatus], pageSize: Optional[int] = 100, pageCursor: Optional[str] = None):
         request_filter = {
             "status": status,
             "pageSize": pageSize,
@@ -2847,7 +2847,7 @@ class FireblocksSDK:
         }
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
     
-    def get_pending_linked_tokens(self, pageSize: int = 100, pageCursor: Optional[str] = None):
+    def get_pending_linked_tokens(self, pageSize: Optional[int], pageCursor: Optional[str] = None):
         return self.get_linked_tokens(TokenLinkStatus.PENDING, pageSize, pageCursor)
 
     def issue_new_token(self, request: CreateTokenRequest):
