@@ -39,11 +39,14 @@ from .api_types import (
     Role,
     SpamTokenOwnershipValues,
     TokenOwnershipSpamUpdatePayload,
+    TokenOwnershipSpamUpdatePayload,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
     ContractUploadRequest, \
     ContractDeployRequest, \
+    ContractInitializationPhase, \
+    ContractTemplateType, \
     ReadCallFunction, \
     WriteCallFunction
 from .sdk_token_provider import SdkTokenProvider
@@ -2851,8 +2854,16 @@ class FireblocksSDK:
     def unlink_token(self, id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{id}")
     
-    def get_contract_templates(self, pageSize: int = 100, pageCursor: str = None):
+    def get_contract_templates(
+            self, 
+            initializationPhase: Optional[ContractInitializationPhase] = None, 
+            type: Optional[ContractTemplateType] = None,
+            pageSize: int = 100, 
+            pageCursor: Optional[str] = None
+        ):
         request_filter = {
+            "initializationPhase": initializationPhase,
+            "type": type,
             "pageSize": pageSize,
             "pageCursor": pageCursor
         }
