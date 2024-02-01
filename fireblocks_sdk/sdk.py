@@ -2884,7 +2884,7 @@ class FireblocksSDK:
     def deploy_contract(self, contractId: str, request: ContractDeployRequest):
         return self._post_request(f"/v1/contract-registry/contracts/{contractId}/deploy", request.to_dict())
     
-    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
+    def get_contracts_by_filter(self, templateId: str, blockchainId: Optional[str] = None):
         return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchainId}")
     
     def get_contract_by_address(self, blockchainId: str, contractAddress: str):
