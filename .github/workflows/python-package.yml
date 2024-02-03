@@ -27,6 +27,5 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Build package
         run: pip install -e .
-#      - name: Test with pytest
-#        run: |
-#          pytest
+      - name: Import package to test compatbility
+        run: python -c "import fireblocks_sdk"
