@@ -2839,15 +2839,21 @@ class FireblocksSDK:
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, status: Optional[TokenLinkStatus], pageSize: Optional[int] = 100, pageCursor: Optional[str] = None):
-        request_filter = {
-            "status": status,
-            "pageSize": pageSize,
-            "pageCursor": pageCursor
-        }
+    def get_linked_tokens(self, status: Optional[TokenLinkStatus] = None, pageSize: Optional[int] = None, pageCursor: Optional[str] = None):
+        request_filter = {}
+
+        if status is not None:
+            request_filter["status"] = status.value
+
+        if pageSize is not None:
+            request_filter["pageSize"] = pageSize
+
+        if pageCursor is not None:
+            request_filter["pageCursor"] = pageCursor
+
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
     
-    def get_pending_linked_tokens(self, pageSize: Optional[int], pageCursor: Optional[str] = None):
+    def get_pending_linked_tokens(self, pageSize: Optional[int] = None, pageCursor: Optional[str] = None):
         return self.get_linked_tokens(TokenLinkStatus.PENDING, pageSize, pageCursor)
 
     def issue_new_token(self, request: CreateTokenRequest):
@@ -2869,15 +2875,23 @@ class FireblocksSDK:
             self, 
             initializationPhase: Optional[ContractInitializationPhase] = None, 
             type: Optional[ContractTemplateType] = None,
-            pageSize: int = 100, 
+            pageSize: Optional[int] = None,
             pageCursor: Optional[str] = None
         ):
-        request_filter = {
-            "initializationPhase": initializationPhase,
-            "type": type,
-            "pageSize": pageSize,
-            "pageCursor": pageCursor
-        }
+        request_filter = {}
+
+        if initializationPhase is not None:
+            request_filter["initializationPhase"] = initializationPhase.value
+
+        if type is not None:
+            request_filter["type"] = type.value
+
+        if pageSize is not None:
+            request_filter["pageSize"] = pageSize
+
+        if pageCursor is not None:
+            request_filter["pageCursor"] = pageCursor
+
         return self._get_request("/v1/contract-registry/contracts", query_params=request_filter)
 
     def upload_contract_template(self, request: ContractUploadRequest):
