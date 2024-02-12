@@ -115,7 +115,12 @@ class ContractTemplateType(str, Enum):
     NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
     NON_TOKEN = "NON_TOKEN"
     UUPS_PROXY = "UUPS_PROXY"
+    UUPS_PROXY_FUNGIBLE_TOKEN = "UUPS_PROXY_FUNGIBLE_TOKEN"
+    UUPS_PROXY_NON_FUNGIBLE_TOKEN = "UUPS_PROXY_NON_FUNGIBLE_TOKEN"
 
+class TokenLinkType(str, Enum):
+    FUNGIBLE_TOKEN = "FUNGIBLE_TOKEN"
+    NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
 
 class InputFieldMetadataTypes(str, Enum):
     EncodedFunctionCallFieldType = "encodedFunctionCall",

@@ -48,6 +48,7 @@ from .tokenization_api_types import \
     ContractInitializationPhase, \
     ContractTemplateType, \
     TokenLinkStatus, \
+    TokenLinkType, \
     ReadCallFunction, \
     WriteCallFunction
 from .sdk_token_provider import SdkTokenProvider
@@ -2865,8 +2866,12 @@ class FireblocksSDK:
     def get_linked_tokens_count(self):
         return self._get_request(f"/v1/tokenization/tokens/count")
 
-    def link_token(self, type: str, refId: str):
-        return self._post_request(f"/v1/tokenization/tokens/link", {type, refId})
+    def link_token(self, type: TokenLinkType, refId: str):
+        body = {
+            "type": type,
+            "refId": refId
+        }
+        return self._post_request(f"/v1/tokenization/tokens/link", body)
 
     def unlink_token(self, id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{id}")
