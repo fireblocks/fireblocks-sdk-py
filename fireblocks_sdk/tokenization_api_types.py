@@ -64,13 +64,15 @@ class StellarRippleCreateParams(BaseDictClass):
 class CreateTokenRequest(BaseDictClass):
     def __init__(
             self,
-            blockchain_id: str,
             vault_account_id: str,
-            create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams]
+            create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams],
+            asset_id: Optional[str] = None,
+            blockchain_id: Optional[str] = None
     ):
-        self.blockchain_id = blockchain_id
         self.vault_account_id = vault_account_id
         self.create_params = create_params
+        self.asset_id = asset_id
+        self.blockchain_id = blockchain_id
 
 
 class ContractDeployRequest(BaseDictClass):
