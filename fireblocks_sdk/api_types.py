@@ -694,3 +694,13 @@ class WithdrawRequestDto:
 
     def to_dict(self):
         return convert_class_to_dict(self.__dict__)
+
+class ClaimRewardsRequestDto:
+    def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
+        self.id = id
+        self.fee = fee
+        self.fee_level = fee_level
+        self.tx_note = tx_note
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)

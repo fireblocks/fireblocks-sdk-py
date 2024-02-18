@@ -36,6 +36,7 @@ from .api_types import (
     StakeRequestDto,
     UnstakeRequestDto,
     WithdrawRequestDto,
+    ClaimRewardsRequestDto,
     Role,
     SpamTokenOwnershipValues,
     TokenOwnershipSpamUpdatePayload,
@@ -128,11 +129,25 @@ class FireblocksSDK:
         """Get staking positions summary by vault."""
         return self._get_request("/v1/staking/positions/summary/vaults")
 
-    def execute_staking_action(self, chain_descriptor: str, action_id: str,
-                               request_body: Union[StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto]):
-        """Execute staking action on a chain.
-        """
-        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body.to_dict())
+    def execute_staking_stake(self, chain_descriptor: str, request_body: StakeRequestDto):
+            """Initiate staking stake on a chain.
+            """
+            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/stake", request_body.to_dict())
+
+    def execute_staking_unstake(self, chain_descriptor: str, request_body: UnstakeRequestDto):
+            """Execute staking unstake on a chain.
+            """
+            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/unstake", request_body.to_dict())
+
+    def execute_staking_withdraw(self, chain_descriptor: str, request_body: WithdrawRequestDto):
+                """Execute staking withdraw on a chain.
+                """
+                return self._post_request(f"/v1/staking/chains/{chain_descriptor}/withdraw", request_body.to_dict())
+
+    def execute_staking_claim_rewards(self, chain_descriptor: str, request_body: ClaimRewardsRequestDto):
+                    """Execute staking claim rewards on a chain.
+                    """
+                    return self._post_request(f"/v1/staking/chains/{chain_descriptor}/claimRewards", request_body.to_dict())
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
