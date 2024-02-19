@@ -4,7 +4,6 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import Any, Dict, Optional, List, Union
-from urllib.parse import quote
 import requests
 
 from .api_types import (
