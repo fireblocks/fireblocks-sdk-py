@@ -4,7 +4,7 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import Any, Dict, Optional, List, Union
-
+from urllib.parse import quote
 import requests
 
 from .api_types import (
@@ -1140,7 +1140,7 @@ class FireblocksSDK:
             external_tx_id (str): The external id of the transaction
         """
 
-        return self._get_request(f"/v1/transactions/external_tx_id/{external_tx_id}")
+        return self._get_request(f"/v1/transactions/external_tx_id/{urllib.quote(external_tx_id, safe='')}")
 
     def get_fee_for_asset(self, asset_id):
         """Gets the estimated fees for an asset
