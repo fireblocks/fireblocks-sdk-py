@@ -169,7 +169,7 @@ class FireblocksNCW:
         return self.sdk._get_request(url)
 
     def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
-        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
+        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/enable"
         body = {"enabled": enabled}
 
         return self.sdk._put_request(url, body)
