@@ -4,18 +4,44 @@ from .sdk import FireblocksSDK
 class FireblocksNCW:
     def __init__(self, sdk: FireblocksSDK):
         self.sdk = sdk
-        self._wallet_url = "/v1/wallets"
+        self._wallet_url = "/v1/ncw/wallets"
 
     def create_wallet(self):
-        url = "/v1/wallets"
-        return self.sdk._post_request(url)
+        return self.sdk._post_request(self._wallet_url)
 
-    def get_wallets(self):
-        return self.sdk._get_request(self._wallet_url)
+    def get_wallets(
+        self,
+        page_cursor: str,
+        page_size: int,
+        sort: str,
+        order: str,
+        enabled: bool = None,
+    ):
+        query_params = {}
+
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        if sort:
+            query_params["sort"] = sort
+
+        if order:
+            query_params["order"] = order
+
+        if enabled:
+            query_params["enabled"] = enabled
+
+        return self.sdk._get_request(self._wallet_url, query_params=query_params)
 
     def get_wallet(self, wallet_id: str):
         url = f"{self._wallet_url}/{wallet_id}"
         return self.sdk._get_request(url)
+
+    def get_latest_backup(self, wallet_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/backup/latest"
 
     def enable_wallet(self, wallet_id: str, enabled: bool):
         url = f"{self._wallet_url}/{wallet_id}/enable"
@@ -103,9 +129,7 @@ class FireblocksNCW:
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
         return self.sdk._put_request(url)
 
-    def get_wallet_asset_balance(
-        self, wallet_id: str, account_id: str, asset_id: str
-    ):
+    def get_wallet_asset_balance(self, wallet_id: str, account_id: str, asset_id: str):
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
         return self.sdk._get_request(url)
 
