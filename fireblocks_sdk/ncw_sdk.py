@@ -42,6 +42,7 @@ class FireblocksNCW:
 
     def get_latest_backup(self, wallet_id: str):
         url = f"{self._wallet_url}/{wallet_id}/backup/latest"
+        return self.sdk._get_request(url)
 
     def enable_wallet(self, wallet_id: str, enabled: bool):
         url = f"{self._wallet_url}/{wallet_id}/enable"
