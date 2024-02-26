@@ -17,7 +17,7 @@ class FireblocksNCW:
         order: str,
         enabled: bool = None,
     ):
-        query_params = {}
+        query_params = {"enabled": enabled}
 
         if page_cursor:
             query_params["pageCursor"] = page_cursor
@@ -30,9 +30,6 @@ class FireblocksNCW:
 
         if order:
             query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
 
         return self.sdk._get_request(self._wallet_url, query_params=query_params)
 
@@ -63,7 +60,7 @@ class FireblocksNCW:
         enabled: bool = None,
     ):
         url = f"{self._wallet_url}/{wallet_id}/accounts"
-        query_params = {}
+        query_params = {"enabled": enabled}
 
         if page_cursor:
             query_params["pageCursor"] = page_cursor
@@ -76,9 +73,6 @@ class FireblocksNCW:
 
         if order:
             query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
 
         return self.sdk._get_request(url, query_params=query_params)
 
@@ -146,7 +140,7 @@ class FireblocksNCW:
         enabled: bool = None,
     ):
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
-        query_params = {}
+        query_params = {"enabled": enabled}
 
         if page_cursor:
             query_params["pageCursor"] = page_cursor
@@ -159,9 +153,6 @@ class FireblocksNCW:
 
         if order:
             query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
 
         return self.sdk._get_request(url, query_params=query_params)
 
@@ -183,3 +174,17 @@ class FireblocksNCW:
         body = {"payload": payload}
 
         return self.sdk._post_request(url, body)
+
+    def get_supported_assets(
+        self, page_cursor: str, page_size: int, only_base_assets: bool
+    ):
+        query_params = {"onlyBaseAssets": only_base_assets}
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        return self._get_request(
+            f"{self._wallet_url}/supported_assets", query_params=query_params
+        )
