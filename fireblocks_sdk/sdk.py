@@ -2880,11 +2880,14 @@ class FireblocksSDK:
     def get_linked_tokens_count(self):
         return self._get_request(f"/v1/tokenization/tokens/count")
 
-    def link_token(self, type: TokenLinkType, ref_id: str):
+    def link_token(self, type: TokenLinkType, ref_id: str, display_name: Optional[str] = None):
         body = {
             "type": type,
-            "refId": ref_id
+            "refId": ref_id,
         }
+        if display_name:
+            body["displayName"] = display_name
+
         return self._post_request(f"/v1/tokenization/tokens/link", body)
 
     def unlink_token(self, id: str):
