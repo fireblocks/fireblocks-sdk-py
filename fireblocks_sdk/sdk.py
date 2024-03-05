@@ -1330,9 +1330,9 @@ class FireblocksSDK:
         """Creates a new asset
 
         Args:
-            blockchainId (str): The blockchain ID
-            address (str): The address of the asset
-            symbol (str) optional: The symbol of the asset to add (e.g BTC, ETH)
+            blockchainId (str): Blockchain ID or asset ID
+            address (str): Asset contract address
+            symbol (str) optional: Asset symbol
             idempotency_key (str, optional)
         """
         body = {
