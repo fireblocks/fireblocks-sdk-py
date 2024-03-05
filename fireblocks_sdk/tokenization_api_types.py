@@ -67,12 +67,14 @@ class CreateTokenRequest(BaseDictClass):
             vault_account_id: str,
             create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams],
             asset_id: Optional[str] = None,
-            blockchain_id: Optional[str] = None
+            blockchain_id: Optional[str] = None,
+            display_name: Optional[str] = None,
     ):
         self.vault_account_id = vault_account_id
         self.create_params = create_params
         self.asset_id = asset_id
         self.blockchain_id = blockchain_id
+        self.display_name = display_name
 
 
 class ContractDeployRequest(BaseDictClass):
