@@ -1327,10 +1327,10 @@ class FireblocksSDK:
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
     def create_new_asset(self, blockchainId, address, symbol=None, idempotency_key=None):
-        """Creates a new asset
+        """Registers new asset
 
         Args:
-            blockchainId (str): Blockchain ID or asset ID
+            blockchainId (str): Native asset of blockchain
             address (str): Asset contract address
             symbol (str) optional: Asset symbol
             idempotency_key (str, optional)
