@@ -1139,7 +1139,7 @@ class FireblocksSDK:
             external_tx_id (str): The external id of the transaction
         """
 
-        return self._get_request(f"/v1/transactions/external_tx_id/{urllib.quote(external_tx_id, safe='')}")
+        return self._get_request(f"/v1/transactions/external_tx_id/{urllib.parse.quote(external_tx_id, safe='')}")
 
     def get_fee_for_asset(self, asset_id):
         """Gets the estimated fees for an asset
