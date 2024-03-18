@@ -1326,6 +1326,23 @@ class FireblocksSDK:
 
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
 
+    def register_new_asset(self, blockchainId, address, symbol=None, idempotency_key=None):
+        """Registers new asset
+
+        Args:
+            blockchainId (str): Native asset of blockchain
+            address (str): Asset contract address
+            symbol (str) optional: Asset symbol
+            idempotency_key (str, optional)
+        """
+        body = {
+            "blockchainId": blockchainId,
+            "address": address,
+            "symbol": symbol,
+        }
+
+        return self._post_request("/v1/assets", body, idempotency_key)
+
     def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
         """Creates a new asset within an existing vault account
 
