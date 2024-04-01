@@ -129,24 +129,24 @@ class FireblocksSDK:
         return self._get_request("/v1/staking/positions/summary/vaults")
 
     def execute_staking_stake(self, chain_descriptor: str, request_body: StakeRequestDto):
-            """Initiate staking stake on a chain.
+        """Initiate staking stake on a chain.
             """
-            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/stake", request_body.to_dict())
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/stake", request_body.to_dict())
 
     def execute_staking_unstake(self, chain_descriptor: str, request_body: UnstakeRequestDto):
-            """Execute staking unstake on a chain.
+        """Execute staking unstake on a chain.
             """
-            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/unstake", request_body.to_dict())
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/unstake", request_body.to_dict())
 
     def execute_staking_withdraw(self, chain_descriptor: str, request_body: WithdrawRequestDto):
-                """Execute staking withdraw on a chain.
+        """Execute staking withdraw on a chain.
                 """
-                return self._post_request(f"/v1/staking/chains/{chain_descriptor}/withdraw", request_body.to_dict())
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/withdraw", request_body.to_dict())
 
     def execute_staking_claim_rewards(self, chain_descriptor: str, request_body: ClaimRewardsRequestDto):
-                    """Execute staking claim rewards on a chain.
+        """Execute staking claim rewards on a chain.
                     """
-                    return self._post_request(f"/v1/staking/chains/{chain_descriptor}/claimRewards", request_body.to_dict())
+        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/claimRewards", request_body.to_dict())
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
@@ -240,7 +240,8 @@ class FireblocksSDK:
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100,
                        sort: List[GetOwnedNftsSortValues] = None,
                        order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
-                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None, spam: SpamTokenOwnershipValues = None):
+                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None,
+                       spam: SpamTokenOwnershipValues = None):
         """
 
         """
@@ -2275,7 +2276,8 @@ class FireblocksSDK:
 
         return self._post_request(url, body)
 
-    def create_api_user(self, name: str, role: Role, csr_pem: str, co_signer_setup: Optional[str] = None, co_signer_setup_is_first_user: Optional[bool] = False) -> None:
+    def create_api_user(self, name: str, role: Role, csr_pem: str, co_signer_setup: Optional[str] = None,
+                        co_signer_setup_is_first_user: Optional[bool] = False) -> None:
         """
         Create Api User for your tenant
         @param role: role of the user, for example: "ADMIN"
@@ -2308,7 +2310,7 @@ class FireblocksSDK:
 
         return self._post_request(url)
 
-    def get_whitelisted_ip_addresses(self, id: str) ->  Dict[str, Any]:
+    def get_whitelisted_ip_addresses(self, id: str) -> Dict[str, Any]:
         """
         Get whitelisted addresses of api user in your tenant
         @param id: userId of the user
@@ -2335,8 +2337,8 @@ class FireblocksSDK:
         url = "/v1/audits"
 
         return self._get_request(url, query_params={"timePeriod": time_period.value})
-        
-    def get_paginated_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY, cursor = None):
+
+    def get_paginated_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY, cursor=None):
         """
         Get paginated audit logs
         :param time_period: The last time period to fetch audit logs
@@ -2853,7 +2855,7 @@ class FireblocksSDK:
         url = "/v1/smart-transfers/settings/user-groups"
 
         return self._get_request(url)
-    
+
     def get_linked_tokens(self, status: Optional[TokenLinkStatus] = None, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
         request_filter = {}
 
@@ -2867,7 +2869,7 @@ class FireblocksSDK:
             request_filter["pageCursor"] = page_cursor
 
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
-    
+
     def get_pending_linked_tokens(self, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
         return self.get_linked_tokens(TokenLinkStatus.PENDING, page_size, page_cursor)
 
@@ -2876,7 +2878,7 @@ class FireblocksSDK:
 
     def get_linked_token(self, id: str):
         return self._get_request(f"/v1/tokenization/tokens/{id}")
-    
+
     def get_linked_tokens_count(self):
         return self._get_request(f"/v1/tokenization/tokens/count")
 
@@ -2892,14 +2894,14 @@ class FireblocksSDK:
 
     def unlink_token(self, id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{id}")
-    
+
     def get_contract_templates(
-            self, 
-            initialization_phase: Optional[ContractInitializationPhase] = None, 
+            self,
+            initialization_phase: Optional[ContractInitializationPhase] = None,
             type: Optional[ContractTemplateType] = None,
             page_size: Optional[int] = None,
             page_cursor: Optional[str] = None
-        ):
+    ):
         request_filter = {}
 
         if initialization_phase:
@@ -2922,7 +2924,7 @@ class FireblocksSDK:
     def get_contract_template(self, contract_id: str):
         return self._get_request(f"/v1/contract-registry/contracts/{contract_id}")
 
-    def get_contract_template_constructor(self, contract_id: str, with_docs: bool=False):
+    def get_contract_template_constructor(self, contract_id: str, with_docs: bool = False):
         return self._get_request(f"/v1/contract-registry/contracts/{contract_id}/constructor?withDocs=${with_docs}")
 
     def delete_contract_template(self, contract_id: str):
@@ -2930,21 +2932,66 @@ class FireblocksSDK:
 
     def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
         return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request.to_dict())
-    
+
     def get_contracts_by_filter(self, templateId: str, blockchain_id: Optional[str] = None):
         return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchain_id}")
-    
+
     def get_contract_by_address(self, blockchain_id: str, contract_address: str):
         return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}")
-    
+
     def get_contract_abi(self, blockchain_id: str, contract_address: str):
         return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/abi")
-    
+
     def read_contract_call_function(self, blockchain_id: str, contract_address: str, request: ReadCallFunction):
         return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/read", request.to_dict())
 
     def write_contract_call_function(self, blockchain_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/write", request.to_dict())
+
+    def get_cosigners(self, page_cursor: str = None, page_size: int = None, sort: str = None, order: OrderValues = None):
+        url = "/v1/cosigners"
+
+        params = {}
+        if page_cursor:
+            params["pageCursor"] = page_cursor
+
+        if page_size:
+            params["pageSize"] = page_size
+
+        if sort:
+            params["sort"] = sort
+
+        if order:
+            params["order"] = order.value
+
+        return self._get_request(url, query_params=params)
+
+    def get_cosigner(self, cosigner_id: str):
+        return self._get_request(f"/v1/cosigners/{cosigner_id}")
+
+    def rename_cosigner(self, cosigner_id: str, name: str):
+        return self._patch_request(f"/v1/cosigners/{cosigner_id}", {"name": name})
+
+    def get_api_keys(self, cosigner_id: str, page_cursor: str = None, page_size: int = None, sort: str = None, order: OrderValues = None):
+        url = f"/v1/cosigners/{cosigner_id}/api_keys"
+
+        params = {}
+        if page_cursor:
+            params["pageCursor"] = page_cursor
+
+        if page_size:
+            params["pageSize"] = page_size
+
+        if sort:
+            params["sort"] = sort
+
+        if order:
+            params["order"] = order.value
+
+        return self._get_request(url, query_params=params)
+
+    def get_api_key(self, cosigner_id: str, api_key_id: str):
+        return self._get_request(f"/v1/cosigners/{cosigner_id}/api_keys/{api_key_id}")
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
