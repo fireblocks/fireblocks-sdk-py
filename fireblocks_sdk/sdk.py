@@ -2830,46 +2830,67 @@ class FireblocksSDK(object):
     def write_contract_call_function(self, blockchainId: str, contractAddress: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/write", request.to_dict())
 
-    def register_validator_key(self, validatorKeyPem: str):
+    def add_validation_key(self, validatorKeyPem: str, daysTillExpired: int):
         """
-        Add a validator key which will be used to extrnal keys for your tenant
+        Add a validator key which will be used to external keys for your tenant
         @param validatorKeyPem: A validator key in PEM format
+        @param daysTillExpired: Number of days left before expiration
         """
 
-        url = "/v1/external_keys/validator_key"
+        url = "/v1/external_keys/validation_keys"
 
         body = {
-            "validatorKey": validatorKeyPem
+            "pubKeyPem": validatorKeyPem,
+            "daysTillExpired": daysTillExpired
         }
 
         print("url="+url)
         print ("body="+str(body))
         return self._post_request(url, body)
+    
+    def get_validation_keys(self):
+        """Get list of validation key."""
+        return self._get_request("/v1/external_keys/validation_keys")
+    
+    # def add_external_keys(self, externalKeys: List):
+    #     """
+    #     Add external keys which will be used to sign transactions
+    #     @param externalKeys: A list of dictionaries. For example:
+    #         [
+    #             {"signedCertPem":..., "signingDeviceKeyId": ...},
+    #             {"signedCertPem":..., "signingDeviceKeyId": ...},
+    #         ]
+    #         signedCertPem: A public blockchain key, signed with a validator key
+    #         signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
+    #     """
 
-    def add_external_keys(self, externalKeys: List):
+    #     url = "/v1/external_keys/external_keys"
+    #     body = {
+    #         "externalKeys": externalKeys
+    #     }
+
+    #     print("url="+url)
+    #     print ("body="+str(body))
+    #     return self._post_request(url, body)
+    
+    def add_external_key(self, signedCertPem: str, signingDeviceKeyId:str):
         """
         Add external keys which will be used to sign transactions
-        @param externalKeys: A list of dictionaries. For example:
-            [
-                {"signedkey":..., "signingDeviceKeyId": ...},
-                {"signedkey":..., "signingDeviceKeyId": ...},
-            ]
-            signedKey: A public blockchain key, signed with a validator key
+        @param extKey: external key as the following:
+            signedCertPem: A public blockchain key, signed with a validator key
             signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
         """
 
-        url = "/v1/external_keys/add_external_keys"
-        body = {
-            "externalKeys": externalKeys
-        }
+        url = "/v1/external_keys/external_keys"
+        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId}
 
         print("url="+url)
         print ("body="+str(body))
         return self._post_request(url, body)
-
+    
     def get_external_keys(self):
         """Get all staking chains."""
-        return self._get_request("/v1/external_keys/get_external_keys")
+        return self._get_request("/v1/external_keys/external_keys")
     
     def link_external_key_to_users(self, keyId: str, userIds: List[str]):
         """
@@ -2879,10 +2900,9 @@ class FireblocksSDK(object):
           userIds: A list of users Ids to be linked to the key. Can be obtained via get_users()
             ]
         """
-        url = "/v1/external_keys/link_external_key_to_users"
+        url = f"/v1/external_keys/external_key/{keyId}"
         body = {
-            "keyId": keyId,
-            "userIds": userIds
+            "users": userIds
         }
 
         print("url="+url)
