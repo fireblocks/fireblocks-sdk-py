@@ -2838,14 +2838,7 @@ class FireblocksSDK(object):
         """
 
         url = "/v1/external_keys/validation_keys"
-
-        body = {
-            "pubKeyPem": validatorKeyPem,
-            "daysTillExpired": daysTillExpired
-        }
-
-        print("url="+url)
-        print ("body="+str(body))
+        body = {"pubKeyPem": validatorKeyPem, "daysTillExpired": daysTillExpired}
         return self._post_request(url, body)
     
     def get_validation_keys(self):
@@ -2883,9 +2876,6 @@ class FireblocksSDK(object):
 
         url = "/v1/external_keys/external_keys"
         body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId}
-
-        print("url="+url)
-        print ("body="+str(body))
         return self._post_request(url, body)
     
     def get_external_keys(self):
@@ -2900,13 +2890,9 @@ class FireblocksSDK(object):
           userIds: A list of users Ids to be linked to the key. Can be obtained via get_users()
             ]
         """
-        url = f"/v1/external_keys/external_key/{keyId}"
-        body = {
-            "users": userIds
-        }
 
-        print("url="+url)
-        print ("body="+str(body))
+        url = f"/v1/external_keys/external_key/{keyId}"
+        body = {"users": userIds}
         return self._post_request(url, body)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
