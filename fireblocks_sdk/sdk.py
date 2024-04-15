@@ -2974,17 +2974,17 @@ class FireblocksSDK:
 
         return self._get_request("/v1/tokenization/contracts", query_params=request_filter)
     
-    def get_contract_by_address(self, blockchain_id: str, contract_address: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}")
+    def get_contract_by_address(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}")
     
-    def get_contract_abi(self, blockchain_id: str, contract_address: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/abi")
+    def get_contract_abi(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/abi")
     
-    def read_contract_call_function(self, blockchain_id: str, contract_address: str, request: ReadCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/read", request.to_dict())
+    def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
 
-    def write_contract_call_function(self, blockchain_id: str, contract_address: str, request: WriteCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/write", request.to_dict())
+    def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
