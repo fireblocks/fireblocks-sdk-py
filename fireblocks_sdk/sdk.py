@@ -2947,9 +2947,32 @@ class FireblocksSDK:
 
     def deploy_contract(self, template_id: str, request: ContractDeployRequest):
         return self._post_request(f"/v1/tokenization/templates/{template_id}/deploy", request.to_dict())
-    
-    def get_contracts_by_filter(self, templateId: str, blockchain_id: Optional[str] = None):
-        return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchain_id}")
+
+    def get_contracts_by_filter(self, 
+                                contract_template_id: Optional[str] = None, 
+                                base_asset_id: Optional[str] = None, 
+                                contract_address: Optional[str] = None, 
+                                page_size: Optional[int] = None, 
+                                page_cursor: Optional[str] = None
+                                ):
+        request_filter = {}
+
+        if contract_template_id:
+            request_filter["contractTemplateId"] = contract_template_id
+
+        if base_asset_id:
+            request_filter["baseAssetId"] = base_asset_id
+
+        if contract_address:
+            request_filter["contractAddress"] = contract_address
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/contracts", query_params=request_filter)
     
     def get_contract_by_address(self, blockchain_id: str, contract_address: str):
         return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}")
