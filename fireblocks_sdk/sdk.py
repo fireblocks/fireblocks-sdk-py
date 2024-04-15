@@ -2941,6 +2941,12 @@ class FireblocksSDK:
 
     def get_contract_template_constructor(self, template_id: str, with_docs: bool=False):
         return self._get_request(f"/v1/tokenization/templates/{template_id}/constructor?withDocs=${with_docs}")
+    
+    def get_contract_template_deploy_function(self, template_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/deploy_function?withDocs=${with_docs}")
+    
+    def get_contract_template_supported_blockchains(self, template_id: str):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/supported_blockchains")
 
     def delete_contract_template(self, template_id: str):
         return self._delete_request(f"/v1/tokenization/templates/{template_id}")
