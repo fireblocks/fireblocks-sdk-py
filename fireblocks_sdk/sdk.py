@@ -2931,37 +2931,66 @@ class FireblocksSDK:
         if page_cursor:
             request_filter["pageCursor"] = page_cursor
 
-        return self._get_request("/v1/contract-registry/contracts", query_params=request_filter)
+        return self._get_request("/v1/tokenization/templates", query_params=request_filter)
 
     def upload_contract_template(self, request: ContractUploadRequest):
-        return self._post_request("/v1/contract-registry/contracts", request.to_dict())
+        return self._post_request("/v1/tokenization/templates", request.to_dict())
 
-    def get_contract_template(self, contract_id: str):
-        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}")
+    def get_contract_template(self, template_id: str):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}")
 
-    def get_contract_template_constructor(self, contract_id: str, with_docs: bool=False):
-        return self._get_request(f"/v1/contract-registry/contracts/{contract_id}/constructor?withDocs=${with_docs}")
-
-    def delete_contract_template(self, contract_id: str):
-        return self._delete_request(f"/v1/contract-registry/contracts/{contract_id}")
-
-    def deploy_contract(self, contract_id: str, request: ContractDeployRequest):
-        return self._post_request(f"/v1/contract-registry/contracts/{contract_id}/deploy", request.to_dict())
+    def get_contract_template_constructor(self, template_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/constructor?withDocs=${with_docs}")
     
-    def get_contracts_by_filter(self, templateId: str, blockchain_id: Optional[str] = None):
-        return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchain_id}")
+    def get_contract_template_deploy_function(self, template_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/deploy_function?withDocs=${with_docs}")
     
-    def get_contract_by_address(self, blockchain_id: str, contract_address: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}")
-    
-    def get_contract_abi(self, blockchain_id: str, contract_address: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/abi")
-    
-    def read_contract_call_function(self, blockchain_id: str, contract_address: str, request: ReadCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/read", request.to_dict())
+    def get_contract_template_supported_blockchains(self, template_id: str):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/supported_blockchains")
 
-    def write_contract_call_function(self, blockchain_id: str, contract_address: str, request: WriteCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchain_id}/{contract_address}/function/write", request.to_dict())
+    def delete_contract_template(self, template_id: str):
+        return self._delete_request(f"/v1/tokenization/templates/{template_id}")
+
+    def deploy_contract(self, template_id: str, request: ContractDeployRequest):
+        return self._post_request(f"/v1/tokenization/templates/{template_id}/deploy", request.to_dict())
+
+    def get_contracts_by_filter(self, 
+                                contract_template_id: Optional[str] = None, 
+                                base_asset_id: Optional[str] = None, 
+                                contract_address: Optional[str] = None, 
+                                page_size: Optional[int] = None, 
+                                page_cursor: Optional[str] = None
+                                ):
+        request_filter = {}
+
+        if contract_template_id:
+            request_filter["contractTemplateId"] = contract_template_id
+
+        if base_asset_id:
+            request_filter["baseAssetId"] = base_asset_id
+
+        if contract_address:
+            request_filter["contractAddress"] = contract_address
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/contracts", query_params=request_filter)
+    
+    def get_contract_by_address(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}")
+    
+    def get_contract_abi(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/abi")
+    
+    def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
+
+    def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
