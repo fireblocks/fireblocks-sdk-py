@@ -11,7 +11,7 @@ setup(
   download_url = 'https://github.com/fireblocks/fireblocks-sdk-py/archive/v2.8.1.tar.gz',
   keywords = ['Fireblocks', 'SDK'],
   install_requires=[
-          'PyJWT>=2.8.1',
+          'PyJWT>=2.8.0',
           'cryptography>=2.7',
           'requests>=2.22.0',
       ],
