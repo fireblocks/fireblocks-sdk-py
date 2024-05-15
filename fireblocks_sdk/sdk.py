@@ -4,7 +4,6 @@ import urllib
 from importlib.metadata import version
 from operator import attrgetter
 from typing import Any, Dict, Optional, List, Union
-
 import requests
 
 from .api_types import (
@@ -36,12 +35,20 @@ from .api_types import (
     StakeRequestDto,
     UnstakeRequestDto,
     WithdrawRequestDto,
+    ClaimRewardsRequestDto,
     Role,
+    SpamTokenOwnershipValues,
+    TokenOwnershipSpamUpdatePayload,
+    TokenOwnershipSpamUpdatePayload,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
     ContractUploadRequest, \
     ContractDeployRequest, \
+    ContractInitializationPhase, \
+    ContractTemplateType, \
+    TokenLinkStatus, \
+    TokenLinkType, \
     ReadCallFunction, \
     WriteCallFunction
 from .sdk_token_provider import SdkTokenProvider
@@ -74,7 +81,7 @@ def handle_response(response, page_mode=False):
         return response_data
 
 
-class FireblocksSDK(object):
+class FireblocksSDK:
     def __init__(
             self,
             private_key,
@@ -121,11 +128,25 @@ class FireblocksSDK(object):
         """Get staking positions summary by vault."""
         return self._get_request("/v1/staking/positions/summary/vaults")
 
-    def execute_staking_action(self, chain_descriptor: str, action_id: str,
-                               request_body: Union[StakeRequestDto, UnstakeRequestDto, WithdrawRequestDto]):
-        """Execute staking action on a chain.
-        """
-        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/{action_id}", request_body.to_dict())
+    def execute_staking_stake(self, chain_descriptor: str, request_body: StakeRequestDto):
+            """Initiate staking stake on a chain.
+            """
+            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/stake", request_body.to_dict())
+
+    def execute_staking_unstake(self, chain_descriptor: str, request_body: UnstakeRequestDto):
+            """Execute staking unstake on a chain.
+            """
+            return self._post_request(f"/v1/staking/chains/{chain_descriptor}/unstake", request_body.to_dict())
+
+    def execute_staking_withdraw(self, chain_descriptor: str, request_body: WithdrawRequestDto):
+                """Execute staking withdraw on a chain.
+                """
+                return self._post_request(f"/v1/staking/chains/{chain_descriptor}/withdraw", request_body.to_dict())
+
+    def execute_staking_claim_rewards(self, chain_descriptor: str, request_body: ClaimRewardsRequestDto):
+                    """Execute staking claim rewards on a chain.
+                    """
+                    return self._post_request(f"/v1/staking/chains/{chain_descriptor}/claimRewards", request_body.to_dict())
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
@@ -219,7 +240,7 @@ class FireblocksSDK(object):
                        collection_ids: List[str] = None, page_cursor: str = '', page_size: int = 100,
                        sort: List[GetOwnedNftsSortValues] = None,
                        order: OrderValues = None, status: NFTOwnershipStatusValues = None, search: str = None,
-                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None):
+                       ncw_account_ids: List[str] = None, ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None, spam: SpamTokenOwnershipValues = None):
         """
 
         """
@@ -266,6 +287,9 @@ class FireblocksSDK(object):
         if search:
             params["search"] = search
 
+        if spam:
+            params["spam"] = spam.value
+
         return self._get_request(url, query_params=params)
 
     def list_owned_collections(self, search: str = None, status: NFTOwnershipStatusValues = None,
@@ -308,7 +332,7 @@ class FireblocksSDK(object):
     def list_owned_assets(self, search: str = None, status: NFTOwnershipStatusValues = None,
                           ncw_id: str = None, wallet_type: NFTsWalletTypeValues = None,
                           sort: List[GetOwnedAssetsSortValues] = None,
-                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100):
+                          order: OrderValues = None, page_cursor: str = '', page_size: int = 100, spam: SpamTokenOwnershipValues = None):
         """
         """
         url = f"/v1/nfts/ownership/assets"
@@ -339,6 +363,9 @@ class FireblocksSDK(object):
         if order:
             params['order'] = order
 
+        if spam:
+            params["spam"] = spam.value
+
         return self._get_request(url, query_params=params)
 
     def update_nft_ownership_status(self, id: str, status: NFTOwnershipStatusValues):
@@ -361,6 +388,16 @@ class FireblocksSDK(object):
         url = "/v1/nfts/ownership/tokens/status"
 
         return self._put_request(url, list(map((lambda payload_item: payload_item.serialize()), payload)))
+
+        def update_nft_token_ownerships_spam_status(self, payload: List[TokenOwnershipSpamUpdatePayload]):
+            """Updates tokens spam status for a tenant, in all tenant vaults.
+
+            Args:
+                payload (TokenOwnershipSpamUpdatePayload[]): List of assets with status for update
+            """
+            url = "/v1/nfts/ownership/tokens/spam"
+
+            return self._put_request(url, list(map((lambda payload_item: payload_item.serialize()), payload)))
 
     def get_supported_assets(self):
         """Gets all assets that are currently supported by Fireblocks"""
@@ -1102,7 +1139,7 @@ class FireblocksSDK(object):
             external_tx_id (str): The external id of the transaction
         """
 
-        return self._get_request(f"/v1/transactions/external_tx_id/{external_tx_id}")
+        return self._get_request(f"/v1/transactions/external_tx_id/{urllib.parse.quote(external_tx_id, safe='')}")
 
     def get_fee_for_asset(self, asset_id):
         """Gets the estimated fees for an asset
@@ -1288,6 +1325,23 @@ class FireblocksSDK(object):
         }
 
         return self._put_request(f"/v1/vault/accounts/{vault_account_id}", body)
+
+    def register_new_asset(self, blockchainId, address, symbol=None, idempotency_key=None):
+        """Registers new asset
+
+        Args:
+            blockchainId (str): Native asset of blockchain
+            address (str): Asset contract address
+            symbol (str) optional: Asset symbol
+            idempotency_key (str, optional)
+        """
+        body = {
+            "blockchainId": blockchainId,
+            "address": address,
+            "symbol": symbol,
+        }
+
+        return self._post_request("/v1/assets", body, idempotency_key)
 
     def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
         """Creates a new asset within an existing vault account
@@ -2114,33 +2168,56 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_users_groups(self) -> List[Dict[str, Any]]:
+    def get_ota_configuration(self) -> Dict[str, Any]:
         """
-        Gets all Users Groups for your tenant
+        Get the tenant's OTA (One-Time-Address) configuration
         """
 
-        url = "/v1/users_groups"
+        url = "/v1/management/ota"
 
         return self._get_request(url)
 
-    def get_users_group(self, id: str) -> Dict[str, Any]:
+    def update_ota_configuration(self, enable: bool) -> None:
         """
-        Gets a Users Group by ID
+        Update the tenant's OTA (One-Time-Address) configuration
+        @param enable
+        """
+
+        url = "/v1/management/ota"
+
+        body = {
+            "enabled": enable
+        }
+
+        return self._put_request(url, body)
+
+    def get_user_groups(self) -> List[Dict[str, Any]]:
+        """
+        Gets all User Groups for your tenant
+        """
+
+        url = "/v1/management/user_groups"
+
+        return self._get_request(url)
+
+    def get_user_group(self, id: str) -> Dict[str, Any]:
+        """
+        Gets a User Group by ID
         @param id: The ID of the User
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         return self._get_request(url)
 
     def create_user_group(self, group_name: str, member_ids: Optional[List[str]] = None) -> Dict[str, Any]:
         """
-        Creates a new Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
+        Creates a new User Group
+        @param group_name: The name of the User Group
+        @param member_ids: The ids of the User Group members
         """
 
-        url = "/v1/users_groups"
+        url = "/v1/management/user_groups"
 
         body = {
             "groupName": group_name,
@@ -2152,13 +2229,13 @@ class FireblocksSDK(object):
     def update_user_group(self, id: str, group_name: Optional[str] = None, member_ids: Optional[List[str]] = None) -> \
             Dict[str, Any]:
         """
-        Updates a Users Group
-        @param id: The ID of the Users Group
-        @param group_name: The name of the Users Group
-        @param member_ids: The ids of the Users Group members
+        Updates a User Group
+        @param id: The ID of the User Group
+        @param group_name: The name of the User Group
+        @param member_ids: The ids of the User Group members
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         body = {
             "groupName": group_name,
@@ -2169,11 +2246,11 @@ class FireblocksSDK(object):
 
     def delete_user_group(self, id: str) -> None:
         """
-        Deletes a Users Group
-        @param id: The ID of the Users Group
+        Deletes a User Group
+        @param id: The ID of the User Group
         """
 
-        url = f"/v1/users_groups/{id}"
+        url = f"/v1/management/user_groups/{id}"
 
         return self._delete_request(url)
 
@@ -2182,7 +2259,7 @@ class FireblocksSDK(object):
         Gets all Console Users for your tenant
         """
 
-        url = "/v1/management/console-users"
+        url = "/v1/management/users"
 
         return self._get_request(url)
 
@@ -2191,7 +2268,7 @@ class FireblocksSDK(object):
         Gets all Api Users for your tenant
         """
 
-        url = "/v1/management/api-users"
+        url = "/v1/management/api_users"
 
         return self._get_request(url)
 
@@ -2204,7 +2281,7 @@ class FireblocksSDK(object):
         @param role: role of the user, for example: "ADMIN"
         """
 
-        url = "/v1/management/console-users"
+        url = "/v1/management/users"
 
         body = {
             "firstName": first_name,
@@ -2226,7 +2303,7 @@ class FireblocksSDK(object):
         @param co_signer_setup_is_first_user: [SGX server enabled only] If you are the first user to be configured on this SGX-enabled Co-Signer server, this has to be true
         """
 
-        url = "/v1/management/api-users"
+        url = "/v1/management/api_users"
 
         body = {
             "role": role,
@@ -2244,7 +2321,7 @@ class FireblocksSDK(object):
         @param id: userId of the user to reset device
         """
 
-        url = f"/v1/management/console-users/{id}/reset-device"
+        url = f"/v1/management/users/{id}/reset_device"
 
         return self._post_request(url)
 
@@ -2254,7 +2331,7 @@ class FireblocksSDK(object):
         @param id: userId of the user
         """
 
-        url = f"/v1/management/api-users/{id}/whitelist-ip-addresses"
+        url = f"/v1/management/api_users/{id}/whitelist_ip_addresses"
 
         return self._get_request(url)
 
@@ -2266,7 +2343,7 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
 
-    def get_audit_logs(self, time_period: TimePeriod):
+    def get_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY):
         """
         Get audit logs
         :param time_period: The last time period to fetch audit logs
@@ -2275,6 +2352,23 @@ class FireblocksSDK(object):
         url = "/v1/audits"
 
         return self._get_request(url, query_params={"timePeriod": time_period.value})
+        
+    def get_paginated_audit_logs(self, time_period: TimePeriod = TimePeriod.DAY, cursor = None):
+        """
+        Get paginated audit logs
+        :param time_period: The last time period to fetch audit logs
+        :param cursor: The next id to fetch audit logs from
+        """
+        url = "/v1/management/audit_logs"
+        params = {}
+
+        if cursor:
+            params["cursor"] = cursor
+
+        if time_period:
+            params["timePeriod"] = time_period.value
+
+        return self._get_request(url, query_params=params)
 
     def get_off_exchange_by_id(self, off_exchange_id):
         """
@@ -2777,123 +2871,184 @@ class FireblocksSDK(object):
 
         return self._get_request(url)
     
-    def get_linked_tokens(self, limit: int = 100, offset: int = 0):
-        request_filter = {"limit": limit, "offset": offset}
+    def get_linked_tokens(self, status: Optional[TokenLinkStatus] = None, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
+        request_filter = {}
+
+        if status:
+            request_filter["status"] = status.value
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
         return self._get_request("/v1/tokenization/tokens", query_params=request_filter)
+    
+    def get_pending_linked_tokens(self, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
+        return self.get_linked_tokens(TokenLinkStatus.PENDING, page_size, page_cursor)
 
     def issue_new_token(self, request: CreateTokenRequest):
         return self._post_request("/v1/tokenization/tokens", request.to_dict())
 
-    def get_linked_token(self, assetId: str):
-        return self._get_request(f"/v1/tokenization/tokens/{assetId}")
-
-    def link_token(self, assetId: str):
-        return self._put_request(f"/v1/tokenization/tokens/{assetId}/link", {})
-
-    def unlink_token(self, assetId: str):
-        return self._delete_request(f"/v1/tokenization/tokens/{assetId}")
+    def get_linked_token(self, id: str):
+        return self._get_request(f"/v1/tokenization/tokens/{id}")
     
-    def get_contract_templates(self, limit: int = 100, offset: int = 0):
-        request_filter = {
-            "limit": limit,
-            "offset": offset
+    def get_linked_tokens_count(self):
+        return self._get_request(f"/v1/tokenization/tokens/count")
+
+    def link_token(self, type: TokenLinkType, ref_id: str, display_name: Optional[str] = None):
+        body = {
+            "type": type,
+            "refId": ref_id,
         }
-        return self._get_request("/v1/contract-registry/contracts", query_params=request_filter)
+        if display_name:
+            body["displayName"] = display_name
+
+        return self._post_request(f"/v1/tokenization/tokens/link", body)
+
+    def unlink_token(self, id: str):
+        return self._delete_request(f"/v1/tokenization/tokens/{id}")
+    
+    def get_contract_templates(
+            self, 
+            initialization_phase: Optional[ContractInitializationPhase] = None, 
+            type: Optional[ContractTemplateType] = None,
+            page_size: Optional[int] = None,
+            page_cursor: Optional[str] = None
+        ):
+        request_filter = {}
+
+        if initialization_phase:
+            request_filter["initializationPhase"] = initialization_phase.value
+
+        if type:
+            request_filter["type"] = type.value
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/templates", query_params=request_filter)
 
     def upload_contract_template(self, request: ContractUploadRequest):
-        return self._post_request("/v1/contract-registry/contracts", request.to_dict())
+        return self._post_request("/v1/tokenization/templates", request.to_dict())
 
-    def get_contract_template(self, contractId: str):
-        return self._get_request(f"/v1/contract-registry/contracts/{contractId}")
+    def get_contract_template(self, template_id: str):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}")
 
-    def get_contract_template_constructor(self, contractId: str, with_docs: bool=False):
-        return self._get_request(f"/v1/contract-registry/contracts/{contractId}/constructor?withDocs=${with_docs}")
-
-    def delete_contract_template(self, contractId: str):
-        return self._delete_request(f"/v1/contract-registry/contracts/{contractId}")
-
-    def deploy_contract(self, contractId: str, request: ContractDeployRequest):
-        return self._post_request(f"/v1/contract-registry/contracts/{contractId}/deploy", request.to_dict())
+    def get_contract_template_constructor(self, template_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/constructor?withDocs=${with_docs}")
     
-    def get_contracts_by_filter(self, templateId: str, blockchainId: str = None):
-        return self._get_request(f"/v1/contract-service/contracts?templateId={templateId}&blockchainId={blockchainId}")
+    def get_contract_template_deploy_function(self, template_id: str, with_docs: bool=False):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/deploy_function?withDocs=${with_docs}")
     
-    def get_contract_by_address(self, blockchainId: str, contractAddress: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}")
-    
-    def get_contract_abi(self, blockchainId: str, contractAddress: str):
-        return self._get_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/abi")
-    
-    def read_contract_call_function(self, blockchainId: str, contractAddress: str, request: ReadCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/read", request.to_dict())
+    def get_contract_template_supported_blockchains(self, template_id: str):
+        return self._get_request(f"/v1/tokenization/templates/{template_id}/supported_blockchains")
 
-    def write_contract_call_function(self, blockchainId: str, contractAddress: str, request: WriteCallFunction):
-        return self._post_request(f"/v1/contract-service/contracts/{blockchainId}/{contractAddress}/function/write", request.to_dict())
+    def delete_contract_template(self, template_id: str):
+        return self._delete_request(f"/v1/tokenization/templates/{template_id}")
+
+    def deploy_contract(self, template_id: str, request: ContractDeployRequest):
+        return self._post_request(f"/v1/tokenization/templates/{template_id}/deploy", request.to_dict())
+
+    def get_contracts_by_filter(self, 
+                                contract_template_id: Optional[str] = None, 
+                                base_asset_id: Optional[str] = None, 
+                                contract_address: Optional[str] = None, 
+                                page_size: Optional[int] = None, 
+                                page_cursor: Optional[str] = None
+                                ):
+        request_filter = {}
+
+        if contract_template_id:
+            request_filter["contractTemplateId"] = contract_template_id
+
+        if base_asset_id:
+            request_filter["baseAssetId"] = base_asset_id
+
+        if contract_address:
+            request_filter["contractAddress"] = contract_address
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/contracts", query_params=request_filter)
+    
+    def get_contract_by_address(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}")
+    
+    def get_contract_abi(self, base_asset_id: str, contract_address: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/abi")
+    
+    def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
+
+    def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
+        return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
     def add_validation_key(self, validatorKeyPem: str, daysTillExpired: int):
         """
-        Add a validator key which will be used to external keys for your tenant
+        Add a validation key which will be used to validate linked signing keys for your tenant
         @param validatorKeyPem: A validator key in PEM format
         @param daysTillExpired: Number of days left before expiration
         """
 
-        url = "/v1/external_keys/validation_keys"
+        url = "/v1/key_link/validation_keys"
         body = {"pubKeyPem": validatorKeyPem, "daysTillExpired": daysTillExpired}
         return self._post_request(url, body)
     
     def get_validation_keys(self):
         """Get list of validation key."""
-        return self._get_request("/v1/external_keys/validation_keys")
+        return self._get_request("/v1/key_link/validation_keys")
     
-    # def add_external_keys(self, externalKeys: List):
-    #     """
-    #     Add external keys which will be used to sign transactions
-    #     @param externalKeys: A list of dictionaries. For example:
-    #         [
-    #             {"signedCertPem":..., "signingDeviceKeyId": ...},
-    #             {"signedCertPem":..., "signingDeviceKeyId": ...},
-    #         ]
-    #         signedCertPem: A public blockchain key, signed with a validator key
-    #         signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
-    #     """
-
-    #     url = "/v1/external_keys/external_keys"
-    #     body = {
-    #         "externalKeys": externalKeys
-    #     }
-
-    #     print("url="+url)
-    #     print ("body="+str(body))
-    #     return self._post_request(url, body)
+    def get_validation_key(self, keyId):
+        """Get list of validation key."""
+        return self._get_request(f"/v1/key_link/validation_keys/{keyId}")
     
-    def add_external_key(self, signedCertPem: str, signingDeviceKeyId:str):
+    def disable_validation_key(self, keyId):
+        """Get list of validation key."""
+        body = {"enabled": False}
+        return self._patch_request(f"/v1/key_link/validation_keys/{keyId}", body)
+
+    def add_signing_key(self, signedCertPem: str, signingDeviceKeyId:str, signerId:str):
         """
-        Add external keys which will be used to sign transactions
-        @param extKey: external key as the following:
-            signedCertPem: A public blockchain key, signed with a validator key
-            signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
+        Add a singing key which will be used to sign transactions
+        @param signedCertPem: A public blockchain key, signed with a validation key
+        @param signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
+        @param signerId: User ID of the agent which the agent that can sign with this key uses
         """
 
-        url = "/v1/external_keys/external_keys"
-        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId}
+        url = "/v1/key_link/signing_keys"
+        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId, "signerId": signerId}
         return self._post_request(url, body)
     
-    def get_external_keys(self):
-        """Get all staking chains."""
-        return self._get_request("/v1/external_keys/external_keys")
+    def get_signing_keys(self):
+        """Get all signing keys."""
+        return self._get_request("/v1/key_link/signing_keys")
     
-    def link_external_key_to_users(self, keyId: str, userIds: List[str]):
+    def get_signing_key(self, keyId: str):
+        """
+        Get a specific signing key.
+         @param keyId Key id as assigned by Fireblocks
+        """
+        return self._get_request(f"/v1/key_link/signing_keys/{keyId}")
+    
+    def set_signing_key_vault_account(self, keyId: str, vaultAccountId: int):
         """
         Link a key to users which can use it to sign
-        @params
-          keyId: Id of the key to link. can be obtained via get_external_keys()
-          userIds: A list of users Ids to be linked to the key. Can be obtained via get_users()
-            ]
+        @param keyId: Id of the key to refresh link
+        @param vaultAccountId vault account where to assign the signing key to
         """
 
-        url = f"/v1/external_keys/external_key/{keyId}"
-        body = {"users": userIds}
-        return self._post_request(url, body)
+        url = f"/v1/key_link/signing_keys/{keyId}"
+        body = {"vaultAccountId": vaultAccountId}
+        return self._patch_request(url, body)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
