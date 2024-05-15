@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional, List, Union
 
+
 def snake_to_camel(snake_case: str):
     words = snake_case.split('_')
     return words[0] + ''.join(word.capitalize() for word in words[1:])
@@ -19,7 +20,7 @@ def convert_class_to_dict(class_dict: dict):
     return output_dict
 
 
-class TransferPeerPath(object):
+class TransferPeerPath:
     def __init__(self, peer_type, peer_id):
         """Defines a source or a destination for a transfer
 
@@ -139,7 +140,7 @@ LOW = "LOW"
 FEE_LEVEL = (HIGH, MEDIUM, LOW)
 
 
-class TransferTicketTerm(object):
+class TransferTicketTerm:
     def __init__(self, network_connection_id, outgoing, asset, amount, note=None, operation=TRANSACTION_TRANSFER):
         """Defines a transfer ticket's term
 
@@ -161,7 +162,7 @@ class TransferTicketTerm(object):
         self.operation = operation
 
 
-class UnsignedMessage(object):
+class UnsignedMessage:
     def __init__(self, content, bip44addressIndex=None, bip44change=None, derivationPath=None):
         """Defines message to be signed by raw transaction
 
@@ -184,7 +185,7 @@ class UnsignedMessage(object):
             self.derivationPath = derivationPath
 
 
-class RawMessage(object):
+class RawMessage:
     def __init__(self, messages, algorithm=None):
         """Defines raw message
 
@@ -198,7 +199,7 @@ class RawMessage(object):
             self.algorithm = algorithm
 
 
-class TransactionDestination(object):
+class TransactionDestination:
     def __init__(self, amount, destination):
         """Defines destinations for multiple outputs transaction
 
@@ -225,7 +226,7 @@ class FireblocksApiException(Exception):
         super().__init__(self.message)
 
 
-class PagedVaultAccountsRequestFilters(object):
+class PagedVaultAccountsRequestFilters:
     """ Optional filters to apply for request
 
     Args
@@ -257,7 +258,7 @@ class PagedVaultAccountsRequestFilters(object):
         self.after = after
 
 
-class PagedExchangeAccountRequestFilters(object):
+class PagedExchangeAccountRequestFilters:
     """ Optional filters to apply for request
 
     Args
@@ -277,7 +278,7 @@ class PagedExchangeAccountRequestFilters(object):
         self.after = after
 
 
-class GetAssetWalletsFilters(object):
+class GetAssetWalletsFilters:
     """ Optional filters to apply for request
 
     Args
@@ -302,7 +303,7 @@ class GetAssetWalletsFilters(object):
         self.after = after
 
 
-class GetSmartTransferFilters(object):
+class GetSmartTransferFilters:
     """ Optional filters to apply for request
     Args
         query (string, optional):  Search query string - either ticketId, asset or network name
@@ -378,6 +379,21 @@ class NFTsWalletTypeValues(str, Enum):
     VAULT_ACCOUNT = "VAULT_ACCOUNT"
     END_USER_WALLET = "END_USER_WALLET"
 
+class SpamTokenOwnershipValues(str, Enum):
+    TRUE = "true"
+    FALSE = "false"
+    ALL = "all"
+
+class TokenOwnershipSpamUpdatePayload:
+    def __init__(self, asset_id: str, spam: bool):
+        self.asset_id = asset_id
+        self.spam = spam
+
+    def serialize(self) -> dict:
+        return {
+            'assetId': self.asset_id,
+            'spam': self.spam,
+        }
 
 class OrderValues(str, Enum):
     ASC = "ASC"
@@ -558,7 +574,7 @@ class PolicyRule:
                  amount_scope: PolicyAmountScope,
                  amount: Union[int, str],
                  period_sec: int,
-                 external_descriptor: str,
+                 external_descriptor: Optional[str] = None,
                  operator: Optional[str] = None,
                  operators: Optional[Operators] = None,
                  transaction_type: Optional[PolicyTransactionType] = None,
@@ -588,7 +604,8 @@ class PolicyRule:
         self.amount_scope = amount_scope
         self.amount = amount
         self.period_sec = period_sec
-        self.external_descriptor = external_descriptor
+        if external_descriptor:
+            self.external_descriptor = external_descriptor
         if operator:
             self.operator = operator
         if operators:
@@ -669,6 +686,16 @@ class UnstakeRequestDto:
 
 
 class WithdrawRequestDto:
+    def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
+        self.id = id
+        self.fee = fee
+        self.fee_level = fee_level
+        self.tx_note = tx_note
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class ClaimRewardsRequestDto:
     def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
         self.id = id
         self.fee = fee

@@ -55,24 +55,26 @@ class EVMTokenCreateParams(BaseDictClass):
 
 
 class StellarRippleCreateParams(BaseDictClass):
-    def __init__(self, issuer_address: Optional[str] = None):
+    def __init__(self, issuer_address: Optional[str] = None, symbol: Optional[str] = None, name: Optional[str] = None):
+        self.symbol = symbol
+        self.name = name
         self.issuer_address = issuer_address
 
 
 class CreateTokenRequest(BaseDictClass):
     def __init__(
             self,
-            symbol: str,
-            name: str,
-            blockchain_id: str,
             vault_account_id: str,
-            create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams]
+            create_params: Union[EVMTokenCreateParams, StellarRippleCreateParams],
+            asset_id: Optional[str] = None,
+            blockchain_id: Optional[str] = None,
+            display_name: Optional[str] = None,
     ):
-        self.symbol = symbol
-        self.name = name
-        self.blockchain_id = blockchain_id
         self.vault_account_id = vault_account_id
         self.create_params = create_params
+        self.asset_id = asset_id
+        self.blockchain_id = blockchain_id
+        self.display_name = display_name
 
 
 class ContractDeployRequest(BaseDictClass):
@@ -117,12 +119,22 @@ class ContractTemplateType(str, Enum):
     NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
     NON_TOKEN = "NON_TOKEN"
     UUPS_PROXY = "UUPS_PROXY"
+    UUPS_PROXY_FUNGIBLE_TOKEN = "UUPS_PROXY_FUNGIBLE_TOKEN"
+    UUPS_PROXY_NON_FUNGIBLE_TOKEN = "UUPS_PROXY_NON_FUNGIBLE_TOKEN"
 
+class TokenLinkType(str, Enum):
+    FUNGIBLE_TOKEN = "FUNGIBLE_TOKEN"
+    NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
 
 class InputFieldMetadataTypes(str, Enum):
     EncodedFunctionCallFieldType = "encodedFunctionCall",
     DeployedContractAddressFieldType = "deployedContractAddress",
-    SupportedAssetAddressFieldType = "supportedAssetAddress",
+    SupportedAssetAddressFieldType = "supportedAssetAddress"
+
+
+class TokenLinkStatus(str, Enum):
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED"
 
 
 class EncodedFunctionCallFieldMetadata:
@@ -157,7 +169,7 @@ class ContractUploadRequest(BaseDictClass):
             docs: Optional[object] = None,
             attributes: Optional[Dict[str, str]] = None,
             type: Optional[ContractTemplateType] = None,
-            input_fields_metadata: Optional[dict[str, FieldMetadata]] = None,
+            input_fields_metadata: Optional[Dict[str, FieldMetadata]] = None,
     ):
         self.name = name
         self.description = description

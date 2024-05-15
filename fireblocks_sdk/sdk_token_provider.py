@@ -5,7 +5,8 @@ import math
 import secrets
 from hashlib import sha256
 
-class SdkTokenProvider(object):
+
+class SdkTokenProvider:
     def __init__(self, private_key, api_key, seconds_jwt_exp):
         self.private_key = private_key
         self.api_key = api_key
