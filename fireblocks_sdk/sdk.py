@@ -919,7 +919,7 @@ class FireblocksSDK:
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
             after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
-            status (str, optional): Only gets transactions with the specified status, which should one of the following:
+            status (str, optional): Only gets transactions with the specified status, which should be one of the following:
                 SUBMITTED, QUEUED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING_3RD_PARTY_MANUAL_APPROVAL,
                 PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
@@ -927,7 +927,7 @@ class FireblocksSDK:
             txhash (str, optional): Only gets transactions with the specified txHash
             assets (str, optional): Filter results for specified assets
             source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
-                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN, UNKNOWN_PEER, FIAT_ACCOUNT,
                 NETWORK_CONNECTION, COMPOUND
             source_id (str, optional): Only gets transactions with given source_id
             dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
@@ -981,7 +981,7 @@ class FireblocksSDK:
         Args:
             before (int, optional): Only gets transactions created before given timestamp (in milliseconds)
             after (int, optional): Only gets transactions created after given timestamp (in milliseconds)
-            status (str, optional): Only gets transactions with the specified status, which should one of the following:
+            status (str, optional): Only gets transactions with the specified status, which should be one of the following:
                 SUBMITTED, QUEUED, PENDING_SIGNATURE, PENDING_AUTHORIZATION, PENDING_3RD_PARTY_MANUAL_APPROVAL,
                 PENDING_3RD_PARTY, BROADCASTING, CONFIRMING, COMPLETED, PENDING_AML_CHECKUP, PARTIALLY_COMPLETED,
                 CANCELLING, CANCELLED, REJECTED, FAILED, TIMEOUT, BLOCKED
@@ -990,7 +990,7 @@ class FireblocksSDK:
             txhash (str, optional): Only gets transactions with the specified txHash
             assets (str, optional): Filter results for specified assets
             source_type (str, optional): Only gets transactions with given source_type, which should be one of the following:
-                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN_PEER, FIAT_ACCOUNT,
+                VAULT_ACCOUNT, EXCHANGE_ACCOUNT, INTERNAL_WALLET, EXTERNAL_WALLET, UNKNOWN, UNKNOWN_PEER, FIAT_ACCOUNT,
                 NETWORK_CONNECTION, COMPOUND
             source_id (str, optional): Only gets transactions with given source_id
             dest_type (str, optional): Only gets transactions with given dest_type, which should be one of the following:
@@ -1546,7 +1546,7 @@ class FireblocksSDK:
             gas_price (number, optional): gasPrice for ETH and ERC-20 transactions.
             wait_for_status (bool, optional): If true, waits for transaction status. Default is false.
             tx_type (str, optional): Transaction type: either TRANSFER, MINT, BURN, TRANSACTION_SUPPLY_TO_COMPOUND or TRANSACTION_REDEEM_FROM_COMPOUND. Default is TRANSFER.
-            note (str, optional): A custome note that can be associated with the transaction.
+            note (str, optional): A customer note that can be associated with the transaction.
             network_fee (str, optional): Transaction blockchain fee (For Ethereum, you can't pass gasPrice, gasLimit and networkFee all together)
             customer_ref_id (string, optional): The ID for AML providers to associate the owner of funds with transactions
             extra_parameters (object, optional)
