@@ -2994,7 +2994,7 @@ class FireblocksSDK:
 
     def add_validation_key(self, validationKeyPem: str, daysTillExpired: int):
         """
-        Add a validation key which will be used to validate linked signing keys for your tenant
+        Add a validation key which will be used to validate signing keys for your tenant
         @param validationKeyPem: A validation key in PEM format
         @param daysTillExpired: Number of days left before expiration
         """
@@ -3003,15 +3003,18 @@ class FireblocksSDK:
         return self._post_request(url, body)
     
     def get_validation_keys(self):
-        """Get list of validation key."""
+        """Get all validation keys."""
         return self._get_request("/v1/key_link/validation_keys")
     
     def get_validation_key(self, keyId):
-        """Get list of validation key."""
+        """
+        Get a specific validation key.
+         @param keyId Key id as assigned by Fireblocks
+        """
         return self._get_request(f"/v1/key_link/validation_keys/{keyId}")
     
     def disable_validation_key(self, keyId):
-        """Get list of validation key."""
+        """Disable a validation key."""
         body = {"enabled": False}
         return self._patch_request(f"/v1/key_link/validation_keys/{keyId}", body)
 
@@ -3020,7 +3023,7 @@ class FireblocksSDK:
         Add a singing key which will be used to sign transactions
         @param signedCertPem: A public blockchain key, signed with a validation key
         @param signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
-        @param agentUserId: User ID of the agent which the agent that can sign with this key uses
+        @param agentUserId: User ID used by the agent that can sign with this key
         """
         url = "/v1/key_link/signing_keys"
         body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId, "agentUserId": agentUserId}
@@ -3039,11 +3042,10 @@ class FireblocksSDK:
     
     def set_signing_key_vault_account(self, keyId: str, vaultAccountId: int):
         """
-        Link a key to users which can use it to sign
-        @param keyId: Id of the key to refresh link
-        @param vaultAccountId vault account where to assign the signing key to
+        Assign a vault account to a signng key
+        @param keyId: Id of the signing key to be assigned to a vault account
+        @param vaultAccountId: Id of the vault account which will ne signed to the key
         """
-
         url = f"/v1/key_link/signing_keys/{keyId}"
         body = {"vaultAccountId": vaultAccountId}
         return self._patch_request(url, body)
