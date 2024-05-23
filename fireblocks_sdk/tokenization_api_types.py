@@ -52,11 +52,9 @@ class EVMTokenCreateParams(BaseDictClass):
     def __init__(
             self, 
             contract_id: str, 
-            constructor_params: Optional[List[ParameterWithValue]] = None, 
             deploy_function_params: Optional[List[ParameterWithValue]] = None
     ):
         self.contract_id = contract_id
-        self.constructor_params = constructor_params
         self.deploy_function_params = deploy_function_params
 
 
@@ -88,12 +86,10 @@ class ContractDeployRequest(BaseDictClass):
             self,
             asset_id: str,
             vault_account_id: str,
-            constructor_parameters: Optional[List[ParameterWithValue]] = None,
             deploy_function_params: Optional[List[ParameterWithValue]] = None
     ):
         self.asset_id = asset_id
         self.vault_account_id = vault_account_id
-        self.constructor_parameters = constructor_parameters
         self.deploy_function_params = deploy_function_params
 
 
