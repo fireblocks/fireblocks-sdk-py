@@ -2992,15 +2992,14 @@ class FireblocksSDK:
     def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
-    def add_validation_key(self, validatorKeyPem: str, daysTillExpired: int):
+    def add_validation_key(self, validationKeyPem: str, daysTillExpired: int):
         """
         Add a validation key which will be used to validate linked signing keys for your tenant
-        @param validatorKeyPem: A validator key in PEM format
+        @param validationKeyPem: A validation key in PEM format
         @param daysTillExpired: Number of days left before expiration
         """
-
         url = "/v1/key_link/validation_keys"
-        body = {"pubKeyPem": validatorKeyPem, "daysTillExpired": daysTillExpired}
+        body = {"publicKeyPem": validationKeyPem, "daysTillExpired": daysTillExpired}
         return self._post_request(url, body)
     
     def get_validation_keys(self):
@@ -3016,16 +3015,15 @@ class FireblocksSDK:
         body = {"enabled": False}
         return self._patch_request(f"/v1/key_link/validation_keys/{keyId}", body)
 
-    def add_signing_key(self, signedCertPem: str, signingDeviceKeyId:str, signerId:str):
+    def add_signing_key(self, signedCertPem: str, signingDeviceKeyId:str, agentUserId:str):
         """
         Add a singing key which will be used to sign transactions
         @param signedCertPem: A public blockchain key, signed with a validation key
         @param signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
-        @param signerId: User ID of the agent which the agent that can sign with this key uses
+        @param agentUserId: User ID of the agent which the agent that can sign with this key uses
         """
-
         url = "/v1/key_link/signing_keys"
-        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId, "signerId": signerId}
+        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId, "agentUserId": agentUserId}
         return self._post_request(url, body)
     
     def get_signing_keys(self):
