@@ -2989,6 +2989,64 @@ class FireblocksSDK:
     def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
+    def add_validation_key(self, validationKeyPem: str, daysTillExpired: int):
+        """
+        Add a validation key which will be used to validate signing keys for your tenant
+        @param validationKeyPem: A validation key in PEM format
+        @param daysTillExpired: Number of days left before expiration
+        """
+        url = "/v1/key_link/validation_keys"
+        body = {"publicKeyPem": validationKeyPem, "daysTillExpired": daysTillExpired}
+        return self._post_request(url, body)
+    
+    def get_validation_keys(self):
+        """Get all validation keys."""
+        return self._get_request("/v1/key_link/validation_keys")
+    
+    def get_validation_key(self, keyId):
+        """
+        Get a specific validation key.
+         @param keyId Key id as assigned by Fireblocks
+        """
+        return self._get_request(f"/v1/key_link/validation_keys/{keyId}")
+    
+    def disable_validation_key(self, keyId):
+        """Disable a validation key."""
+        body = {"enabled": False}
+        return self._patch_request(f"/v1/key_link/validation_keys/{keyId}", body)
+
+    def add_signing_key(self, signedCertPem: str, signingDeviceKeyId:str, agentUserId:str):
+        """
+        Add a singing key which will be used to sign transactions
+        @param signedCertPem: A public blockchain key, signed with a validation key
+        @param signingDeviceKeyId: The key id on the device which generated the private/public blockchain key pair
+        @param agentUserId: User ID used by the agent that can sign with this key
+        """
+        url = "/v1/key_link/signing_keys"
+        body =  {"signedCertPem": signedCertPem, "signingDeviceKeyId": signingDeviceKeyId, "agentUserId": agentUserId}
+        return self._post_request(url, body)
+    
+    def get_signing_keys(self):
+        """Get all signing keys."""
+        return self._get_request("/v1/key_link/signing_keys")
+    
+    def get_signing_key(self, keyId: str):
+        """
+        Get a specific signing key.
+         @param keyId Key id as assigned by Fireblocks
+        """
+        return self._get_request(f"/v1/key_link/signing_keys/{keyId}")
+    
+    def set_signing_key_vault_account(self, keyId: str, vaultAccountId: int):
+        """
+        Assign a vault account to a signng key
+        @param keyId: Id of the signing key to be assigned to a vault account
+        @param vaultAccountId: Id of the vault account which will ne signed to the key
+        """
+        url = f"/v1/key_link/signing_keys/{keyId}"
+        body = {"vaultAccountId": vaultAccountId}
+        return self._patch_request(url, body)
+
     def _get_request(self, path, page_mode=False, query_params: Dict = None):
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
