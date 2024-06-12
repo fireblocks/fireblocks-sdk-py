@@ -2977,6 +2977,9 @@ class FireblocksSDK:
 
         return self._get_request("/v1/tokenization/contracts", query_params=request_filter)
     
+    def get_contract_address(self, base_asset_id: str, tx_hash: str):
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/tx_hash/{tx_hash}")
+
     def get_contract_by_address(self, base_asset_id: str, contract_address: str):
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}")
     
