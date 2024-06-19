@@ -2984,7 +2984,7 @@ class FireblocksSDK:
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}")
     
     def get_contract_abi(self, base_asset_id: str, contract_address: str):
-        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/abi")
+        return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
     
     def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
