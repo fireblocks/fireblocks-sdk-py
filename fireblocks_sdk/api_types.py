@@ -225,7 +225,15 @@ class FireblocksApiException(Exception):
         self.error_code = error_code
         super().__init__(self.message)
 
-
+class RescanTx:
+    """
+        Args
+        asset_id (string): the asset if of the transaction
+        tx_hash (string): the hash of the transaction
+    """
+    def __init__(self, asset_id, tx_hash):
+        self.assetId = asset_id
+        self.txHash = tx_hash
 class PagedVaultAccountsRequestFilters:
     """ Optional filters to apply for request
 
