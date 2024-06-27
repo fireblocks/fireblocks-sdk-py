@@ -2090,7 +2090,7 @@ class FireblocksSDK:
 
         return self._get_request(url)
 
-    def rescan_transactions(self, rescan_txs):
+    def rescan_transactions(self, rescan_txs: List[RescanTx]):
         """initiate rescan for given transactions
         Args:
             rescan_txs: (Array of RescanTx): the transaction asset_id and Hash for rescan
