@@ -407,16 +407,16 @@ class FireblocksSDK:
     def set_asset_price(self, id: str, currency: str, price: int):
         """Set asset price
 
-           Args:
-                id (str): The asset ID
-                currency (str): The currency (according to ISO 4217 currency codes)
-                price (str): The price in currency
+            Args:
+            id (str): The asset ID
+            currency (str): The currency (according to ISO 4217 currency codes)
+            price (str): The price in currency
         """
 
-            body = {
-            "currency": currency,
-            "price": price,
-            }
+        body = {
+        "currency": currency,
+        "price": price,
+        }
 
         return self._post_request(f"/v1/assets/prices/${id}", body)
 
