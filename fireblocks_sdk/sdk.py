@@ -50,7 +50,8 @@ from .tokenization_api_types import \
     TokenLinkStatus, \
     TokenLinkType, \
     ReadCallFunction, \
-    WriteCallFunction
+    WriteCallFunction, \
+    CreateCollectionRequest
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -2909,6 +2910,29 @@ class FireblocksSDK:
 
     def unlink_token(self, id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{id}")
+    
+    def create_new_collection(self, request: CreateCollectionRequest):
+        return self._post_request("/v1/tokenization/collections", request.to_dict())
+
+    def get_linked_collections(self, status: Optional[TokenLinkStatus] = None, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
+        request_filter = {}
+
+        if status:
+            request_filter["status"] = status.value
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/collections", query_params=request_filter)
+
+    def get_linked_collection(self, id: str):
+        return self._get_request(f"/v1/tokenization/collections/{id}")
+    
+    def unlinked_collection(self, id: str):
+        return self._delete_request(f"/v1/tokenization/collections/{id}")
     
     def get_contract_templates(
             self, 

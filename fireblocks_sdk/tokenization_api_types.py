@@ -4,6 +4,9 @@ from typing import Optional, List, Union, Dict
 
 from .api_types import convert_class_to_dict
 
+class CollectionLinkType(str, Enum):
+    NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
+    SEMI_FUNGIBLE_TOKEN = "SEMI_FUNGIBLE_TOKEN"
 
 class BaseDictClass(ABC):
     def to_dict(self):
@@ -78,6 +81,23 @@ class CreateTokenRequest(BaseDictClass):
         self.create_params = create_params
         self.asset_id = asset_id
         self.blockchain_id = blockchain_id
+        self.display_name = display_name
+
+class CreateCollectionRequest(BaseDictClass):
+    def __init__(
+            self,
+            base_asset_id: str,
+            vault_account_id: str,
+            type: CollectionLinkType,
+            name: str,
+            admin_address: str,
+            display_name: Optional[str] = None,
+    ):
+        self.base_asset_id = base_asset_id
+        self.vault_account_id = vault_account_id
+        self.type = type
+        self.name = name
+        self.admin_address = admin_address
         self.display_name = display_name
 
 
