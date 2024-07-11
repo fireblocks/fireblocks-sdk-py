@@ -99,7 +99,39 @@ class CreateCollectionRequest(BaseDictClass):
         self.name = name
         self.admin_address = admin_address
         self.display_name = display_name
+        
+class MintCollectionTokenRequest(BaseDictClass):
+    def __init__(
+            self,
+            to: str,
+            tokenId: str,
+            vaultAccountId: str,
+            amount: Optional[str] = None,
+            metadataURI: Optional[str] = None,
+            metadata: Optional[str] = None,
+    ):
+        self.to = to
+        self.tokenId = tokenId
+        self.vaultAccountId = vaultAccountId
+        self.amount = amount
+        self.metadataURI = metadataURI
+        self.metadata = metadata
 
+
+class BurnCollectionTokenRequest(BaseDictClass):
+    def __init__(
+            self,
+            to: str,
+            tokenId: str,
+            vaultAccountId: str,
+            amount: Optional[str] = None,
+            metadataURI: Optional[str] = None,
+            metadata: Optional[str] = None,
+    ):
+        self.to = to
+        self.tokenId = tokenId
+        self.vaultAccountId = vaultAccountId
+        self.amount = amount
 
 class ContractDeployRequest(BaseDictClass):
     def __init__(
