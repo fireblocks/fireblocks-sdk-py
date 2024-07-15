@@ -2936,10 +2936,10 @@ class FireblocksSDK:
     def unlinked_collection(self, id: str):
         return self._delete_request(f"/v1/tokenization/collections/{id}")
     
-    def mint_collection_token(self, request: MintCollectionTokenRequest):
+    def mint_nft(self, request: MintCollectionTokenRequest):
         return self._post_request("/v1/tokenization/collections/tokens/mint", request.to_dict())
     
-    def burn_collection_token(self, request: BurnCollectionTokenRequest):
+    def burn_nft(self, request: BurnCollectionTokenRequest):
         return self._post_request("/v1/tokenization/collections/tokens/burn", request.to_dict())
     
     def get_contract_templates(
