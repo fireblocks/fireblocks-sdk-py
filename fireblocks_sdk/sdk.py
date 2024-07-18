@@ -404,7 +404,7 @@ class FireblocksSDK:
 
         return self._get_request("/v1/supported_assets")
 
-    def set_asset_price(self, id: str, currency: str, price: int):
+    def set_asset_price(self, id: str, currency: str, price: float):
         """Set asset price
 
             Args:
