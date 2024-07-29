@@ -3027,13 +3027,13 @@ class FireblocksSDK:
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
 
     def fetch_or_scrape_abi(self, base_asset_id: str, contract_address: str):
-        return self._post_request(f"/v1/contracts/fetch_abi",{
+        return self._post_request("/v1/contracts/fetch-abi",{
             "baseAssetId": base_asset_id,
             "contractAddress": contract_address
         })
 
     def add_abi(self, base_asset_id: str, contract_address: str):
-        return self._post_request(f"/v1/contracts/abi",{
+        return self._post_request("/v1/contracts/abi",{
             "baseAssetId": base_asset_id,
             "contractAddress": contract_address
         })
