@@ -260,4 +260,3 @@ class WriteCallFunction(BaseDictClass):
         self.amount = amount
         self.fee_level = fee_level
         self.note = note
-
