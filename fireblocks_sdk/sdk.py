@@ -2900,11 +2900,19 @@ class FireblocksSDK:
     def get_linked_tokens_count(self):
         return self._get_request(f"/v1/tokenization/tokens/count")
 
-    def link_token(self, type: TokenLinkType, ref_id: str, display_name: Optional[str] = None):
+    def link_token(self, type: TokenLinkType, ref_id: Optional[str] = None, 
+                   display_name: Optional[str] = None, base_asset_id: Optional[str] = None,  contract_address: Optional[str] = None):
         body = {
             "type": type,
-            "refId": ref_id,
         }
+        
+        if ref_id:
+            body["refId"] = ref_id
+
+        if base_asset_id and contract_address:
+            body["baseAssetId"] = base_asset_id
+            body["contractAddress"] = contract_address
+
         if display_name:
             body["displayName"] = display_name
 
@@ -3017,7 +3025,19 @@ class FireblocksSDK:
     
     def get_contract_abi(self, base_asset_id: str, contract_address: str):
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
-    
+
+    def fetch_or_scrape_abi(self, base_asset_id: str, contract_address: str):
+        return self._post_request(f"/v1/contracts/fetch_abi",{
+            "baseAssetId": base_asset_id,
+            "contractAddress": contract_address
+        })
+
+    def add_abi(self, base_asset_id: str, contract_address: str):
+        return self._post_request(f"/v1/contracts/abi",{
+            "baseAssetId": base_asset_id,
+            "contractAddress": contract_address
+        })
+  
     def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
 

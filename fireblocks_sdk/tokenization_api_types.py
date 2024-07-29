@@ -260,3 +260,12 @@ class WriteCallFunction(BaseDictClass):
         self.amount = amount
         self.fee_level = fee_level
         self.note = note
+
+class ContractWithABIDto:
+    def __init__(self, address: str, base_asset_id: str, name: str, abi: List[AbiFunction], is_proxy: Optional[bool] = None, implementation: Optional[str] = None):
+        self.address = address
+        self.base_asset_id = base_asset_id
+        self.name = name
+        self.abi = abi
+        self.is_proxy = is_proxy
+        self.implementation = implementation
