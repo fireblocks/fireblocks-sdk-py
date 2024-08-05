@@ -121,14 +121,10 @@ class MintCollectionTokenRequest(BaseDictClass):
 class BurnCollectionTokenRequest(BaseDictClass):
     def __init__(
             self,
-            to: str,
             tokenId: str,
             vaultAccountId: str,
             amount: Optional[str] = None,
-            metadataURI: Optional[str] = None,
-            metadata: Optional[str] = None,
     ):
-        self.to = to
         self.tokenId = tokenId
         self.vaultAccountId = vaultAccountId
         self.amount = amount
