@@ -2900,11 +2900,10 @@ class FireblocksSDK:
     def get_linked_tokens_count(self):
         return self._get_request(f"/v1/tokenization/tokens/count")
 
-    def link_token(self, type: TokenLinkType, ref_id: str = None, 
-                   display_name: Optional[str] = None):
+    def link_token(self, type: TokenLinkType, ref_id: str = None, display_name: Optional[str] = None):
         body = {
             "type": type,
-            "refId": ref_id
+            "refId": ref_id,
         }
 
         if display_name:
@@ -2917,7 +2916,7 @@ class FireblocksSDK:
         body = {
             "type": type,
             "baseAssetId": base_asset_id,
-            "contractAddress": contract_address
+            "contractAddress": contract_address,
         }
     
         if display_name:
