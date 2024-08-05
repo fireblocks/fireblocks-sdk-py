@@ -2911,8 +2911,7 @@ class FireblocksSDK:
 
         return self._post_request(f"/v1/tokenization/tokens/link", body)
 
-    def link_contract_by_address(self, type: TokenLinkType, base_asset_id: str,  
-                                 contract_address: str, display_name: Optional[str] = None):
+    def link_contract_by_address(self, type: TokenLinkType, base_asset_id: str,  contract_address: str, display_name: Optional[str] = None):
         body = {
             "type": type,
             "baseAssetId": base_asset_id,
