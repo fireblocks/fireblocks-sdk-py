@@ -407,6 +407,22 @@ class FireblocksSDK:
 
         return self._get_request("/v1/supported_assets")
 
+    def set_asset_price(self, id: str, currency: str, price: float):
+        """Set asset price
+
+            Args:
+            id (str): The asset ID
+            currency (str): The currency (according to ISO 4217 currency codes)
+            price (str): The price in currency
+        """
+
+        body = {
+        "currency": currency,
+        "price": price,
+        }
+
+        return self._post_request(f"/v1/assets/prices/${id}", body)
+
     def get_vault_accounts_with_page_info(
             self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
     ):
