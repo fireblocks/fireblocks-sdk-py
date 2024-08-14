@@ -3054,7 +3054,7 @@ class FireblocksSDK:
             "contractAddress": contract_address
         })
 
-    def add_abi(self, base_asset_id: str, contract_address: str, abi: List[AbiFunction], name: Optional[str] = None):
+    def save_abi(self, base_asset_id: str, contract_address: str, abi: List[AbiFunction], name: Optional[str] = None):
         return self._post_request("/v1/contracts/abi",{
             "baseAssetId": base_asset_id,
             "contractAddress": contract_address,
