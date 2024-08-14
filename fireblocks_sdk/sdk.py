@@ -53,7 +53,8 @@ from .tokenization_api_types import \
     WriteCallFunction, \
     CreateCollectionRequest, \
     MintCollectionTokenRequest, \
-    BurnCollectionTokenRequest
+    BurnCollectionTokenRequest, \
+    AbiFunction
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -3053,10 +3054,12 @@ class FireblocksSDK:
             "contractAddress": contract_address
         })
 
-    def add_abi(self, base_asset_id: str, contract_address: str):
+    def add_abi(self, base_asset_id: str, contract_address: str, abi: List[AbiFunction], name: Optional[str] = None):
         return self._post_request("/v1/contracts/abi",{
             "baseAssetId": base_asset_id,
-            "contractAddress": contract_address
+            "contractAddress": contract_address,
+            "abi": abi,
+            "name": name,
         })
   
     def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
