@@ -4,6 +4,9 @@ from typing import Optional, List, Union, Dict
 
 from .api_types import convert_class_to_dict
 
+class CollectionLinkType(str, Enum):
+    NON_FUNGIBLE_TOKEN = "NON_FUNGIBLE_TOKEN"
+    SEMI_FUNGIBLE_TOKEN = "SEMI_FUNGIBLE_TOKEN"
 
 class BaseDictClass(ABC):
     def to_dict(self):
@@ -80,6 +83,51 @@ class CreateTokenRequest(BaseDictClass):
         self.blockchain_id = blockchain_id
         self.display_name = display_name
 
+class CreateCollectionRequest(BaseDictClass):
+    def __init__(
+            self,
+            base_asset_id: str,
+            vault_account_id: str,
+            type: CollectionLinkType,
+            name: str,
+            admin_address: str,
+            display_name: Optional[str] = None,
+    ):
+        self.base_asset_id = base_asset_id
+        self.vault_account_id = vault_account_id
+        self.type = type
+        self.name = name
+        self.admin_address = admin_address
+        self.display_name = display_name
+        
+class MintCollectionTokenRequest(BaseDictClass):
+    def __init__(
+            self,
+            to: str,
+            tokenId: str,
+            vaultAccountId: str,
+            amount: Optional[str] = None,
+            metadataURI: Optional[str] = None,
+            metadata: Optional[str] = None,
+    ):
+        self.to = to
+        self.tokenId = tokenId
+        self.vaultAccountId = vaultAccountId
+        self.amount = amount
+        self.metadataURI = metadataURI
+        self.metadata = metadata
+
+
+class BurnCollectionTokenRequest(BaseDictClass):
+    def __init__(
+            self,
+            tokenId: str,
+            vaultAccountId: str,
+            amount: Optional[str] = None,
+    ):
+        self.tokenId = tokenId
+        self.vaultAccountId = vaultAccountId
+        self.amount = amount
 
 class ContractDeployRequest(BaseDictClass):
     def __init__(

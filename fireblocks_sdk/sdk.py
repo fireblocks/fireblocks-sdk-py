@@ -51,7 +51,10 @@ from .tokenization_api_types import \
     TokenLinkStatus, \
     TokenLinkType, \
     ReadCallFunction, \
-    WriteCallFunction
+    WriteCallFunction, \
+    CreateCollectionRequest, \
+    MintCollectionTokenRequest, \
+    BurnCollectionTokenRequest
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -404,6 +407,22 @@ class FireblocksSDK:
         """Gets all assets that are currently supported by Fireblocks"""
 
         return self._get_request("/v1/supported_assets")
+
+    def set_asset_price(self, id: str, currency: str, price: float):
+        """Set asset price
+
+            Args:
+            id (str): The asset ID
+            currency (str): The currency (according to ISO 4217 currency codes)
+            price (str): The price in currency
+        """
+
+        body = {
+        "currency": currency,
+        "price": price,
+        }
+
+        return self._post_request(f"/v1/assets/prices/${id}", body)
 
     def get_vault_accounts_with_page_info(
             self, paged_vault_accounts_request_filters: PagedVaultAccountsRequestFilters
@@ -2916,6 +2935,19 @@ class FireblocksSDK:
             "type": type,
             "refId": ref_id,
         }
+
+        if display_name:
+            body["displayName"] = display_name
+
+        return self._post_request(f"/v1/tokenization/tokens/link", body)
+
+    def link_contract_by_address(self, type: TokenLinkType, base_asset_id: str,  contract_address: str, display_name: Optional[str] = None):
+        body = {
+            "type": type,
+            "baseAssetId": base_asset_id,
+            "contractAddress": contract_address,
+        }
+    
         if display_name:
             body["displayName"] = display_name
 
@@ -2923,6 +2955,35 @@ class FireblocksSDK:
 
     def unlink_token(self, id: str):
         return self._delete_request(f"/v1/tokenization/tokens/{id}")
+    
+    def create_new_collection(self, request: CreateCollectionRequest):
+        return self._post_request("/v1/tokenization/collections", request.to_dict())
+
+    def get_linked_collections(self, status: Optional[TokenLinkStatus] = None, page_size: Optional[int] = None, page_cursor: Optional[str] = None):
+        request_filter = {}
+
+        if status:
+            request_filter["status"] = status.value
+
+        if page_size:
+            request_filter["pageSize"] = page_size
+
+        if page_cursor:
+            request_filter["pageCursor"] = page_cursor
+
+        return self._get_request("/v1/tokenization/collections", query_params=request_filter)
+
+    def get_linked_collection(self, id: str):
+        return self._get_request(f"/v1/tokenization/collections/{id}")
+    
+    def unlinked_collection(self, id: str):
+        return self._delete_request(f"/v1/tokenization/collections/{id}")
+    
+    def mint_nft(self, request: MintCollectionTokenRequest):
+        return self._post_request("/v1/tokenization/collections/tokens/mint", request.to_dict())
+    
+    def burn_nft(self, request: BurnCollectionTokenRequest):
+        return self._post_request("/v1/tokenization/collections/tokens/burn", request.to_dict())
     
     def get_contract_templates(
             self, 
@@ -2999,7 +3060,19 @@ class FireblocksSDK:
     
     def get_contract_abi(self, base_asset_id: str, contract_address: str):
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
-    
+
+    def fetch_or_scrape_abi(self, base_asset_id: str, contract_address: str):
+        return self._post_request("/v1/contracts/fetch-abi",{
+            "baseAssetId": base_asset_id,
+            "contractAddress": contract_address
+        })
+
+    def add_abi(self, base_asset_id: str, contract_address: str):
+        return self._post_request("/v1/contracts/abi",{
+            "baseAssetId": base_asset_id,
+            "contractAddress": contract_address
+        })
+  
     def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/read", request.to_dict())
 
