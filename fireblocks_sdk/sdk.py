@@ -2093,14 +2093,16 @@ class FireblocksSDK:
     def rescan_transactions(self, rescan_txs: List[RescanTx]):
         """initiate rescan for given transactions
         Args:
-            rescan_txs: (Array of RescanTx): the transaction asset_id and Hash for rescan
+            rescan_txs: (Array of RescanTx): the transaction asset_id and hash for rescan
                 Each RescanTx should have the following keys:
-                - 'assetId': string
-                - 'txHash': String
+                - 'asset_id': string
+                - 'tx_hash': String
         """
         path = f"/v1/rescan/transactions"
-        body = {"transactions": rescan_txs}
-        return self._post_request(path, body)
+        transactions = []
+        for rescan_tx in rescan_txs:
+            transactions.append({"assetId": rescan_tx.asset_id, "txHash": rescan_tx.tx_hash})
+        return self._post_request(path, transactions)
     def get_paginated_addresses(self, vault_account_id, asset_id, limit=500, before=None, after=None):
         """Gets a paginated response of the addresses for a given vault account and asset
         Args:

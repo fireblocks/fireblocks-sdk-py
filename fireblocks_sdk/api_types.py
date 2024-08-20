@@ -232,8 +232,8 @@ class RescanTx:
         tx_hash (string): the hash of the transaction
     """
     def __init__(self, asset_id, tx_hash):
-        self.assetId = asset_id
-        self.txHash = tx_hash
+        self.asset_id = asset_id
+        self.tx_hash = tx_hash
 class PagedVaultAccountsRequestFilters:
     """ Optional filters to apply for request
 
