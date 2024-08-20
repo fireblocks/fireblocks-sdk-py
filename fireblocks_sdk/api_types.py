@@ -228,8 +228,8 @@ class FireblocksApiException(Exception):
 class RescanTx:
     """
         Args
-        asset_id (string): the asset if of the transaction
-        tx_hash (string): the hash of the transaction
+        asset_id (string): The asset symbol
+        tx_hash (string): The hash of the transaction
     """
     def __init__(self, asset_id, tx_hash):
         self.asset_id = asset_id
