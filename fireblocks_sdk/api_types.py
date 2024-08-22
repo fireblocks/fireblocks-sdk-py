@@ -234,6 +234,18 @@ class RescanTx:
     def __init__(self, asset_id, tx_hash):
         self.asset_id = asset_id
         self.tx_hash = tx_hash
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+class RescanTxRequest:
+    def __init__(self, rescan_txs: List[RescanTx]):
+        self.rescan_txs = rescan_txs
+        self.txs_to_validate = []
+    def to_dict(self):
+        for rescan_tx in self.rescan_txs:
+            self.txs_to_validate.append(rescan_tx.to_dict())
+
 class PagedVaultAccountsRequestFilters:
     """ Optional filters to apply for request
 
