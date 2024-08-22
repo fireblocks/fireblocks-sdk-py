@@ -42,6 +42,7 @@ from .api_types import (
     TokenOwnershipSpamUpdatePayload,
     RescanTx,
     RescanTxRequest,
+    RescanTxResponse,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
@@ -2110,7 +2111,7 @@ class FireblocksSDK:
 
         return self._get_request(url)
 
-    def rescan_transactions(self, rescan_txs: List[RescanTx]):
+    def rescan_transactions(self, rescan_txs: List[RescanTx]) -> list[RescanTxResponse]:
         """initiate rescan for given transactions
         Args:
             rescan_txs: (Array of RescanTx): the transaction asset_id and hash for rescan
