@@ -42,7 +42,6 @@ from .api_types import (
     TokenOwnershipSpamUpdatePayload,
     RescanTx,
     RescanTxRequest,
-    RescanTxResponse,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \

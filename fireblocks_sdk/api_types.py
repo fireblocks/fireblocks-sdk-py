@@ -246,12 +246,6 @@ class RescanTxRequest:
         for rescan_tx in self.rescan_txs:
             self.txs_to_validate.append(rescan_tx.to_dict())
 
-class RescanTxResponse:
-    def __init__(self, tx_hashes, base_asset, network_protocol):
-        self.txHashes = tx_hashes
-        self.baseAsset = base_asset
-        self.networkProtocol = network_protocol
-
 class PagedVaultAccountsRequestFilters:
     """ Optional filters to apply for request
 
