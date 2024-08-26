@@ -41,7 +41,6 @@ from .api_types import (
     TokenOwnershipSpamUpdatePayload,
     TokenOwnershipSpamUpdatePayload,
     RescanTx,
-    RescanTxRequest,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
@@ -2119,9 +2118,8 @@ class FireblocksSDK:
                 - 'tx_hash': String
         """
         path = f"/v1/transactions/rescan"
-        rescan_tx_request = RescanTxRequest(rescan_txs)
-        rescan_tx_request.to_dict()
-        return self._post_request(path, rescan_tx_request.txs_to_validate)
+        request_data = [tx.to_dict() for tx in rescan_txs]
+        return self._post_request(path, request_data)
 
     def get_paginated_addresses(self, vault_account_id, asset_id, limit=500, before=None, after=None):
         """Gets a paginated response of the addresses for a given vault account and asset
