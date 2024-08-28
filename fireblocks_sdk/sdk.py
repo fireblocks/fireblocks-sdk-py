@@ -54,7 +54,8 @@ from .tokenization_api_types import \
     WriteCallFunction, \
     CreateCollectionRequest, \
     MintCollectionTokenRequest, \
-    BurnCollectionTokenRequest
+    BurnCollectionTokenRequest, \
+    AbiFunction
 from .sdk_token_provider import SdkTokenProvider
 
 
@@ -3061,15 +3062,17 @@ class FireblocksSDK:
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
 
     def fetch_or_scrape_abi(self, base_asset_id: str, contract_address: str):
-        return self._post_request("/v1/contracts/fetch-abi",{
+        return self._post_request("/v1/tokenization/contracts/fetch-abi",{
             "baseAssetId": base_asset_id,
             "contractAddress": contract_address
         })
 
-    def add_abi(self, base_asset_id: str, contract_address: str):
-        return self._post_request("/v1/contracts/abi",{
+    def save_abi(self, base_asset_id: str, contract_address: str, abi: List[AbiFunction], name: Optional[str] = None):
+        return self._post_request("/v1/tokenization/contracts/abi",{
             "baseAssetId": base_asset_id,
-            "contractAddress": contract_address
+            "contractAddress": contract_address,
+            "abi": abi,
+            "name": name,
         })
   
     def read_contract_call_function(self, base_asset_id: str, contract_address: str, request: ReadCallFunction):
