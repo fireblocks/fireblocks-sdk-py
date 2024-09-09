@@ -1549,6 +1549,7 @@ class FireblocksSDK:
             fee_level=None,
             fail_on_low_fee=None,
             max_fee=None,
+            max_total_fee=None,
             gas_limit=None,
             idempotency_key=None,
             external_tx_id=None,
@@ -1617,6 +1618,9 @@ class FireblocksSDK:
 
         if max_fee:
             body["maxFee"] = max_fee
+
+        if max_total_fee:
+            body["maxTotalFee"] = max_total_fee
 
         if fail_on_low_fee:
             body["failOnLowFee"] = fail_on_low_fee
