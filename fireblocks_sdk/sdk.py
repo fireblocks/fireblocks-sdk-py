@@ -3066,7 +3066,7 @@ class FireblocksSDK:
         return self._get_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions")
 
     def fetch_or_scrape_abi(self, base_asset_id: str, contract_address: str):
-        return self._post_request("/v1/tokenization/contracts/fetch-abi",{
+        return self._post_request("/v1/tokenization/contracts/fetch_abi",{
             "baseAssetId": base_asset_id,
             "contractAddress": contract_address
         })
