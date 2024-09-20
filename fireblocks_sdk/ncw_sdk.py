@@ -4,17 +4,41 @@ from .sdk import FireblocksSDK
 class FireblocksNCW:
     def __init__(self, sdk: FireblocksSDK):
         self.sdk = sdk
-        self._wallet_url = "/v1/wallets"
+        self._wallet_url = "/v1/ncw/wallets"
 
     def create_wallet(self):
-        url = "/v1/wallets"
-        return self.sdk._post_request(url)
+        return self.sdk._post_request(self._wallet_url)
 
-    def get_wallets(self):
-        return self.sdk._get_request(self._wallet_url)
+    def get_wallets(
+        self,
+        page_cursor: str,
+        page_size: int,
+        sort: str,
+        order: str,
+        enabled: bool = None,
+    ):
+        query_params = {"enabled": enabled}
+
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        if sort:
+            query_params["sort"] = sort
+
+        if order:
+            query_params["order"] = order
+
+        return self.sdk._get_request(self._wallet_url, query_params=query_params)
 
     def get_wallet(self, wallet_id: str):
         url = f"{self._wallet_url}/{wallet_id}"
+        return self.sdk._get_request(url)
+
+    def get_latest_backup(self, wallet_id: str):
+        url = f"{self._wallet_url}/{wallet_id}/backup/latest"
         return self.sdk._get_request(url)
 
     def enable_wallet(self, wallet_id: str, enabled: bool):
@@ -36,7 +60,7 @@ class FireblocksNCW:
         enabled: bool = None,
     ):
         url = f"{self._wallet_url}/{wallet_id}/accounts"
-        query_params = {}
+        query_params = {"enabled": enabled}
 
         if page_cursor:
             query_params["pageCursor"] = page_cursor
@@ -49,9 +73,6 @@ class FireblocksNCW:
 
         if order:
             query_params["order"] = order
-
-        if enabled:
-            query_params["enabled"] = enabled
 
         return self.sdk._get_request(url, query_params=query_params)
 
@@ -103,9 +124,7 @@ class FireblocksNCW:
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
         return self.sdk._put_request(url)
 
-    def get_wallet_asset_balance(
-        self, wallet_id: str, account_id: str, asset_id: str
-    ):
+    def get_wallet_asset_balance(self, wallet_id: str, account_id: str, asset_id: str):
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/balance"
         return self.sdk._get_request(url)
 
@@ -121,7 +140,7 @@ class FireblocksNCW:
         enabled: bool = None,
     ):
         url = f"{self._wallet_url}/{wallet_id}/accounts/{account_id}/assets/{asset_id}/addresses"
-        query_params = {}
+        query_params = {"enabled": enabled}
 
         if page_cursor:
             query_params["pageCursor"] = page_cursor
@@ -135,9 +154,6 @@ class FireblocksNCW:
         if order:
             query_params["order"] = order
 
-        if enabled:
-            query_params["enabled"] = enabled
-
         return self.sdk._get_request(url, query_params=query_params)
 
     def get_devices(self, wallet_id: str):
@@ -145,7 +161,7 @@ class FireblocksNCW:
         return self.sdk._get_request(url)
 
     def enable_device(self, wallet_id: str, device_id: str, enabled: bool):
-        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}"
+        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/enable"
         body = {"enabled": enabled}
 
         return self.sdk._put_request(url, body)
@@ -158,3 +174,17 @@ class FireblocksNCW:
         body = {"payload": payload}
 
         return self.sdk._post_request(url, body)
+
+    def get_supported_assets(
+        self, page_cursor: str, page_size: int, only_base_assets: bool
+    ):
+        query_params = {"onlyBaseAssets": only_base_assets}
+        if page_cursor:
+            query_params["pageCursor"] = page_cursor
+
+        if page_size:
+            query_params["pageSize"] = page_size
+
+        return self._get_request(
+            f"{self._wallet_url}/supported_assets", query_params=query_params
+        )
