@@ -1,5 +1,5 @@
 from .sdk import FireblocksSDK
-
+import urllib
 
 class FireblocksNCW:
     def __init__(self, sdk: FireblocksSDK):
@@ -158,3 +158,43 @@ class FireblocksNCW:
         body = {"payload": payload}
 
         return self.sdk._post_request(url, body)
+    
+    def get_public_key_info(self, wallet_id: str, algorithm: str, derivation_path: str, compressed=None):
+        """Get the public key information
+
+        Args:
+            wallet_id (str)
+            algorithm (str)
+            derivation_path (str)
+            compressed (boolean, optional)
+        """
+
+        url = f"/v1/ncw/wallet/${wallet_id}/public_key_info"
+        if algorithm:
+            url += f"?algorithm={algorithm}"
+        if derivation_path:
+            url += f"&derivationPath={urllib.parse.quote(derivation_path)}"
+        if compressed:
+            url += f"&compressed={compressed}"
+        return self.sdk._get_request(url, None, None, wallet_id)
+
+    def get_public_key_info_by_account_asset(
+            self, wallet_id: str, asset_id: str, account_id: int, change: int, address_index: int, compressed=None
+    ):
+        """Get the public key information for an NCW account
+
+        Args:
+            wallet_id (str)
+            asset_id (str)
+            account_id (number)
+            change (number)
+            address_index (number)
+            compressed (boolean, optional)
+        """
+
+        url = f"/v1/ncw/wallet/${wallet_id}/accounts/{account_id}/{asset_id}/{change}/{address_index}/public_key_info"
+        if compressed:
+            url += f"?compressed={compressed}"
+
+        return self.sdk._get_request(url, None, None, wallet_id)
+
