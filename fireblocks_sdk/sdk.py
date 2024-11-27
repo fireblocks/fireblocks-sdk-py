@@ -3085,11 +3085,14 @@ class FireblocksSDK:
     def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
-    def _get_request(self, path, page_mode=False, query_params: Dict = None):
+    def _get_request(self, path, page_mode=False, query_params: Dict = None, ncw_wallet_id: str=None):
         if query_params:
             path = path + "?" + urllib.parse.urlencode(query_params)
         token = self.token_provider.sign_jwt(path)
         headers = {"Authorization": f"Bearer {token}"}
+        if ncw_wallet_id is not None:
+            headers["X-End-User-Wallet-Id"] = ncw_wallet_id
+
         response = self.http_session.get(
             self.base_url + path, headers=headers, timeout=self.timeout
         )
@@ -3103,13 +3106,15 @@ class FireblocksSDK:
         )
         return handle_response(response)
 
-    def _post_request(self, path, body=None, idempotency_key=None):
+    def _post_request(self, path, body=None, idempotency_key=None, ncw_wallet_id=None):
         body = body or {}
 
         token = self.token_provider.sign_jwt(path, body)
         headers = {"Authorization": f"Bearer {token}"}
         if idempotency_key is not None:
             headers["Idempotency-Key"] = idempotency_key
+        if ncw_wallet_id is not None:
+            headers["X-End-User-Wallet-Id"] = ncw_wallet_id
 
         response = self.http_session.post(
             self.base_url + path, headers=headers, json=body, timeout=self.timeout
