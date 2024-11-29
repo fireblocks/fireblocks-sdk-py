@@ -1653,7 +1653,7 @@ class FireblocksSDK:
         if replace_tx_by_hash:
             body["replaceTxByHash"] = replace_tx_by_hash
 
-        if treat_as_gross_amount:
+        if treat_as_gross_amount is not None:
             body["treatAsGrossAmount"] = treat_as_gross_amount
 
         if destinations:
