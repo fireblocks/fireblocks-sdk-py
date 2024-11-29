@@ -216,14 +216,28 @@ class FireblocksApiException(Exception):
     """Exception raised for Fireblocks sdk errors
 
     Attributes:
-        message: explanation of the error
+        reason: explanation of the error
+        error_message: original remote error message
         error_code: error code of the error
+        http_code: HTTP status code of the response
     """
-
-    def __init__(self, message="Fireblocks SDK error", error_code=None):
-        self.message = message
+    def __init__(self,
+                 reason: str = '',
+                 error_message: Optional[str] = None,
+                 error_code: Optional[int] = None,
+                 http_code: Optional[int] = None):
+        self.error_message = error_message
         self.error_code = error_code
-        super().__init__(self.message)
+        self.http_code = http_code
+
+        display_error = reason or \
+                        (error_message and f"Got an error from fireblocks server: {error_message}") or \
+                        "Fireblocks SDK error"
+
+        super().__init__(display_error)
+
+        # Let's maintain the .message attribute for backwards compatibility purposes
+        self.message = display_error
 
 class RescanTx:
     """
