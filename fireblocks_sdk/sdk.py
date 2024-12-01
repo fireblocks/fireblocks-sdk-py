@@ -36,6 +36,7 @@ from .api_types import (
     UnstakeRequestDto,
     WithdrawRequestDto,
     ClaimRewardsRequestDto,
+    SplitRequestDto,
     Role,
     SpamTokenOwnershipValues,
     TokenOwnershipSpamUpdatePayload,
@@ -152,6 +153,11 @@ class FireblocksSDK:
                     """Execute staking claim rewards on a chain.
                     """
                     return self._post_request(f"/v1/staking/chains/{chain_descriptor}/claimRewards", request_body.to_dict())
+
+    def execute_staking_split(self, chain_descriptor: str, request_body: SplitRequestDto):
+                        """Execute staking split on a chain.
+                        """
+                        return self._post_request(f"/v1/staking/chains/{chain_descriptor}/split", request_body.to_dict())
 
     def get_staking_positions(self, chain_descriptor: str = None):
         """Get all staking positions, optionally filtered by chain."""
