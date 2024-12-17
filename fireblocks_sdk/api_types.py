@@ -687,8 +687,9 @@ class StakeRequestDto:
 
 
 class UnstakeRequestDto:
-    def __init__(self, id: str, fee: str = None, fee_level: str = None, tx_note: str = None):
+    def __init__(self, id: str, amount: str = None, fee: str = None, fee_level: str = None, tx_note: str = None):
         self.id = id
+        self.amount = amount
         self.fee = fee
         self.fee_level = fee_level
         self.tx_note = tx_note
