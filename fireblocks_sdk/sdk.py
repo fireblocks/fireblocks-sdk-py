@@ -42,6 +42,8 @@ from .api_types import (
     TokenOwnershipSpamUpdatePayload,
     TokenOwnershipSpamUpdatePayload,
     RescanTx,
+    AssetClassValues,
+    AssetScopeValues,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
@@ -1369,6 +1371,98 @@ class FireblocksSDK:
         }
 
         return self._post_request("/v1/assets", body, idempotency_key)
+
+    def list_assets(
+        self,
+        blockchain_id: str = None,
+        asset_class: AssetClassValues = None,
+        symbol: str = None,
+        scope: AssetScopeValues = None,
+        deprecated: bool = None,
+        page_cursor: str = None,
+        page_size: int = None,
+    ):
+        """
+        List assets [BETA]
+
+        Args:
+            blockchain_id (str): Blockchain id of the assets
+            asset_class (AssetClassValues): Assets class
+            symbol (str): Assets onchain symbol
+            scope (AssetScopeValues): Scope of the assets
+            deprecated (bool): Are assets deprecated
+            page_cursor (str): Next page cursor to fetch
+            page_size (int): Items per page
+        """
+
+        url = "/v1/assets"
+        if blockchain_id:
+            url += f"?blockchainId={blockchain_id}"
+        if asset_class:
+            url += f"&assetClass={asset_class.value}"
+        if symbol:
+            url += f"?symbol={symbol}"
+        if scope:
+            url += f"&scope={scope.value}"
+        if deprecated is not None:
+            url += f"&deprecated={deprecated}"
+        if page_cursor:
+            url += f"?pageCursor={page_cursor}"
+        if page_size:
+            url += f"?pageSize={page_size}"
+        return self._get_request(url)
+
+    def get_asset_by_id(self, asset_id: str):
+        """
+        Get an asset [BETA]
+
+        Args:
+            asset_id (str): The ID or legacyId of the asset
+        """
+
+        return self._get_request(f"/v1/assets/{asset_id}")
+
+    def list_blockchains(
+        self,
+        protocol: str = None,
+        deprecated: bool = None,
+        test: bool = None,
+        page_cursor: str = None,
+        page_size: int = None,
+    ):
+        """
+        List blockchains [BETA]
+
+        Args:
+            protocol (str): Blockchain protocol
+            deprecated (bool): Is blockchain deprecated
+            test (bool): Is test blockchain
+            page_cursor (str): Page cursor to fetch
+            page_size (int): Items per page (max 500)
+        """
+
+        url = "/v1/blockchains"
+        if protocol:
+            url += f"?protocol={protocol}"
+        if deprecated is not None:
+            url += f"&deprecated={deprecated}"
+        if test is not None:
+            url += f"&test={test}"
+        if page_cursor:
+            url += f"?pageCursor={page_cursor}"
+        if page_size:
+            url += f"?pageSize={page_size}"
+        return self._get_request(url)
+
+    def get_blockchain_by_id(self, blockchain_id: str):
+        """
+        Get an blockchain [BETA]
+
+        Args:
+            blockchain_id (str): The ID or legacyId of the blockchain
+        """
+
+        return self._get_request(f"/v1/blockchains/{blockchain_id}")
 
     def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
         """Creates a new asset within an existing vault account
