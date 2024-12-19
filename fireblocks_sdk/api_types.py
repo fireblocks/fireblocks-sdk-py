@@ -407,6 +407,20 @@ class TokenOwnershipSpamUpdatePayload:
             'spam': self.spam,
         }
 
+
+class AssetClassValues(str, Enum):
+    NATIVE = "NATIVE"
+    FT = "FT"
+    FIAT = "FIAT"
+    NFT = "NFT"
+    SFT = "SFT"
+
+
+class AssetScopeValues(str, Enum):
+    GLOBAL = "Global"
+    LOCAL = "Local"
+
+
 class OrderValues(str, Enum):
     ASC = "ASC"
     DESC = "DESC"
