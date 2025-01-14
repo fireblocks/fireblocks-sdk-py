@@ -417,8 +417,8 @@ class AssetClassValues(str, Enum):
 
 
 class AssetScopeValues(str, Enum):
-    GLOBAL = "Global"
-    LOCAL = "Local"
+    GLOBAL = "GLOBAL"
+    LOCAL = "LOCAL"
 
 
 class OrderValues(str, Enum):
