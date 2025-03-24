@@ -1102,6 +1102,30 @@ class FireblocksSDK:
 
         return self._get_request(f"/v1/internal_wallets/{wallet_id}")
 
+    def get_internal_wallet_assets(
+        self,
+        wallet_id,
+        page_size: Optional[int] = None,
+        page_cursor: Optional[str] = None,
+    ):
+        """Gets a paginated response of assets for an internal wallet from your tenant
+        Args:
+            wallet_id (str): The wallet id to query
+            page_size (int): Number of assets to return per page (default=50, max=200)
+            page_cursor (str): Cursor for pagination
+        """
+
+        params = {}
+
+        if page_size:
+            params["pageSize"] = page_size
+        if page_cursor:
+            params["pageCursor"] = page_cursor
+
+        return self._get_request(
+            f"/v1/internal_wallets/{wallet_id}/assets", query_params=params
+        )
+
     def get_internal_wallet_asset(self, wallet_id, asset_id):
         """Gets an asset from an internal wallet from your tenant
         Args:
