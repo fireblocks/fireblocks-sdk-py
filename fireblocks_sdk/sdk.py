@@ -65,18 +65,19 @@ from .sdk_token_provider import SdkTokenProvider
 def handle_response(response, page_mode=False):
     try:
         response_data = response.json()
-    except:
+    except (AttributeError, ValueError):
         response_data = None
-    if response.status_code >= 300:
-        if type(response_data) is dict:
-            error_code = response_data.get("code")
+
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        if isinstance(response_data, dict):
+            error_code = response_data.get('code')
+            message = response_data.get('message')
             raise FireblocksApiException(
-                "Got an error from fireblocks server: " + response.text, error_code
-            )
+                error_message=message, error_code=error_code, http_code=response.status_code) from err
         else:
-            raise FireblocksApiException(
-                "Got an error from fireblocks server: " + response.text
-            )
+            raise FireblocksApiException(error_message=response.text, http_code=response.status_code) from err
     else:
         if page_mode:
             return {
