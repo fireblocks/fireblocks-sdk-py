@@ -1407,7 +1407,7 @@ class FireblocksSDK:
         page_size: int = None,
     ):
         """
-        List assets [BETA]
+        List assets
 
         Args:
             blockchain_id (str): Blockchain id of the assets
@@ -1438,7 +1438,7 @@ class FireblocksSDK:
 
     def get_asset_by_id(self, asset_id: str):
         """
-        Get an asset [BETA]
+        Get an asset
 
         Args:
             asset_id (str): The ID or legacyId of the asset
@@ -1455,7 +1455,7 @@ class FireblocksSDK:
         page_size: int = None,
     ):
         """
-        List blockchains [BETA]
+        List blockchains
 
         Args:
             protocol (str): Blockchain protocol
@@ -1480,7 +1480,7 @@ class FireblocksSDK:
 
     def get_blockchain_by_id(self, blockchain_id: str):
         """
-        Get an blockchain [BETA]
+        Get an blockchain
 
         Args:
             blockchain_id (str): The ID or legacyId of the blockchain
