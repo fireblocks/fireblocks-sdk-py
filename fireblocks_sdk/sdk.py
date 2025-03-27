@@ -1420,20 +1420,27 @@ class FireblocksSDK:
         """
 
         url = "/v1/assets"
+
+        params = {}
+
         if blockchain_id:
-            url += f"?blockchainId={blockchain_id}"
+            params["blockchainId"] = blockchain_id
         if asset_class:
-            url += f"&assetClass={asset_class.value}"
+            params["assetClass"] = asset_class.value
         if symbol:
-            url += f"?symbol={symbol}"
+            params["symbol"] = symbol
         if scope:
-            url += f"&scope={scope.value}"
+            params["scope"] = scope.value
         if deprecated is not None:
-            url += f"&deprecated={deprecated}"
+            params["deprecated"] = "true" if deprecated is True else "false"
         if page_cursor:
-            url += f"?pageCursor={page_cursor}"
+            params["pageCursor"] = page_cursor
         if page_size:
-            url += f"?pageSize={page_size}"
+            params["pageSize"] = page_size
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
         return self._get_request(url)
 
     def get_asset_by_id(self, asset_id: str):
@@ -1466,16 +1473,23 @@ class FireblocksSDK:
         """
 
         url = "/v1/blockchains"
+
+        params = {}
+
         if protocol:
-            url += f"?protocol={protocol}"
+            params["protocol"] = protocol
         if deprecated is not None:
-            url += f"&deprecated={deprecated}"
+            params["deprecated"] = "true" if deprecated is True else "false"
         if test is not None:
-            url += f"&test={test}"
+            params["test"] = "true" if test is True else "false"
         if page_cursor:
-            url += f"?pageCursor={page_cursor}"
+            params["pageCursor"] = page_cursor
         if page_size:
-            url += f"?pageSize={page_size}"
+            params["pageSize"] = page_size
+
+        if params:
+            url = url + "?" + urllib.parse.urlencode(params)
+
         return self._get_request(url)
 
     def get_blockchain_by_id(self, blockchain_id: str):
