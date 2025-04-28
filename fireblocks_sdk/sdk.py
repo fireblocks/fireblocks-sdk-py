@@ -1403,9 +1403,9 @@ class FireblocksSDK:
             symbol: str = None,
             scope: AssetScopeValues = None,
             deprecated: bool = None,
-            ids: List[str] = None,
             page_cursor: str = None,
             page_size: int = None,
+            ids: List[str] = None,
     ):
         """
         List assets
@@ -1416,9 +1416,9 @@ class FireblocksSDK:
             symbol (str): Assets onchain symbol
             scope (AssetScopeValues): Scope of the assets
             deprecated (bool): Are assets deprecated
-            ids (List[str]): Asset ids (max 100)
             page_cursor (str): Next page cursor to fetch
             page_size (int): Items per page
+            ids (List[str]): Asset ids (max 100)
         """
 
         url = "/v1/assets"
@@ -1462,9 +1462,9 @@ class FireblocksSDK:
             protocol: str = None,
             deprecated: bool = None,
             test: bool = None,
-            ids: List[str] = None,
             page_cursor: str = None,
             page_size: int = None,
+            ids: List[str] = None,
     ):
         """
         List blockchains
@@ -1473,9 +1473,9 @@ class FireblocksSDK:
             protocol (str): Blockchain protocol
             deprecated (bool): Is blockchain deprecated
             test (bool): Is test blockchain
-            ids (List[str]): Blockchain ids (max 100)
             page_cursor (str): Page cursor to fetch
             page_size (int): Items per page (max 500)
+            ids (List[str]): Blockchain ids (max 100)
         """
 
         url = "/v1/blockchains"
