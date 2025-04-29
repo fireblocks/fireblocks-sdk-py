@@ -1397,14 +1397,15 @@ class FireblocksSDK:
         return self._post_request("/v1/assets", body, idempotency_key)
 
     def list_assets(
-        self,
-        blockchain_id: str = None,
-        asset_class: AssetClassValues = None,
-        symbol: str = None,
-        scope: AssetScopeValues = None,
-        deprecated: bool = None,
-        page_cursor: str = None,
-        page_size: int = None,
+            self,
+            blockchain_id: str = None,
+            asset_class: AssetClassValues = None,
+            symbol: str = None,
+            scope: AssetScopeValues = None,
+            deprecated: bool = None,
+            page_cursor: str = None,
+            page_size: int = None,
+            ids: List[str] = None,
     ):
         """
         List assets
@@ -1417,6 +1418,7 @@ class FireblocksSDK:
             deprecated (bool): Are assets deprecated
             page_cursor (str): Next page cursor to fetch
             page_size (int): Items per page
+            ids (List[str]): Asset ids (max 100)
         """
 
         url = "/v1/assets"
@@ -1433,13 +1435,15 @@ class FireblocksSDK:
             params["scope"] = scope.value
         if deprecated is not None:
             params["deprecated"] = "true" if deprecated is True else "false"
+        if ids is not None and len(ids) > 0:
+            params["ids"] = ids
         if page_cursor:
             params["pageCursor"] = page_cursor
         if page_size:
             params["pageSize"] = page_size
 
         if params:
-            url = url + "?" + urllib.parse.urlencode(params)
+            url = url + "?" + urllib.parse.urlencode(params, doseq=True)
 
         return self._get_request(url)
 
@@ -1454,12 +1458,13 @@ class FireblocksSDK:
         return self._get_request(f"/v1/assets/{asset_id}")
 
     def list_blockchains(
-        self,
-        protocol: str = None,
-        deprecated: bool = None,
-        test: bool = None,
-        page_cursor: str = None,
-        page_size: int = None,
+            self,
+            protocol: str = None,
+            deprecated: bool = None,
+            test: bool = None,
+            page_cursor: str = None,
+            page_size: int = None,
+            ids: List[str] = None,
     ):
         """
         List blockchains
@@ -1470,6 +1475,7 @@ class FireblocksSDK:
             test (bool): Is test blockchain
             page_cursor (str): Page cursor to fetch
             page_size (int): Items per page (max 500)
+            ids (List[str]): Blockchain ids (max 100)
         """
 
         url = "/v1/blockchains"
@@ -1482,13 +1488,15 @@ class FireblocksSDK:
             params["deprecated"] = "true" if deprecated is True else "false"
         if test is not None:
             params["test"] = "true" if test is True else "false"
+        if ids is not None and len(ids) > 0:
+            params["ids"] = ids
         if page_cursor:
             params["pageCursor"] = page_cursor
         if page_size:
             params["pageSize"] = page_size
 
         if params:
-            url = url + "?" + urllib.parse.urlencode(params)
+            url = url + "?" + urllib.parse.urlencode(params, doseq=True)
 
         return self._get_request(url)
 
