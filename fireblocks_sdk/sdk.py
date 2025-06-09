@@ -874,6 +874,27 @@ class FireblocksSDK:
             body,
             idempotency_key,
         )
+    
+    def create_internal_transfer(
+            self, exchange_account_id, source_type, dest_type, asset, amount, idempotency_key=None
+    ):
+        """Create an internal transfer between two trading accounts in an exchange account.
+
+        Args:
+            exchange_account_id (string): The exchange ID in Fireblocks
+            source_type (string): The source trading account type
+            dest_type (string): The destination trading account type
+            asset (string): The asset to transfer
+            amount (double): The amount to transfer
+            idempotency_key (str, optional)
+        """
+        body = {"sourceType": source_type, "destType": dest_type, "asset": asset, "amount": amount}
+
+        return self._post_request(
+            f"/v1/exchange_accounts/{exchange_account_id}/internal_transfer",
+            body,
+            idempotency_key,
+        )
 
     def get_fiat_accounts(self):
         """Gets all fiat accounts for your tenant"""
