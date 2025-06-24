@@ -408,6 +408,38 @@ class TokenOwnershipSpamUpdatePayload:
         }
 
 
+class AssetNoteRequest:
+    def __init__(self, text: Union[str, None, object] = object()):
+        """
+        Args:
+            text (str | None): Asset user note.
+        """
+        if text is not AssetNoteRequest.__init__.__defaults__[0]:  # Check if text was explicitly provided
+            self.text = text
+
+    def to_dict(self):
+        result = {}
+        if hasattr(self, 'text'):
+            result['text'] = self.text
+        return result
+
+
+class AssetMetadataRequest:
+    def __init__(self, note: AssetNoteRequest):
+        self.note = note
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+
+class UpdateAssetUserMetadataRequest:
+    def __init__(self, metadata: AssetMetadataRequest):
+        self.metadata = metadata
+
+    def to_dict(self):
+        return convert_class_to_dict(self.__dict__)
+
+
 class AssetClassValues(str, Enum):
     NATIVE = "NATIVE"
     FT = "FT"

@@ -44,6 +44,7 @@ from .api_types import (
     RescanTx,
     AssetClassValues,
     AssetScopeValues,
+    UpdateAssetUserMetadataRequest,
 )
 from .tokenization_api_types import \
     CreateTokenRequest, \
@@ -1511,22 +1512,20 @@ class FireblocksSDK:
         return self._get_request(f"/v1/blockchains/{blockchain_id}")
 
     def update_asset_user_metadata(
-            self,
-            asset_id: str = None,
-            note: str = None,
+        self,
+        asset_id: str,
+        update_asset_user_metadata_request: UpdateAssetUserMetadataRequest
     ):
         """
         Update user metadata for an asset.
 
         Args:
             asset_id (str): The ID or legacyId of the asset.
-            note (str): Asset user note.
+            update_asset_user_metadata_request (UpdateAssetUserMetadataRequest): Asset user metadata.
         """
-
-        body = {"metadata": {"note": {"text": note or None}}}
-
         return self._patch_request(
-            f"/v1/assets/{asset_id}", body
+            f"/v1/assets/{asset_id}",
+            update_asset_user_metadata_request.to_dict()
         )
 
     def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
