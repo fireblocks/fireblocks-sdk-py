@@ -414,7 +414,7 @@ class AssetNoteRequest:
         Args:
             text (str | None): Asset user note.
         """
-        if text is not AssetNoteRequest.__init__.__defaults__[0]:  # Check if text was explicitly provided
+        if text is not AssetNoteRequest.__init__.__defaults__[0]:
             self.text = text
 
     def to_dict(self):
