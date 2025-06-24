@@ -1512,23 +1512,21 @@ class FireblocksSDK:
 
     def update_asset_user_metadata(
             self,
-            assetId: str = None,
+            asset_id: str = None,
             note: str = None,
-            idempotency_key=None
-        ):
+    ):
         """
         Update user metadata for an asset.
 
         Args:
-            assetId (str): The ID or legacyId of the asset.
+            asset_id (str): The ID or legacyId of the asset.
             note (str): Asset user note.
-            idempotency_key (str, optional): Key to ensure idempotent requests.
         """
 
         body = {"metadata": {"note": {"text": note or None}}}
 
         return self._patch_request(
-            f"/v1/assets/{assetId}", body, idempotency_key=idempotency_key
+            f"/v1/assets/{asset_id}", body
         )
 
     def create_vault_asset(self, vault_account_id, asset_id, idempotency_key=None):
