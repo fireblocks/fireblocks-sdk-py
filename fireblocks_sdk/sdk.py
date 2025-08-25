@@ -3251,12 +3251,12 @@ class FireblocksSDK:
     def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
 
-    def set_aml_verdict(self, tx_id: str, verdict: str, idempotency_key: Optional[str] = None):
+    def set_aml_verdict(self, tx_id: str, verdict: str):
         payload = {
             "txId": tx_id,
             "verdict": verdict
         }
-        return self._post_request("/v1/screening/aml/verdict/manual", payload, idempotency_key)
+        return self._post_request("/v1/screening/aml/verdict/manual", payload)
 
     def get_screening_full_details(self, tx_id: str):
         return self._get_request(f"/v1/screening/transaction/{tx_id}")
@@ -3273,8 +3273,8 @@ class FireblocksSDK:
     def get_travel_rule_post_screening_policy(self):
         return self._get_request("/v1/screening/travel_rule/post_screening_policy")
 
-    def bypass_screening_policy(self, tx_id: str, idempotency_key: Optional[str] = None):
-        return self._post_request(f"/v1/screening/transaction/{tx_id}/bypass_screening_policy", {}, idempotency_key)
+    def bypass_screening_policy(self, tx_id: str):
+        return self._post_request(f"/v1/screening/transaction/{tx_id}/bypass_screening_policy", {})
 
     def get_aml_screening_configuration(self):
         return self._get_request("/v1/screening/aml/policy_configuration")
@@ -3282,7 +3282,7 @@ class FireblocksSDK:
     def get_travel_rule_screening_configuration(self):
         return self._get_request("/v1/screening/travel_rule/policy_configuration")
 
-    def update_aml_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None, idempotency_key: Optional[str] = None):
+    def update_aml_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
         payload = {}
         if bypass_screening is not None:
             payload["bypassScreening"] = bypass_screening
@@ -3292,7 +3292,7 @@ class FireblocksSDK:
             payload["outboundDelayHours"] = outbound_delay_hours
         return self._put_request("/v1/screening/aml/policy_configuration", payload)
 
-    def update_travel_rule_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None, idempotency_key: Optional[str] = None):
+    def update_travel_rule_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
         payload = {}
         if bypass_screening is not None:
             payload["bypassScreening"] = bypass_screening
@@ -3302,7 +3302,7 @@ class FireblocksSDK:
             payload["outboundDelayHours"] = outbound_delay_hours
         return self._put_request("/v1/screening/travel_rule/policy_configuration", payload)
 
-    def update_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None, idempotency_key: Optional[str] = None):
+    def update_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
         payload = {}
         if bypass_screening is not None:
             payload["bypassScreening"] = bypass_screening
