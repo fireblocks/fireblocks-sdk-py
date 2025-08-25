@@ -3,7 +3,8 @@ import platform
 import urllib
 from importlib.metadata import version
 from operator import attrgetter
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, List
+
 import requests
 
 from .api_types import (
@@ -40,12 +41,14 @@ from .api_types import (
     Role,
     SpamTokenOwnershipValues,
     TokenOwnershipSpamUpdatePayload,
-    TokenOwnershipSpamUpdatePayload,
     RescanTx,
     AssetClassValues,
     AssetScopeValues,
     UpdateAssetUserMetadataRequest,
+    # New screening, AML, and travel rule types
+    VaspReviewValues,
 )
+from .sdk_token_provider import SdkTokenProvider
 from .tokenization_api_types import \
     CreateTokenRequest, \
     ContractUploadRequest, \
@@ -60,7 +63,6 @@ from .tokenization_api_types import \
     MintCollectionTokenRequest, \
     BurnCollectionTokenRequest, \
     AbiFunction
-from .sdk_token_provider import SdkTokenProvider
 
 
 def handle_response(response, page_mode=False):
@@ -3248,6 +3250,147 @@ class FireblocksSDK:
 
     def write_contract_call_function(self, base_asset_id: str, contract_address: str, request: WriteCallFunction):
         return self._post_request(f"/v1/contract_interactions/base_asset_id/{base_asset_id}/contract_address/{contract_address}/functions/write", request.to_dict())
+
+    def set_aml_verdict(self, tx_id: str, verdict: str):
+        payload = {
+            "txId": tx_id,
+            "verdict": verdict
+        }
+        return self._post_request("/v1/screening/aml/verdict/manual", payload)
+
+    def get_screening_full_details(self, tx_id: str):
+        return self._get_request(f"/v1/screening/transaction/{tx_id}")
+
+    def get_aml_screening_policy(self):
+        return self._get_request("/v1/screening/aml/screening_policy")
+
+    def get_travel_rule_screening_policy(self):
+        return self._get_request("/v1/screening/travel_rule/screening_policy")
+
+    def get_aml_post_screening_policy(self):
+        return self._get_request("/v1/screening/aml/post_screening_policy")
+
+    def get_travel_rule_post_screening_policy(self):
+        return self._get_request("/v1/screening/travel_rule/post_screening_policy")
+
+    def bypass_screening_policy(self, tx_id: str):
+        return self._post_request(f"/v1/screening/transaction/{tx_id}/bypass_screening_policy", {})
+
+    def get_aml_screening_configuration(self):
+        return self._get_request("/v1/screening/aml/policy_configuration")
+
+    def get_travel_rule_screening_configuration(self):
+        return self._get_request("/v1/screening/travel_rule/policy_configuration")
+
+    def update_aml_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
+        payload = {}
+        if bypass_screening is not None:
+            payload["bypassScreening"] = bypass_screening
+        if inbound_delay_hours is not None:
+            payload["inboundDelayHours"] = inbound_delay_hours
+        if outbound_delay_hours is not None:
+            payload["outboundDelayHours"] = outbound_delay_hours
+        return self._put_request("/v1/screening/aml/policy_configuration", payload)
+
+    def update_travel_rule_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
+        payload = {}
+        if bypass_screening is not None:
+            payload["bypassScreening"] = bypass_screening
+        if inbound_delay_hours is not None:
+            payload["inboundDelayHours"] = inbound_delay_hours
+        if outbound_delay_hours is not None:
+            payload["outboundDelayHours"] = outbound_delay_hours
+        return self._put_request("/v1/screening/travel_rule/policy_configuration", payload)
+
+    def update_screening_configuration(self, bypass_screening: bool = None, inbound_delay_hours: int = None, outbound_delay_hours: int = None):
+        payload = {}
+        if bypass_screening is not None:
+            payload["bypassScreening"] = bypass_screening
+        if inbound_delay_hours is not None:
+            payload["inboundDelayHours"] = inbound_delay_hours
+        if outbound_delay_hours is not None:
+            payload["outboundDelayHours"] = outbound_delay_hours
+        return self._put_request("/v1/screening/configurations", payload)
+
+    def get_all_vasps(self, search: Optional[str] = None, review_value: Optional[str] = None,
+                      page_size: Optional[int] = None, page_cursor: Optional[str] = None,
+                      order: Optional[str] = None, fields: Optional[List[str]] = None):
+        params = {}
+        if search:
+            params["search"] = search
+        if review_value:
+            if review_value not in [VaspReviewValues.TRUSTED, VaspReviewValues.BLOCKED, 
+                                  VaspReviewValues.MANUAL, VaspReviewValues.NULL]:
+                raise FireblocksApiException(f"Invalid review_value: {review_value}")
+            params["reviewValue"] = review_value
+        if page_size:
+            params["pageSize"] = page_size
+        if page_cursor:
+            params["pageCursor"] = page_cursor
+        if order:
+            params["order"] = order
+        if fields:
+            params["fields"] = ",".join(fields)
+            
+        return self._get_request("/v1/screening/travel_rule/vasp", query_params=params)
+
+    def get_vasp_by_did(self, did: str, fields: Optional[List[str]] = None):
+        params = {}
+        if fields:
+            params["fields"] = ",".join(fields)
+            
+        return self._get_request(f"/v1/screening/travel_rule/vasp/{did}", query_params=params)
+
+    def get_vault_vasp(self, vault_account_id: str):
+        return self._get_request(f"/v1/screening/travel_rule/vault/{vault_account_id}/vasp")
+
+    def assign_vasp_to_vault(self, vault_account_id: str, vasp_did: str):
+        payload = {
+            "vaspDid": vasp_did or ""
+        }
+        return self._post_request(f"/v1/screening/travel_rule/vault/{vault_account_id}/vasp", payload)
+
+    def update_vasp_details(self, vasp_did: str, json_did_key: str = None):
+        payload = {"vaspDid": vasp_did}
+        if json_did_key:
+            payload["jsonDidKey"] = json_did_key
+        return self._put_request("/v1/screening/travel_rule/vasp/update", payload)
+
+    def validate_travel_rule_transaction(self, originator_vasp_did: str, beneficiary_vasp_did: str, 
+                                         transaction_asset: str, transaction_amount: str,
+                                         originator_vasp_name: str, beneficiary_vasp_name: str,
+                                         tx_hash: str = None, network_id: str = None,
+                                         destination_address: str = None, protocol: str = None,
+                                         notation: Optional[List[str]] = None):
+        payload = {
+            "originatorVASPdid": originator_vasp_did,
+            "beneficiaryVASPdid": beneficiary_vasp_did,
+            "transactionAsset": transaction_asset,
+            "transactionAmount": transaction_amount,
+            "originatorVASPname": originator_vasp_name,
+            "beneficiaryVASPname": beneficiary_vasp_name
+        }
+        
+        if tx_hash or network_id or destination_address:
+            blockchain_info = {}
+            if tx_hash:
+                blockchain_info["txHash"] = tx_hash
+            if network_id:
+                blockchain_info["networkId"] = network_id
+            if destination_address:
+                blockchain_info["destinationAddress"] = destination_address
+            payload["transactionBlockchainInfo"] = blockchain_info
+        
+        if protocol:
+            if protocol not in ["TRLight", "TRP", "OpenVASP", "GTR"]:
+                raise FireblocksApiException(f"Invalid protocol: {protocol}")
+            payload["protocol"] = protocol
+        
+        params = {}
+        if notation:
+            params["notation"] = ",".join(notation)
+            
+        return self._post_request("/v1/screening/travel_rule/transaction/validate/full", payload)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None, ncw_wallet_id: str=None):
         if query_params:
