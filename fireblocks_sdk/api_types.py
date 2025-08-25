@@ -453,10 +453,6 @@ class AssetClassValues(str, Enum):
     SFT = "SFT"
 
 
-# =============================================================================
-# SCREENING, AML, AND TRAVEL RULE TYPES
-# =============================================================================
-
 class AmlVerdictValues(str, Enum):
     ACCEPT = "ACCEPT"
     REJECT = "REJECT"
@@ -483,7 +479,6 @@ class VaspReviewValues(str, Enum):
     BLOCKED = "BLOCKED"
     MANUAL = "MANUAL"
     NULL = "NULL"
-
 
 
 class AssetScopeValues(str, Enum):
