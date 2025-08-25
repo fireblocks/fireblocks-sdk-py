@@ -3344,13 +3344,13 @@ class FireblocksSDK:
     def get_vault_vasp(self, vault_account_id: str):
         return self._get_request(f"/v1/screening/travel_rule/vault/{vault_account_id}/vasp")
 
-    def assign_vasp_to_vault(self, vault_account_id: str, vasp_did: str, idempotency_key: Optional[str] = None):
+    def assign_vasp_to_vault(self, vault_account_id: str, vasp_did: str):
         payload = {
             "vaspDid": vasp_did or ""
         }
-        return self._post_request(f"/v1/screening/travel_rule/vault/{vault_account_id}/vasp", payload, idempotency_key)
+        return self._post_request(f"/v1/screening/travel_rule/vault/{vault_account_id}/vasp", payload)
 
-    def update_vasp_details(self, vasp_did: str, json_did_key: str = None, idempotency_key: Optional[str] = None):
+    def update_vasp_details(self, vasp_did: str, json_did_key: str = None):
         payload = {"vaspDid": vasp_did}
         if json_did_key:
             payload["jsonDidKey"] = json_did_key
@@ -3361,7 +3361,7 @@ class FireblocksSDK:
                                          originator_vasp_name: str, beneficiary_vasp_name: str,
                                          tx_hash: str = None, network_id: str = None,
                                          destination_address: str = None, protocol: str = None,
-                                         notation: Optional[List[str]] = None, idempotency_key: Optional[str] = None):
+                                         notation: Optional[List[str]] = None):
         payload = {
             "originatorVASPdid": originator_vasp_did,
             "beneficiaryVASPdid": beneficiary_vasp_did,
@@ -3390,7 +3390,7 @@ class FireblocksSDK:
         if notation:
             params["notation"] = ",".join(notation)
             
-        return self._post_request("/v1/screening/travel_rule/transaction/validate/full", payload, idempotency_key)
+        return self._post_request("/v1/screening/travel_rule/transaction/validate/full", payload)
 
     def _get_request(self, path, page_mode=False, query_params: Dict = None, ncw_wallet_id: str=None):
         if query_params:
