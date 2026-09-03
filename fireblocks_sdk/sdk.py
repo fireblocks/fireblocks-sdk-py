@@ -7,6 +7,8 @@ from typing import Any, Dict, Optional, List
 
 import requests
 
+from fireblocks_sdk.connection_pool import mount_idle_aware_adapter
+
 from .api_types import (
     FireblocksApiException,
     TRANSACTION_TYPES,
@@ -101,6 +103,7 @@ class FireblocksSDK:
             timeout=None,
             anonymous_platform=False,
             seconds_jwt_exp=55,
+            connection_idle_timeout_sec=None,
     ):
         """Creates a new Fireblocks API Client.
 
@@ -109,6 +112,10 @@ class FireblocksSDK:
             api_key (str): Your api key. This is a uuid you received from Fireblocks
             api_base_url (str): The fireblocks server URL. Leave empty to use the default server
             timeout (number): Timeout for http requests in seconds
+            connection_idle_timeout_sec (number, optional): How long a pooled connection may sit
+                idle before it is discarded and reopened. Guards against proxies that silently
+                drop idle connections. Leave unset for the SDK default of 30; use 0 to open a
+                fresh connection for every request, or -1 for no limit.
         """
         self.private_key = private_key
         self.api_key = api_key
@@ -116,6 +123,7 @@ class FireblocksSDK:
         self.token_provider = SdkTokenProvider(private_key, api_key, seconds_jwt_exp)
         self.timeout = timeout
         self.http_session = requests.Session()
+        mount_idle_aware_adapter(self.http_session, connection_idle_timeout_sec)
         self.http_session.headers.update(
             {
                 "X-API-Key": self.api_key,
