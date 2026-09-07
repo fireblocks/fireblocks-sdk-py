@@ -7,7 +7,10 @@ from typing import Any, Dict, Optional, List
 
 import requests
 
-from fireblocks_sdk.connection_pool import mount_idle_aware_adapter
+from fireblocks_sdk.connection_pool import (
+    DEFAULT_IDLE_TIMEOUT_SECONDS,
+    mount_idle_aware_adapter,
+)
 
 from .api_types import (
     FireblocksApiException,
@@ -103,7 +106,7 @@ class FireblocksSDK:
             timeout=None,
             anonymous_platform=False,
             seconds_jwt_exp=55,
-            connection_idle_timeout_sec=None,
+            connection_idle_timeout_sec=DEFAULT_IDLE_TIMEOUT_SECONDS,
     ):
         """Creates a new Fireblocks API Client.
 
@@ -114,8 +117,12 @@ class FireblocksSDK:
             timeout (number): Timeout for http requests in seconds
             connection_idle_timeout_sec (number, optional): How long a pooled connection may sit
                 idle before it is discarded and reopened. Guards against proxies that silently
-                drop idle connections. Leave unset for the SDK default of 30; use 0 to open a
-                fresh connection for every request, or -1 for no limit.
+                drop idle connections. Defaults as shown above and may not exceed
+                MAX_IDLE_TIMEOUT_SECONDS. -1 disables eviction (not recommended,
+                risks connection issues).
+
+        Raises:
+            ValueError: if connection_idle_timeout_sec exceeds MAX_IDLE_TIMEOUT_SECONDS.
         """
         self.private_key = private_key
         self.api_key = api_key

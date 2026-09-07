@@ -1,4 +1,5 @@
 import copy
+import logging
 import time
 
 import pytest
@@ -13,6 +14,7 @@ from fireblocks_sdk.connection_pool import (
     IdleAwareHTTPSConnectionPool,
     IdleAwarePoolManager,
     IdleAwareProxyManager,
+    MAX_IDLE_TIMEOUT_SECONDS,
     mount_idle_aware_adapter,
     normalize_idle_timeout_sec,
 )
@@ -334,6 +336,46 @@ def test_normalize_treats_none_as_not_configured():
 @pytest.mark.parametrize("value", [-1, -30])
 def test_normalize_treats_negative_as_no_limit(value):
     assert normalize_idle_timeout_sec(value) is None
+
+
+def test_normalize_keeps_the_maximum_itself():
+    assert normalize_idle_timeout_sec(MAX_IDLE_TIMEOUT_SECONDS) == MAX_IDLE_TIMEOUT_SECONDS
+
+
+def test_normalize_caps_values_above_the_maximum():
+    # Only reachable when the pools are built directly; mount_idle_aware_adapter
+    # rejects these before they get here.
+    assert normalize_idle_timeout_sec(600) == MAX_IDLE_TIMEOUT_SECONDS
+
+
+def test_normalize_warns_when_it_caps(caplog):
+    with caplog.at_level(logging.WARNING, logger="fireblocks_sdk.connection_pool"):
+        normalize_idle_timeout_sec(600)
+    assert "Capping" in caplog.text
+
+
+def test_capping_does_not_apply_to_no_limit():
+    # -1 is not "a very small number", it is the disable switch, so the ceiling
+    # must not turn it into MAX.
+    assert normalize_idle_timeout_sec(-1) is None
+
+
+def test_mount_rejects_a_limit_above_the_maximum():
+    # Raised at construction so a bad setting is not discovered mid-request.
+    with pytest.raises(ValueError, match="at most"):
+        mount_idle_aware_adapter(requests.Session(), MAX_IDLE_TIMEOUT_SECONDS + 1)
+
+
+def test_mount_accepts_the_maximum():
+    adapter = mount_idle_aware_adapter(requests.Session(), MAX_IDLE_TIMEOUT_SECONDS)
+    pool = adapter.poolmanager.connection_from_url("https://api.fireblocks.io")
+    assert pool.idle_timeout_sec == MAX_IDLE_TIMEOUT_SECONDS
+
+
+def test_mount_still_allows_disabling():
+    adapter = mount_idle_aware_adapter(requests.Session(), -1)
+    pool = adapter.poolmanager.connection_from_url("https://api.fireblocks.io")
+    assert pool.idle_timeout_sec is None
 
 
 def test_normalize_falls_back_to_the_default_on_garbage():

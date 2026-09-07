@@ -24,6 +24,9 @@ log = logging.getLogger(__name__)
 DEFAULT_IDLE_TIMEOUT_SECONDS = 30
 """Seconds a pooled connection may sit idle. Matches the Fireblocks Java SDK."""
 
+MAX_IDLE_TIMEOUT_SECONDS = 60
+"""Largest accepted idle timeout, well inside the idle window of the edge."""
+
 _IDLE_SINCE_ATTR = "_fireblocks_idle_since"
 
 
@@ -49,6 +52,18 @@ def normalize_idle_timeout_sec(value):
 
     if seconds < 0:
         return None
+
+    if seconds > MAX_IDLE_TIMEOUT_SECONDS:
+        # mount_idle_aware_adapter rejects this up front; reaching here means the
+        # pools were built directly, so cap rather than raise -- pools are created
+        # during a request, where an exception would read as a transport failure
+        # rather than a bad setting.
+        log.warning(
+            "Capping connection_idle_timeout_sec=%s at the maximum of %ss",
+            seconds,
+            MAX_IDLE_TIMEOUT_SECONDS,
+        )
+        return float(MAX_IDLE_TIMEOUT_SECONDS)
 
     return seconds
 
@@ -198,7 +213,17 @@ def mount_idle_aware_adapter(session, idle_timeout_sec=None):
     :param idle_timeout_sec: seconds a pooled connection may sit idle; see
         :func:`normalize_idle_timeout_sec` for how the value is interpreted.
     :return: the mounted adapter.
+    :raises ValueError: if the limit exceeds :data:`MAX_IDLE_TIMEOUT_SECONDS`.
     """
+    # Checked here rather than in the pool so a bad setting is reported when the
+    # client is built, matching the generated SDK, where pydantic rejects it at
+    # AdditionalOptions construction.
+    if idle_timeout_sec is not None and idle_timeout_sec > MAX_IDLE_TIMEOUT_SECONDS:
+        raise ValueError(
+            f"connection_idle_timeout_sec must be at most "
+            f"{MAX_IDLE_TIMEOUT_SECONDS}; got {idle_timeout_sec}"
+        )
+
     adapter = IdleAwareHTTPAdapter(idle_timeout_sec=idle_timeout_sec)
     session.mount("https://", adapter)
     session.mount("http://", adapter)
