@@ -154,7 +154,7 @@ class FireblocksNCW:
         """
         payload: stringified JSON, message originated in the NCW SDK
         """
-        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/rpc"
+        url = f"{self._wallet_url}/{wallet_id}/devices/{device_id}/invoke"
         body = {"payload": payload}
 
         return self.sdk._post_request(url, body)
