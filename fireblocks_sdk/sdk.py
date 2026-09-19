@@ -2197,8 +2197,10 @@ class FireblocksSDK:
         body = {
             "gasThreshold": gas_threshold,
             "gasCap": gas_cap,
-            "maxGasPrice": max_gas_price,
         }
+
+        if max_gas_price is not None:
+            body["maxGasPrice"] = str(max_gas_price)
 
         return self._put_request(url, body)
 
