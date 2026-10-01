@@ -1,6 +1,8 @@
 import json
+import os
 import platform
 import urllib
+import warnings
 from importlib.metadata import version
 from operator import attrgetter
 from typing import Any, Dict, Optional, List
@@ -97,6 +99,17 @@ def handle_response(response, page_mode=False):
         return response_data
 
 
+# FutureWarning, not DeprecationWarning: Python hides DeprecationWarning raised from
+# inside an imported library by default, so users would never see it.
+_DEPRECATION_WARNING = (
+    "fireblocks-sdk is deprecated and reaches end-of-life on November 1, 2026: "
+    "no further updates or fixes after that date. Existing installs continue to work. "
+    "Migrate to the fireblocks package: https://developers.fireblocks.com/reference/sdk-migration-guide "
+    "(set FIREBLOCKS_SDK_SUPPRESS_DEPRECATION_WARNING=1 to silence this warning)"
+)
+_deprecation_warning_shown = False
+
+
 class FireblocksSDK:
     def __init__(
             self,
@@ -124,6 +137,11 @@ class FireblocksSDK:
         Raises:
             ValueError: if connection_idle_timeout_sec exceeds MAX_IDLE_TIMEOUT_SECONDS.
         """
+        global _deprecation_warning_shown
+        if not _deprecation_warning_shown and not os.environ.get("FIREBLOCKS_SDK_SUPPRESS_DEPRECATION_WARNING"):
+            _deprecation_warning_shown = True
+            warnings.warn(_DEPRECATION_WARNING, FutureWarning, stacklevel=2)
+
         self.private_key = private_key
         self.api_key = api_key
         self.base_url = api_base_url
