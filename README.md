@@ -8,6 +8,8 @@
 > Existing installs continue to work, and this package will never be unpublished or yanked.
 >
 > Migrate to the [`fireblocks`](https://pypi.org/project/fireblocks/) package — see the [SDK Migration Guide](https://developers.fireblocks.com/reference/sdk-migration-guide).
+>
+> To silence the startup warning, set `FIREBLOCKS_SDK_SUPPRESS_DEPRECATION_WARNING=1`.
 
 ## About
 This repository contains the official Python SDK for Fireblocks API.
