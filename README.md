@@ -1,6 +1,16 @@
 # The Official Python SDK for Fireblocks API
 [![PyPI version](https://badge.fury.io/py/fireblocks-sdk.svg)](https://badge.fury.io/py/fireblocks-sdk)
 
+> **⚠️ This package is deprecated.**
+>
+> `fireblocks-sdk` is deprecated and reaches **end-of-life on November 1, 2026** — no further updates or fixes will be released after that date.
+>
+> Existing installs continue to work, and this package will never be unpublished or yanked.
+>
+> Migrate to the [`fireblocks`](https://pypi.org/project/fireblocks/) package — see the [SDK Migration Guide](https://developers.fireblocks.com/reference/sdk-migration-guide).
+>
+> To silence the startup warning, set `FIREBLOCKS_SDK_SUPPRESS_DEPRECATION_WARNING=1`.
+
 ## About
 This repository contains the official Python SDK for Fireblocks API.
 For the complete API reference, go to the [API reference](https://developers.fireblocks.com/).
